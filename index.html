@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Database Customer</title>
+    <title>Aplikasi Kasir Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -461,7 +461,11 @@
                 doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("FAKTUR PENJUALAN", 196, yPos, { align: 'right' });
                 doc.setFontSize(10); doc.setFont("helvetica", "normal");
                 
-                const numericInvoiceId = purchase.date.toMillis().toString().slice(-6);
+                // PERUBAHAN: Format nomor faktur diubah
+                const d = purchase.date.toDate();
+                const yymmdd = d.getFullYear().toString().slice(-2) + (d.getMonth() + 1).toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0');
+                const uniquePart = purchase.date.toMillis().toString().slice(-4);
+                const numericInvoiceId = `${yymmdd}${uniquePart}`;
                 doc.text(`No. Faktur: INV/${numericInvoiceId}`, 196, yPos + 6, { align: 'right' });
                 doc.text(`Tanggal: ${formatDate(purchase.date)}`, 196, yPos + 11, { align: 'right' });
 
@@ -550,7 +554,6 @@
             if (target.id === 'add-order-item-btn') addOrderItemRow();
             if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); }
             if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); 
-            // PERUBAHAN: Menggunakan tanggal dari pesanan (order.orderDate) bukan serverTimestamp()
             batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); 
             const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } }
         });
