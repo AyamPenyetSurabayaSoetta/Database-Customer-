@@ -447,11 +447,39 @@
                 const activeOrdersTotal = pendingOrders.reduce((sum, order) => sum + order.total, 0);
                 document.getElementById('active-orders-count').textContent = `${activeOrdersCount} Pesanan`;
                 document.getElementById('active-orders-total').textContent = formatCurrency(activeOrdersTotal);
+                const daysInMonthSoFar = now.getDate();
+                const labels = [];
+                const salesByDay = Array(daysInMonthSoFar).fill(0);
+                const expensesByDay = Array(daysInMonthSoFar).fill(0);
 
-                const last7Days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - i); return d.toISOString().split('T')[0]; }).reverse();
-                const salesByDay = last7Days.map(day => state.transactions.filter(tx => tx.date && tx.type === 'sale' && new Date(tx.date.seconds * 1000).toISOString().split('T')[0] === day).reduce((sum, tx) => sum + tx.total, 0));
-                const expensesByDay = last7Days.map(day => state.monthlyExpenses.filter(ex => ex.date && new Date(ex.date.seconds * 1000).toISOString().split('T')[0] === day).reduce((sum, ex) => sum + ex.total, 0));
-                renderFunctions.updateChart(last7Days.map(d => new Date(d).toLocaleDateString('id-ID', {day: '2-digit', month: 'short'})), salesByDay, expensesByDay);
+                for (let i = 1; i <= daysInMonthSoFar; i++) {
+                const date = new Date(currentYear, currentMonth, i);
+                labels.push(date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
+}
+                state.transactions.forEach(tx => {
+                if (tx.type === 'sale' && tx.date) {
+                const txDate = new Date(tx.date.seconds * 1000);
+                if (txDate.getFullYear() === currentYear && txDate.getMonth() === currentMonth) {
+                const dayOfMonth = txDate.getDate();
+                salesByDay[dayOfMonth - 1] += tx.total;
+        }
+    }
+});
+
+// 5. Proses data belanja bulan ini
+                state.monthlyExpenses.forEach(ex => {
+                if (ex.date) {
+                const exDate = new Date(ex.date.seconds * 1000);
+                if (exDate.getFullYear() === currentYear && exDate.getMonth() === currentMonth) {
+                const dayOfMonth = exDate.getDate(); // Mendapatkan tanggal (1-31)
+                expensesByDay[dayOfMonth - 1] += ex.total; // Masukkan ke array (index 0 untuk tgl 1)
+        }
+    }
+});
+
+// 6. Tampilkan grafik dengan data yang sudah diolah
+renderFunctions.updateChart(labels, salesByDay, expensesByDay);
+
             },
             renderProfile: () => { const name = state.businessProfile.name; const initial = name ? name.charAt(0).toUpperCase() : 'B'; document.getElementById('business-name-header').textContent = name; document.getElementById('business-initial-header').textContent = initial; document.getElementById('business-name-settings').textContent = name; document.getElementById('business-initial-settings').textContent = initial; },
             updateChart: (labels, salesData, expensesData) => { const ctx = document.getElementById('cashflow-chart').getContext('2d'); if (cashflowChart) { cashflowChart.destroy(); } cashflowChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: salesData, backgroundColor: 'rgba(16, 185, 129, 0.5)' }, { label: 'Uang Keluar', data: expensesData, backgroundColor: 'rgba(239, 68, 68, 0.5)' }] }, options: { scales: { y: { beginAtZero: true } } } }); },
