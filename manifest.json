@@ -1,0 +1,21 @@
+{
+  "name": "Aplikasi Database Pelanggan",
+  "short_name": "Database Pelanggan",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "description": "Aplikasi Database untuk Ayam Penyet Surabaya.",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/main/IMG-20250808-WA0023.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/main/IMG-20250808-WA0023.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ]
+}
