@@ -87,7 +87,7 @@
                 <div class="grid grid-cols-5 gap-2 text-center text-xs text-gray-700 mb-6">
                     <button id="shortcut-new-order" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><span>Pesanan Baru</span></button>
                     <button id="shortcut-new-sale"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5 4 4"/><path d="M13 7 8.7 2.7a2.41 2.41 0 0 0-3.4 0L2.7 5.3a2.41 2.41 0 0 0 0 3.4L7 13"/><path d="m8 6 2-2"/><path d="m2 22 5.5-1.5L21.17 6.83a2.82 2.82 0 0 0-4-4L3.5 16.5Z"/></svg></div><span>Faktur</span></button>
-                    <button id="shortcut-new-item" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span>Inventaris</span></button>
+                    <button id="shortcut-new-item" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span>Menu</span></button>
                     <button id="shortcut-new-contact" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Pelanggan</span></button>
                     <button id="shortcut-new-expense"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2.5h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6l1.6-8.4H7.1"/></svg></div><span>Belanja</span></button>
                 </div>
@@ -122,6 +122,23 @@
             <div id="page-pesanan" class="page hidden">
                 <h2 class="font-bold text-2xl mb-6">Daftar Pesanan</h2>
                 <div id="order-list" class="space-y-3"></div>
+
+                <div class="mt-12 border-t pt-6">
+                    <h3 class="font-bold text-xl mb-4">Riwayat Pesanan Selesai</h3>
+                    <div class="space-y-4 mb-4">
+                        <div class="flex items-center gap-2">
+                            <select id="completedOrderMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                <option value="">Ekspor Semua Bulan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="exportCompletedOrdersCsvBtn" class="w-full bg-teal-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                        Ekspor Pesanan Selesai (CSV)
+                    </button>
+
+                    <div id="completed-order-list" class="space-y-3 mt-4">
+                        </div>
+                </div>
             </div>
 
             <div id="page-pihak" class="page hidden">
@@ -130,15 +147,23 @@
             </div>
 
             <div id="page-inventaris" class="page hidden">
-                <h2 class="font-bold text-2xl mb-6">Inventaris</h2>
+                <h2 class="font-bold text-2xl mb-6">Menu</h2>
                 <div id="inventory-list" class="space-y-3"></div>
             </div>
 
             <div id="page-laporan" class="page hidden">
                 <h2 class="font-bold text-2xl mb-4">Laporan Belanja</h2>
-                 <div class="flex items-center gap-2 mb-4">
-                    <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap">Ekspor Laporan Belanja (CSV)</button>
+                 <div class="space-y-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                            <option value="">Semua Bulan</option>
+                        </select>
+                        <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+                    </div>
                 </div>
+                <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                    Ekspor Laporan Belanja (CSV)
+                </button>
                 <div id="expense-report-list" class="space-y-6"></div>
             </div>
 
@@ -174,7 +199,7 @@
         <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t flex justify-around">
             <button data-target="page-beranda" class="nav-button flex-1 py-2 px-1 text-center text-gray-500 nav-active"><svg class="mx-auto beranda-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs">Beranda</span></button>
             <button data-target="page-pesanan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span class="text-xs">Pesanan</span></button>
-            <button data-target="page-inventaris" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="text-xs">Inventaris</span></button>
+            <button data-target="page-inventaris" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="text-xs">Menu</span></button>
             <button data-target="page-pihak" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-xs">Pihak</span></button>
             <button data-target="page-pelanggan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12h3v5H7z"/><path d="M12 7h3v10h-3z"/><path d="M17 15h3v2h-3z"/></svg><span class="text-xs">Rangkuman</span></button>
             <button data-target="page-lainnya" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span class="text-xs">Lainnya</span></button>
@@ -274,7 +299,7 @@
                     });
                 }
             },
-            renderInventoryList: () => { const listEl = document.getElementById('inventory-list'); listEl.innerHTML = ''; if (state.inventory.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Inventaris kosong</h3><p class="mt-1 text-sm text-gray-500">Tambahkan item untuk mengelolanya.</p></div>`; } else { state.inventory.forEach(item => { const el = document.createElement('div'); el.className = 'p-3 border rounded-lg flex justify-between items-center'; el.innerHTML = `<div><p class="font-bold">${item.name}</p></div><div class="text-right"><p class="font-semibold">${formatCurrency(item.price)}</p><div class="space-x-2"><button data-id="${item.id}" class="edit-item-btn text-xs text-blue-500 font-semibold">Edit</button><button data-id="${item.id}" class="delete-item-btn text-xs text-red-500 font-semibold">Hapus</button></div></div>`; listEl.appendChild(el); }); } },
+            renderInventoryList: () => { const listEl = document.getElementById('inventory-list'); listEl.innerHTML = ''; if (state.inventory.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Menu kosong</h3><p class="mt-1 text-sm text-gray-500">Tambahkan item untuk mengelolanya.</p></div>`; } else { state.inventory.forEach(item => { const el = document.createElement('div'); el.className = 'p-3 border rounded-lg flex justify-between items-center'; el.innerHTML = `<div><p class="font-bold">${item.name}</p></div><div class="text-right"><p class="font-semibold">${formatCurrency(item.price)}</p><div class="space-x-2"><button data-id="${item.id}" class="edit-item-btn text-xs text-blue-500 font-semibold">Edit</button><button data-id="${item.id}" class="delete-item-btn text-xs text-red-500 font-semibold">Hapus</button></div></div>`; listEl.appendChild(el); }); } },
             renderSalesReport: () => {
                 const listEl = document.getElementById('sales-report-list');
                 const monthFilterEl = document.getElementById('salesMonthFilter');
@@ -322,10 +347,45 @@
             },
             renderExpenseReport: () => {
                 const listEl = document.getElementById('expense-report-list');
+                const monthFilterEl = document.getElementById('expenseMonthFilter');
                 listEl.innerHTML = '';
-                if (state.monthlyExpenses.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui pintasan di Beranda.</p></div>`; return; }
-                const expensesByMonth = state.monthlyExpenses.reduce((acc, expense) => { const date = new Date(expense.date.seconds * 1000); const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense); acc[monthYear].total += expense.total; return acc; }, {});
-                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = expensesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; listEl.appendChild(monthEl); });
+
+                const availableMonths = [...new Set(state.monthlyExpenses.map(ex => 
+                    new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
+                ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+                monthFilterEl.value = currentFilterValue;
+
+                const selectedMonth = monthFilterEl.value;
+                const filteredExpenses = state.monthlyExpenses.filter(ex => 
+                    !selectedMonth || new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
+                );
+
+                if (filteredExpenses.length === 0) { 
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui tombol (+).</p></div>`; 
+                    return; 
+                }
+
+                const expensesByMonth = filteredExpenses.reduce((acc, expense) => { 
+                    const date = new Date(expense.date.seconds * 1000); 
+                    const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); 
+                    if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } 
+                    acc[monthYear].items.push(expense); 
+                    acc[monthYear].total += expense.total; 
+                    return acc; 
+                }, {});
+
+                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { 
+                    const monthData = expensesByMonth[month]; 
+                    const monthEl = document.createElement('div'); 
+                    monthEl.className = 'border rounded-lg'; 
+                    const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); 
+                    monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; 
+                    listEl.appendChild(monthEl); 
+                });
             },
             renderCustomerSummary: () => {
                 const listEl = document.getElementById('customer-summary-list');
@@ -356,6 +416,69 @@
                         </div>`;
                     listEl.appendChild(el);
                 });
+            },
+            renderCompletedOrderList: () => {
+                const listEl = document.getElementById('completed-order-list');
+                if (!listEl) return;
+
+                listEl.innerHTML = '';
+                const completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+
+                if (completedOrders.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-8"><p class="text-sm text-gray-500">Belum ada pesanan yang selesai.</p></div>`;
+                    return;
+                }
+
+                completedOrders.forEach(order => {
+                    const matchingTransaction = state.transactions.find(tx => 
+                        tx.type === 'sale' &&
+                        tx.contactId === order.contactId &&
+                        tx.total === order.total &&
+                        tx.date && order.orderDate &&
+                        tx.date.seconds === order.orderDate.seconds
+                    );
+
+                    const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
+                    const item = document.createElement('div');
+                    item.className = 'p-3 border rounded-lg bg-gray-50/70';
+                    item.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold">${order.contactName}</p>
+                                <p class="text-sm text-gray-500">${formatCurrency(order.total)}</p>
+                            </div>
+                            <p class="text-xs text-gray-500">${formatDate(order.orderDate)}</p>
+                        </div>
+                        <div class="text-sm space-y-1 mt-2 pt-2 border-t">
+                            <ul class="list-disc pl-5 text-gray-600 text-xs">${itemsHtml}</ul>
+                        </div>
+                        ${matchingTransaction ? `
+                        <div class="text-right mt-3">
+                            <button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">
+                                CETAK ULANG FAKTUR
+                            </button>
+                        </div>
+                        ` : ''}
+                    `;
+                    listEl.appendChild(item);
+                });
+            },
+            renderCompletedOrderFilters: () => {
+                const monthFilterEl = document.getElementById('completedOrderMonthFilter');
+                if (!monthFilterEl) return;
+
+                const completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+                const availableMonths = [...new Set(completedOrders.map(order => 
+                    new Date(order.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
+                ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Ekspor Semua Bulan</option>';
+                availableMonths.forEach(month => {
+                    const option = new Option(month, month);
+                    monthFilterEl.add(option);
+                });
+                monthFilterEl.value = currentFilterValue;
             },
             renderDashboard: () => {
                 const now = new Date();
@@ -491,7 +614,6 @@
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
             const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { showToast("Tambahkan minimal satu barang."); return Promise.reject(new Error("No items selected.")); } if (!data.contactId) { showToast("Pilih pihak terlebih dahulu."); return Promise.reject(new Error("No contact selected.")); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
             
-            // === PERUBAHAN LOGIKA SIMPAN PESANAN DIMULAI DI SINI ===
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { 
                 const customerName = data.customerName.trim(); 
                 const customerPhone = data.customerPhone.trim(); 
@@ -508,13 +630,11 @@
                 
                 if (existingContact) { 
                     contactId = existingContact.id; 
-                    // Cek jika ada perubahan data telepon atau alamat, lalu update
                     if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) {
                         await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress });
                         showToast(`Info kontak ${customerName} diperbarui.`);
                     }
                 } else { 
-                    // Simpan data lengkap untuk kontak baru
                     const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; 
                     const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); 
                     contactId = newContactRef.id; 
@@ -541,7 +661,7 @@
                 const payload = { 
                     contactId: contactId, 
                     contactName: contactName, 
-                    alamat: customerAddress, // Gunakan alamat dari form
+                    alamat: customerAddress,
                     items: items, 
                     total: total, 
                     status: 'pending', 
@@ -550,7 +670,6 @@
                 await addDoc(collection(db, 'customer_orders'), payload); 
                 return 'Pesanan baru berhasil disimpan!'; 
             });
-            // === PERUBAHAN LOGIKA SIMPAN PESANAN BERAKHIR DI SINI ===
 
             const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pihak', customerDetailModalContent, () => {});
 
@@ -562,7 +681,6 @@
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
             
-            // === PERUBAHAN AUTO-FILL FORM DIMULAI DI SINI ===
             const populateContactInfo = (contactName) => {
                 const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase());
                 if (contact) {
@@ -587,7 +705,7 @@
             });
             
             nameInput.addEventListener('blur', (e) => {
-                setTimeout(() => { // Beri jeda agar event click di suggestion box bisa berjalan dulu
+                setTimeout(() => {
                     populateContactInfo(e.target.value);
                     suggestionsBox.classList.add('hidden');
                 }, 200);
@@ -601,16 +719,32 @@
                     populateContactInfo(selectedName);
                 } 
             });
-            // === PERUBAHAN AUTO-FILL FORM BERAKHIR DI SINI ===
 
             const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
             const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); };
-            const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pihak" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
+            const updateFAB = (pageId) => { 
+                fabContainer.innerHTML = ''; 
+                let fabHTML = ''; 
+                const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; 
+                const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; 
+                if (pageId === 'page-pihak') { 
+                    fabHTML = `<button title="Tambah Pihak" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; 
+                } else if (pageId === 'page-inventaris') { 
+                    fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; 
+                } else if (pageId === 'page-penjualan') { 
+                    fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; 
+                } else if (pageId === 'page-pesanan') { 
+                    fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; 
+                } else if (pageId === 'page-laporan') {
+                    fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`;
+                }
+                fabContainer.innerHTML = fabHTML; 
+            };
 
             navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
             document.getElementById('shortcut-new-item').addEventListener('click', () => navigateTo('page-inventaris'));
-            document.getElementById('shortcut-new-expense').addEventListener('click', () => { expenseModal.show({ purchaseDate: new Date().toISOString().split('T')[0] }); });
+            document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
             document.getElementById('shortcut-new-sale').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } if (state.contacts.length === 0) { showToast("Tambahkan data pihak."); return; } const contactSelect = document.getElementById('sale-contact-select'); contactSelect.innerHTML = state.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); document.getElementById('sale-items-container').innerHTML = ''; addSaleItemRow(); saleModal.show(); });
             document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
             document.getElementById('btn-edit-profile').addEventListener('click', () => profileModal.show(state.businessProfile));
@@ -622,53 +756,134 @@
                 });
             });
 
-            document.body.addEventListener('click', async (e) => { const target = e.target.closest('button'); if (!target) return; if (target.id === 'fab-add-contact') contactModal.show(); if (target.id === 'fab-add-item') itemModal.show(); if (target.id === 'fab-add-sale') navigateTo('page-penjualan'); if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click(); if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); } if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id)); showToast('Pihak berhasil dihapus.'); } } if (target.classList.contains('edit-item-btn')) { const item = state.inventory.find(i => i.id === target.dataset.id); if (item) itemModal.show(item); } if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id)); showToast('Barang berhasil dihapus.'); } } 
-            if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
-            if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id)); showToast('Pesanan berhasil dihapus.'); } } 
-            if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } }
-            if (target.classList.contains('invoice-btn')) renderFunctions.generateInvoice(target.dataset.id); if (target.id === 'add-sale-item-btn') addSaleItemRow(); if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); }
-            if (target.id === 'add-order-item-btn') addOrderItemRow();
-            if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); }
-            if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } }
-            
-            if (target.classList.contains('view-customer-details-btn')) {
-                const customerId = target.dataset.id;
-                const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId);
-                const detailsEl = document.getElementById('customer-item-details');
+            document.body.addEventListener('click', async (e) => { 
+                const target = e.target.closest('button'); 
+                if (!target) return; 
 
-                if (sales.length > 0) {
-                    const historyHtml = sales.map(sale => {
-                        const itemsHtml = sale.items.map(item => 
-                            `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`
-                        ).join('');
-
-                        return `
-                            <div class="border rounded-lg p-3 mb-3">
-                                <div class="flex justify-between items-center mb-2 pb-2 border-b">
-                                    <p class="font-semibold text-gray-700">${formatDate(sale.date)}</p>
-                                    <p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p>
-                                </div>
-                                <ul class="list-disc pl-5 mb-3">${itemsHtml}</ul>
-                                <div class="text-right">
-                                    <button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                    detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`;
-                } else {
-                    detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pihak ini.</p>`;
+                if (target.classList.contains('reprint-invoice-btn')) {
+                    const transactionId = target.dataset.id;
+                    if (transactionId) {
+                        renderFunctions.generateInvoice(transactionId);
+                    } else {
+                        showToast("ID Faktur tidak ditemukan.");
+                    }
                 }
-                customerDetailModal.show();
-            }
-        });
+
+                if (target.id === 'fab-add-contact') contactModal.show(); 
+                if (target.id === 'fab-add-item') itemModal.show(); 
+                if (target.id === 'fab-add-expense') {
+                    expenseModal.show({ purchaseDate: new Date().toISOString().split('T')[0] });
+                }
+                if (target.id === 'fab-add-sale') navigateTo('page-penjualan'); 
+                if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click(); 
+                if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); } 
+                if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id)); showToast('Pihak berhasil dihapus.'); } } 
+                if (target.classList.contains('edit-item-btn')) { const item = state.inventory.find(i => i.id === target.dataset.id); if (item) itemModal.show(item); } 
+                if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id)); showToast('Barang berhasil dihapus.'); } } 
+                if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
+                if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id)); showToast('Pesanan berhasil dihapus.'); } } 
+                if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } }
+                if (target.classList.contains('invoice-btn')) renderFunctions.generateInvoice(target.dataset.id); if (target.id === 'add-sale-item-btn') addSaleItemRow(); if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); }
+                if (target.id === 'add-order-item-btn') addOrderItemRow();
+                if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); }
+                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } }
+                if (target.classList.contains('view-customer-details-btn')) {
+                    const customerId = target.dataset.id;
+                    const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId);
+                    const detailsEl = document.getElementById('customer-item-details');
+
+                    if (sales.length > 0) {
+                        const historyHtml = sales.map(sale => {
+                            const itemsHtml = sale.items.map(item => 
+                                `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`
+                            ).join('');
+
+                            return `
+                                <div class="border rounded-lg p-3 mb-3">
+                                    <div class="flex justify-between items-center mb-2 pb-2 border-b">
+                                        <p class="font-semibold text-gray-700">${formatDate(sale.date)}</p>
+                                        <p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p>
+                                    </div>
+                                    <ul class="list-disc pl-5 mb-3">${itemsHtml}</ul>
+                                    <div class="text-right">
+                                        <button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`;
+                    } else {
+                        detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pihak ini.</p>`;
+                    }
+                    customerDetailModal.show();
+                }
+            });
             saleModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
             customerOrderModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = ''; document.getElementById('salesMonthFilter').value = ''; renderFunctions.renderSalesReport(); });
             document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pihak", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
-            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"]; const data = state.monthlyExpenses.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); exportToCsv(`laporan_belanja_${new Date().toISOString().split('T')[0]}.csv`, headers, data); });
+            
+            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { 
+                const selectedMonth = document.getElementById('expenseMonthFilter').value;
+                const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"];
+                
+                let dataToExport = state.monthlyExpenses;
+                if (selectedMonth) {
+                    dataToExport = dataToExport.filter(ex => 
+                        new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
+                    );
+                }
+
+                if (dataToExport.length === 0) {
+                    showToast('Tidak ada data belanja untuk diekspor.');
+                    return;
+                }
+
+                const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); 
+                const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+                exportToCsv(filename, headers, data); 
+            });
+
+            document.getElementById('expenseMonthFilter').addEventListener('change', renderFunctions.renderExpenseReport);
+            document.getElementById('resetExpenseFilter').addEventListener('click', () => {
+                document.getElementById('expenseMonthFilter').value = '';
+                renderFunctions.renderExpenseReport();
+            });
+
+            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('completedOrderMonthFilter').value;
+                const headers = ["Tanggal Pesan", "Nama Pihak", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"];
+                let dataToExport = state.customerOrders.filter(o => o.status === 'completed');
+                
+                if (selectedMonth) {
+                    dataToExport = dataToExport.filter(o => 
+                        new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
+                    );
+                }
+
+                if (dataToExport.length === 0) {
+                    showToast('Tidak ada data pesanan selesai untuk diekspor.');
+                    return;
+                }
+
+                const data = dataToExport.flatMap(order => 
+                    order.items.map(item => [
+                        formatDate(order.orderDate),
+                        order.contactName,
+                        order.alamat || '-',
+                        item.name,
+                        item.qty,
+                        item.price,
+                        item.qty * item.price
+                    ])
+                );
+                
+                const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+                exportToCsv(filename, headers, data);
+                showToast('Laporan pesanan selesai sedang diunduh...');
+            });
 
             navigateTo('page-beranda');
         }
@@ -687,10 +902,20 @@
                     initializeApplication(db);
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
-                    onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); }, (error) => console.error("Error fetching transactions:", error));
+                    onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
                     onSnapshot(doc(db, 'config', 'businessProfile'), (doc) => { if (doc.exists()) { state.businessProfile = doc.data(); } renderFunctions.renderProfile(); }, (error) => console.error("Error fetching profile:", error));
-                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderOrderList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching customer orders:", error));
-                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderExpenseReport(); renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching monthly expenses:", error));
+                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { 
+                        state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                        renderFunctions.renderOrderList(); 
+                        renderFunctions.renderCompletedOrderList();
+                        renderFunctions.renderDashboard();
+                        renderFunctions.renderCompletedOrderFilters();
+                    }, (error) => console.error("Error fetching customer orders:", error));
+                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { 
+                        state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                        renderFunctions.renderExpenseReport(); 
+                        renderFunctions.renderDashboard(); 
+                    }, (error) => console.error("Error fetching monthly expenses:", error));
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
