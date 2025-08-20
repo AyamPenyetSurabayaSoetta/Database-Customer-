@@ -163,12 +163,12 @@
             <div id="page-laporan" class="page hidden">
                 <h2 class="font-bold text-2xl mb-4">Laporan Belanja</h2>
                  <div class="space-y-4 mb-4">
-                     <div class="flex items-center gap-2">
-                         <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
-                             <option value="">Semua Bulan</option>
-                         </select>
-                         <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
-                     </div>
+                         <div class="flex items-center gap-2">
+                             <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                 <option value="">Semua Bulan</option>
+                             </select>
+                             <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+                         </div>
                  </div>
                  <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
                      Ekspor Laporan Belanja (CSV)
@@ -197,13 +197,47 @@
                                 <span>Profil Bisnis</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
+                            <button id="btn-view-checklist" class="w-full text-left p-4 flex justify-between items-center">
+                                <span>Laporan Kebersihan</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <div id="page-checklist" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Laporan Kebersihan</h2>
+                </header>
+                <div class="space-y-4 mb-4">
+                        <div class="flex items-center gap-2">
+                            <select id="checklistMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                <option value="">Semua Bulan</option>
+                            </select>
+                        </div>
+                </div>
+                <button id="exportChecklistCsvBtn" class="w-full bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                    Ekspor Laporan Kebersihan (CSV)
+                </button>
+                <div id="checklist-report-list" class="space-y-4"></div>
+            </div>
+
         </main>
 
-        <div id="fab-container" class="fixed bottom-20 right-4 space-y-3 z-40"></div>
+        <div class="fixed bottom-20 right-0 left-0 max-w-md mx-auto z-40">
+            <div id="fab-container" class="absolute bottom-0 right-4 space-y-3"></div>
+
+            <div id="broadcast-controls" class="hidden absolute bottom-0 w-full bg-white p-3 border-t shadow-lg">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm"><strong id="selected-count">0</strong> pelanggan dipilih</p>
+                    <button id="show-broadcast-modal" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm">Broadcast Pesan</button>
+                </div>
+            </div>
+        </div>
 
         <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t flex justify-around">
             <button data-target="page-beranda" class="nav-button flex-1 py-2 px-1 text-center text-gray-500 nav-active"><svg class="mx-auto beranda-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs">Beranda</span></button>
@@ -215,7 +249,28 @@
         </nav>
     </div>
 
-    <div id="modal-container"></div>
+    <div id="modal-container">
+        <div id="broadcast-progress-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-[70] hidden">
+            <div class="modal-content bg-white w-full rounded-t-2xl p-4 text-center">
+                <h3 id="broadcast-progress-title" class="font-bold text-lg mb-2">Mengirim Broadcast...</h3>
+                <p id="broadcast-progress-status" class="text-gray-600 mb-4">Mempersiapkan...</p>
+                <div id="broadcast-target-info" class="bg-gray-100 p-3 rounded-lg mb-6">
+                    <p class="text-sm">Berikutnya:</p>
+                    <p id="broadcast-next-contact-name" class="font-bold text-xl">-</p>
+                </div>
+                <div id="broadcast-actions">
+                    <button id="broadcast-send-next-btn" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold mb-3">Buka WhatsApp & Kirim</button>
+                    <button id="broadcast-cancel-btn" class="w-full text-gray-600 py-2">Batalkan Broadcast</button>
+                </div>
+                <div id="broadcast-complete" class="hidden">
+                     <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <h3 class="font-bold text-lg mt-4">Broadcast Selesai</h3>
+                     <p class="text-gray-600 mb-6">Semua pesan telah diproses.</p>
+                     <button id="broadcast-close-btn" class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="toast" class="toast"></div>
 
     <script type="module">
@@ -236,9 +291,14 @@
         const companyInfo = { name: "Ayam Penyet Surabaya", address: "Jl. Soekarno Hatta no. 725A", city: "Kota Bandung, 40286", phone: "0811-6594-527", email: "ayampenyetsurabaya725@gmail.com" };
         const companyLogoUrl = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
 
-        let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [] };
+        let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [] };
         let salesChart, expensesChart;
         let toastTimer;
+
+        // State untuk broadcast
+        let broadcastQueue = [];
+        let currentBroadcastIndex = 0;
+        let broadcastMessageTemplate = '';
 
         const getWeekOfMonth = (date) => {
             const day = date.getDate();
@@ -261,7 +321,9 @@
             if (formatted.startsWith('0')) {
                 formatted = '62' + formatted.substring(1);
             } else if (!formatted.startsWith('62')) {
-                formatted = '62' + formatted;
+                if(formatted.length > 5) { // Basic check to avoid prepending 62 to invalid numbers
+                    formatted = '62' + formatted;
+                }
             }
             return formatted;
         };
@@ -283,7 +345,7 @@
                 const listEl = document.getElementById('contact-list');
                 listEl.innerHTML = '';
                 const whatsappSvgIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
-                
+
                 const searchTerm = document.getElementById('contactSearchInput')?.value.toLowerCase() || '';
                 const filteredContacts = state.contacts.filter(contact => {
                     const nameMatch = contact.name.toLowerCase().includes(searchTerm);
@@ -302,12 +364,15 @@
                         const whatsappButton = whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="text-green-600 hover:text-green-700" title="Kirim WhatsApp">${whatsappSvgIcon}</a>` : '';
 
                         item.innerHTML = `
-                            <div>
-                                <p class="font-bold">${contact.name}</p>
-                                <p class="text-sm text-gray-500">${contact.phone || '-'}</p>
-                                <p class="text-xs text-gray-400 mt-1">${contact.address || 'Alamat tidak tersedia'}</p>
+                            <div class="flex-grow flex items-center gap-3">
+                                <input type="checkbox" data-id="${contact.id}" class="contact-checkbox h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 flex-shrink-0">
+                                <div class="flex-grow">
+                                    <p class="font-bold">${contact.name}</p>
+                                    <p class="text-sm text-gray-500">${contact.phone || '-'}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${contact.address || 'Alamat tidak tersedia'}</p>
+                                </div>
                             </div>
-                            <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-3 flex-shrink-0">
                                 ${whatsappButton}
                                 <button data-id="${contact.id}" class="edit-contact-btn text-blue-500 font-semibold text-sm">Edit</button>
                                 <button data-id="${contact.id}" class="delete-contact-btn text-red-500 font-semibold text-sm">Hapus</button>
@@ -420,8 +485,8 @@
                             <div class="flex items-center gap-3">
                                <span class="font-bold text-gray-400 w-6 text-center">${index + 1}</span>
                                <div>
-                                    <p class="font-bold">${customer.name}</p>
-                                    <p class="text-sm text-gray-500">Terakhir beli: ${formatDate(customer.lastPurchaseDate)}</p>
+                                   <p class="font-bold">${customer.name}</p>
+                                   <p class="text-sm text-gray-500">Terakhir beli: ${formatDate(customer.lastPurchaseDate)}</p>
                                </div>
                             </div>
                             <div class="text-right">
@@ -634,12 +699,73 @@
                 doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("Total", 145, finalY + 10); doc.text(`: ${formatCurrency(purchase.total)}`, 157, finalY + 10);
                 doc.setFontSize(9); doc.setFont("helvetica", "italic"); doc.setTextColor(150); doc.text("Terima kasih telah berbelanja.", 14, 280);
                 doc.save(`faktur-${purchase.contactName}-${new Date().toISOString().split('T')[0]}.pdf`);
-            }
+            },
+            renderChecklistReport: () => {
+                const listEl = document.getElementById('checklist-report-list');
+                const monthFilterEl = document.getElementById('checklistMonthFilter');
+                if (!listEl || !monthFilterEl) return;
+
+                listEl.innerHTML = '';
+
+                // Populate month filter
+                const availableMonths = [...new Set(state.checklistHistory.map(report =>
+                    report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) : null
+                ).filter(Boolean))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+                monthFilterEl.value = currentFilterValue;
+
+                // Filter reports by selected month
+                const selectedMonth = monthFilterEl.value;
+                const filteredReports = state.checklistHistory.filter(report =>
+                    !selectedMonth || (report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth)
+                );
+
+                if (filteredReports.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada laporan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data laporan kebersihan yang cocok dengan filter Anda.</p></div>`;
+                    return;
+                }
+
+                // Render the filtered reports
+                filteredReports.forEach(report => {
+                    const dateEl = document.createElement('div');
+                    const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
+
+                    const tasksHtml = (report.tasks || [])
+                        .filter(task => task.done)
+                        .map(task => {
+                            const imageHtml = task.proofUrl
+                                ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>`
+                                : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+
+                            return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">
+                                        ${imageHtml}
+                                        <div class="flex-1">
+                                            <p class="font-medium">${task.text}</p>
+                                            <p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p>
+                                        </div>
+                                    </li>`;
+                        }).join('');
+
+                    if (tasksHtml) {
+                        dateEl.innerHTML = `
+                            <div class="border rounded-lg mb-4">
+                                <header class="bg-gray-50 p-3 rounded-t-lg">
+                                    <h3 class="font-bold text-lg">${reportDate}</h3>
+                                </header>
+                                <ul class="px-3">${tasksHtml}</ul>
+                            </div>`;
+                        listEl.appendChild(dateEl);
+                    }
+                });
+            },
         };
 
         function initializeApplication(db) {
             const modalContainer = document.getElementById('modal-container');
-            const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset(); formEl.dataset.id = data.id || ''; Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; }); modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden'); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); }); modalEl.querySelector('.close-modal-btn').addEventListener('click', hide); formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML; submitBtn.disabled = true; submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries()); data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
+            const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset(); formEl.dataset.id = data.id || ''; Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; }); modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden'); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); }); modalEl.querySelector('.close-modal-btn').addEventListener('click', hide); formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML; submitBtn.disabled = true; submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries()); data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error); else showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
             const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => { const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); let resolvePromise; const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); }; const hide = () => modalEl.classList.add('hidden'); modalEl.querySelector('.confirm-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(true); }); modalEl.querySelector('.cancel-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(false); }); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } }); return { show }; };
 
             const profileModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Bisnis</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Simpan Profil</button>`;
@@ -649,6 +775,16 @@
             const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
             const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
+            const broadcastModalContent = `
+                <div class="space-y-4">
+                    <div>
+                        <label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label>
+                        <textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea>
+                        <p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p>
+                    </div>
+                </div>
+                <button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>
+            `;
 
             const profileModal = createModal('profile-modal', 'Edit Profil Bisnis', profileModalContent, async (data) => { await setDoc(doc(db, 'config', 'businessProfile'), { name: data.name }); return 'Profil bisnis berhasil diperbarui!'; });
             const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { 
@@ -665,16 +801,14 @@
             const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate }; await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
             const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
-            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { showToast("Tambahkan minimal satu barang."); return Promise.reject(new Error("No items selected.")); } if (!data.contactId) { showToast("Pilih pelanggan terlebih dahulu."); return Promise.reject(new Error("No contact selected.")); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
-
+            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); } if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { 
                 const customerName = data.customerName.trim(); 
                 const customerPhone = data.customerPhone.trim(); 
                 const customerAddress = form.elements['alamat'].value.trim();
 
                 if (!customerName) { 
-                    showToast("Nama pelanggan harus diisi."); 
-                    return Promise.reject(new Error("Customer name is required.")); 
+                    throw new Error("Nama pelanggan harus diisi."); 
                 } 
 
                 let contactId;
@@ -705,8 +839,7 @@
                 }); 
 
                 if (items.length === 0) { 
-                    showToast("Tambahkan minimal satu barang pesanan."); 
-                    return Promise.reject(new Error("No items selected.")); 
+                    throw new Error("Tambahkan minimal satu barang pesanan."); 
                 } 
 
                 const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); 
@@ -723,8 +856,63 @@
                 await addDoc(collection(db, 'customer_orders'), payload); 
                 return 'Pesanan baru berhasil disimpan!'; 
             });
-
             const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
+            
+            // --- MODIFIKASI DISINI: Logika baru untuk broadcast ---
+            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => {
+                broadcastMessageTemplate = data.message;
+                const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked');
+
+                if (!broadcastMessageTemplate) {
+                    throw new Error("Pesan tidak boleh kosong.");
+                }
+
+                broadcastQueue = Array.from(checkedBoxes)
+                    .map(cb => state.contacts.find(c => c.id === cb.dataset.id))
+                    .filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone));
+
+                if (broadcastQueue.length === 0) {
+                    throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid.");
+                }
+
+                currentBroadcastIndex = 0;
+                setupAndShowBroadcastProgress();
+                return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`;
+            });
+
+            // --- FUNGSI BARU: Untuk mengelola modal progress broadcast ---
+            const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
+            const setupAndShowBroadcastProgress = () => {
+                document.getElementById('broadcast-actions').classList.remove('hidden');
+                document.getElementById('broadcast-complete').classList.add('hidden');
+                broadcastProgressModalEl.classList.remove('hidden');
+                updateBroadcastProgressUI();
+            };
+
+            const updateBroadcastProgressUI = () => {
+                if (currentBroadcastIndex >= broadcastQueue.length) {
+                    // Selesai
+                    document.getElementById('broadcast-actions').classList.add('hidden');
+                    document.getElementById('broadcast-complete').classList.remove('hidden');
+                } else {
+                    // Lanjut ke berikutnya
+                    const contact = broadcastQueue[currentBroadcastIndex];
+                    document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`;
+                    document.getElementById('broadcast-next-contact-name').textContent = contact.name;
+                }
+            };
+
+            const hideBroadcastProgress = () => {
+                broadcastProgressModalEl.classList.add('hidden');
+                broadcastQueue = [];
+                currentBroadcastIndex = 0;
+                broadcastMessageTemplate = '';
+                // Uncheck all boxes
+                document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false);
+                document.getElementById('broadcast-controls').classList.add('hidden');
+            };
+            // --- Akhir dari fungsi baru ---
+
 
             const updateSaleTotal = () => { let total = 0; document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
             const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateSaleTotal(); };
@@ -733,7 +921,6 @@
 
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
-
             const populateContactInfo = (contactName) => {
                 const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase());
                 if (contact) {
@@ -741,7 +928,6 @@
                     customerOrderModal.formEl.elements['alamat'].value = contact.address || '';
                 }
             };
-
             nameInput.addEventListener('input', (e) => { 
                 const searchTerm = e.target.value.toLowerCase(); 
                 if (searchTerm.length === 0) { 
@@ -756,14 +942,12 @@
                     suggestionsBox.classList.add('hidden'); 
                 } 
             });
-
             nameInput.addEventListener('blur', (e) => {
                 setTimeout(() => {
                     populateContactInfo(e.target.value);
                     suggestionsBox.classList.add('hidden');
                 }, 200);
             });
-
             suggestionsBox.addEventListener('click', (e) => { 
                 if (e.target.classList.contains('suggestion-item')) { 
                     const selectedName = e.target.dataset.name;
@@ -774,7 +958,22 @@
             });
 
             const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
-            const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); };
+            const navigateTo = (pageId) => { 
+                pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); 
+                navButtons.forEach(btn => { 
+                    const isActive = btn.dataset.target === pageId; 
+                    btn.classList.toggle('nav-active', isActive); 
+                    const berandaIcon = btn.querySelector('.beranda-icon'); 
+                    if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; 
+                }); 
+                updateFAB(pageId); 
+
+                if (pageId !== 'page-pihak') {
+                    document.getElementById('broadcast-controls').classList.add('hidden');
+                    document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false);
+                }
+            };
+
             const updateFAB = (pageId) => { 
                 fabContainer.innerHTML = ''; 
                 let fabHTML = ''; 
@@ -801,6 +1000,9 @@
             document.getElementById('shortcut-new-sale').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } if (state.contacts.length === 0) { showToast("Tambahkan data pelanggan."); return; } const contactSelect = document.getElementById('sale-contact-select'); contactSelect.innerHTML = state.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); document.getElementById('sale-items-container').innerHTML = ''; addSaleItemRow(); saleModal.show(); });
             document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
             document.getElementById('btn-edit-profile').addEventListener('click', () => profileModal.show(state.businessProfile));
+
+            document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
+            document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
 
             document.querySelectorAll('.chart-week-btn').forEach(button => {
                 button.addEventListener('click', () => {
@@ -876,9 +1078,47 @@
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = ''; document.getElementById('salesMonthFilter').value = ''; renderFunctions.renderSalesReport(); });
-            
+
             document.getElementById('contactSearchInput').addEventListener('input', renderFunctions.renderContactList);
             document.getElementById('completedOrderSearchInput').addEventListener('input', renderFunctions.renderCompletedOrderList);
+            
+            // Event listener untuk checkbox pelanggan
+            const contactListEl = document.getElementById('contact-list');
+            const broadcastControlsEl = document.getElementById('broadcast-controls');
+            const selectedCountEl = document.getElementById('selected-count');
+
+            contactListEl.addEventListener('change', e => {
+                if (e.target.classList.contains('contact-checkbox')) {
+                    const checkedCount = contactListEl.querySelectorAll('.contact-checkbox:checked').length;
+                    if (checkedCount > 0) {
+                        selectedCountEl.textContent = checkedCount;
+                        broadcastControlsEl.classList.remove('hidden');
+                    } else {
+                        broadcastControlsEl.classList.add('hidden');
+                    }
+                }
+            });
+
+            document.getElementById('show-broadcast-modal').addEventListener('click', () => {
+                broadcastModal.show();
+            });
+            
+            // --- EVENT LISTENERS BARU untuk progress modal ---
+            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => {
+                if(currentBroadcastIndex < broadcastQueue.length) {
+                    const contact = broadcastQueue[currentBroadcastIndex];
+                    const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]);
+                    const whatsappNumber = formatWhatsappNumber(contact.phone);
+                    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(url, '_blank');
+                    currentBroadcastIndex++;
+                    updateBroadcastProgressUI();
+                }
+            });
+
+            document.getElementById('broadcast-cancel-btn').addEventListener('click', hideBroadcastProgress);
+            document.getElementById('broadcast-close-btn').addEventListener('click', hideBroadcastProgress);
+
 
             document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
 
@@ -942,6 +1182,33 @@
                 showToast('Laporan pesanan selesai sedang diunduh...');
             });
 
+            document.getElementById('checklistMonthFilter').addEventListener('change', renderFunctions.renderChecklistReport);
+            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('checklistMonthFilter').value;
+                const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"];
+                let dataToExport = state.checklistHistory;
+                if (selectedMonth) {
+                    dataToExport = dataToExport.filter(report =>
+                        report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
+                    );
+                }
+                if (dataToExport.length === 0) {
+                    showToast('Tidak ada data kebersihan untuk diekspor.');
+                    return;
+                }
+                const data = dataToExport.flatMap(report =>
+                    (report.tasks || []).filter(t => t.done).map(task => [
+                        formatDate(report.tanggal),
+                        task.text,
+                        task.completedBy || 'N/A',
+                        task.proofUrl || 'N/A'
+                    ])
+                );
+                const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+                exportToCsv(filename, headers, data);
+                showToast('Laporan kebersihan sedang diunduh...');
+            });
+
             navigateTo('page-beranda');
         }
 
@@ -973,6 +1240,13 @@
                         renderFunctions.renderExpenseReport(); 
                         renderFunctions.renderDashboard(); 
                     }, (error) => console.error("Error fetching monthly expenses:", error));
+
+                    // Mengambil data dari koleksi 'checklist_history'
+                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => {
+                        state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderChecklistReport();
+                    }, (error) => console.error("Error fetching checklist history:", error));
+                    
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
