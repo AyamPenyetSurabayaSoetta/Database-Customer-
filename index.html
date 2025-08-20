@@ -91,9 +91,9 @@
                     <button id="shortcut-new-contact" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Pelanggan</span></button>
                     <button id="shortcut-new-expense"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2.5h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6l1.6-8.4H7.1"/></svg></div><span>Belanja</span></button>
                 </div>
-                
+
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">Arus Kas</h3>
+                    <h3 class="font-bold text-lg">Grafik Mingguan</h3>
                     <div class="flex items-center border border-gray-200 rounded-md text-xs font-semibold">
                         <button data-week="1" class="chart-week-btn px-4 py-1 text-gray-500 rounded-l-md">M1</button>
                         <button data-week="2" class="chart-week-btn px-4 py-1 text-gray-500 border-l border-r">M2</button>
@@ -101,13 +101,22 @@
                         <button data-week="4" class="chart-week-btn px-4 py-1 text-gray-500 rounded-r-md">M4</button>
                     </div>
                 </div>
-                <div><canvas id="cashflow-chart"></canvas></div>
+                <div class="space-y-8 mt-6">
+                    <div>
+                        <h4 class="font-semibold text-md mb-2 text-center text-gray-700">Penjualan (Uang Masuk)</h4>
+                        <canvas id="sales-chart"></canvas>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-md mb-2 text-center text-gray-700">Belanja (Uang Keluar)</h4>
+                        <canvas id="expenses-chart"></canvas>
+                    </div>
+                </div>
             </div>
 
             <div id="page-penjualan" class="page hidden">
                 <h2 class="font-bold text-2xl mb-4">Laporan Penjualan</h2>
                 <div class="space-y-4 mb-4">
-                    <input type="text" id="salesSearchInput" placeholder="Cari berdasarkan nama pihak..." class="w-full px-3 py-1.5 border rounded-lg">
+                    <input type="text" id="salesSearchInput" placeholder="Cari berdasarkan nama pelanggan..." class="w-full px-3 py-1.5 border rounded-lg">
                     <div class="flex items-center gap-2">
                         <select id="salesMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
                             <option value="">Semua Bulan</option>
@@ -126,6 +135,7 @@
                 <div class="mt-12 border-t pt-6">
                     <h3 class="font-bold text-xl mb-4">Riwayat Pesanan Selesai</h3>
                     <div class="space-y-4 mb-4">
+                        <input type="text" id="completedOrderSearchInput" placeholder="Cari berdasarkan nama pelanggan atau item..." class="w-full px-3 py-1.5 border rounded-lg">
                         <div class="flex items-center gap-2">
                             <select id="completedOrderMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
                                 <option value="">Ekspor Semua Bulan</option>
@@ -135,14 +145,13 @@
                     <button id="exportCompletedOrdersCsvBtn" class="w-full bg-teal-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
                         Ekspor Pesanan Selesai (CSV)
                     </button>
-
-                    <div id="completed-order-list" class="space-y-3 mt-4">
-                        </div>
+                    <div id="completed-order-list" class="space-y-3 mt-4"></div>
                 </div>
             </div>
 
             <div id="page-pihak" class="page hidden">
-                <h2 class="font-bold text-2xl mb-6">Daftar Pihak</h2>
+                <h2 class="font-bold text-2xl mb-6">Daftar Pelanggan</h2>
+                <input type="text" id="contactSearchInput" placeholder="Cari nama, no. telp, atau alamat..." class="w-full px-3 py-1.5 border rounded-lg mb-4">
                 <div id="contact-list" class="space-y-3"></div>
             </div>
 
@@ -154,21 +163,21 @@
             <div id="page-laporan" class="page hidden">
                 <h2 class="font-bold text-2xl mb-4">Laporan Belanja</h2>
                  <div class="space-y-4 mb-4">
-                    <div class="flex items-center gap-2">
-                        <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
-                            <option value="">Semua Bulan</option>
-                        </select>
-                        <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
-                    </div>
-                </div>
-                <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
-                    Ekspor Laporan Belanja (CSV)
-                </button>
-                <div id="expense-report-list" class="space-y-6"></div>
+                     <div class="flex items-center gap-2">
+                         <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                             <option value="">Semua Bulan</option>
+                         </select>
+                         <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+                     </div>
+                 </div>
+                 <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                     Ekspor Laporan Belanja (CSV)
+                 </button>
+                 <div id="expense-report-list" class="space-y-6"></div>
             </div>
 
             <div id="page-pelanggan" class="page hidden">
-                <h2 class="font-bold text-2xl mb-6">Rangkuman Pihak</h2>
+                <h2 class="font-bold text-2xl mb-6">Rangkuman Pelanggan</h2>
                 <div id="customer-summary-list" class="space-y-4"></div>
             </div>
 
@@ -200,7 +209,7 @@
             <button data-target="page-beranda" class="nav-button flex-1 py-2 px-1 text-center text-gray-500 nav-active"><svg class="mx-auto beranda-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs">Beranda</span></button>
             <button data-target="page-pesanan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span class="text-xs">Pesanan</span></button>
             <button data-target="page-inventaris" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="text-xs">Menu</span></button>
-            <button data-target="page-pihak" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-xs">Pihak</span></button>
+            <button data-target="page-pihak" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-xs">Pelanggan</span></button>
             <button data-target="page-pelanggan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12h3v5H7z"/><path d="M12 7h3v10h-3z"/><path d="M17 15h3v2h-3z"/></svg><span class="text-xs">Rangkuman</span></button>
             <button data-target="page-lainnya" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span class="text-xs">Lainnya</span></button>
         </nav>
@@ -228,9 +237,9 @@
         const companyLogoUrl = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
 
         let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [] };
-        let cashflowChart;
+        let salesChart, expensesChart;
         let toastTimer;
-        
+
         const getWeekOfMonth = (date) => {
             const day = date.getDate();
             if (day <= 7) return 1;
@@ -245,7 +254,7 @@
         const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount || 0);
         const formatDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}) : '';
         const showToast = (message) => { const toast = document.getElementById('toast'); if (toastTimer) clearTimeout(toastTimer); toast.textContent = message; toast.classList.add('show'); toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); };
-        
+
         const formatWhatsappNumber = (phone) => {
             if (!phone) return '';
             let formatted = phone.replace(/\D/g, ''); 
@@ -274,15 +283,24 @@
                 const listEl = document.getElementById('contact-list');
                 listEl.innerHTML = '';
                 const whatsappSvgIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
-                if (state.contacts.length === 0) {
-                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 11a4 4 0 110-5.292" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada pihak</h3><p class="mt-1 text-sm text-gray-500">Tambahkan pelanggan atau pemasok.</p></div>`;
+                
+                const searchTerm = document.getElementById('contactSearchInput')?.value.toLowerCase() || '';
+                const filteredContacts = state.contacts.filter(contact => {
+                    const nameMatch = contact.name.toLowerCase().includes(searchTerm);
+                    const phoneMatch = contact.phone && contact.phone.toLowerCase().includes(searchTerm);
+                    const addressMatch = contact.address && contact.address.toLowerCase().includes(searchTerm);
+                    return nameMatch || phoneMatch || addressMatch;
+                });
+
+                if (filteredContacts.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 11a4 4 0 110-5.292" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Pelanggan tidak ditemukan</h3><p class="mt-1 text-sm text-gray-500">Coba kata kunci lain atau tambahkan pelanggan baru.</p></div>`;
                 } else {
-                    state.contacts.forEach(contact => {
+                    filteredContacts.forEach(contact => {
                         const item = document.createElement('div');
                         item.className = 'p-3 border rounded-lg flex justify-between items-center';
                         const whatsappNumber = formatWhatsappNumber(contact.phone);
                         const whatsappButton = whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="text-green-600 hover:text-green-700" title="Kirim WhatsApp">${whatsappSvgIcon}</a>` : '';
-                        
+
                         item.innerHTML = `
                             <div>
                                 <p class="font-bold">${contact.name}</p>
@@ -353,7 +371,7 @@
                 const availableMonths = [...new Set(state.monthlyExpenses.map(ex => 
                     new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
                 ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
-                
+
                 const currentFilterValue = monthFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
                 availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
@@ -391,7 +409,7 @@
                 const listEl = document.getElementById('customer-summary-list');
                 listEl.innerHTML = '';
                 const sales = state.transactions.filter(tx => tx.type === 'sale');
-                if (sales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Rangkuman pihak akan muncul di sini setelah ada penjualan.</p></div>`; return; }
+                if (sales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Rangkuman pelanggan akan muncul di sini setelah ada penjualan.</p></div>`; return; }
                 const summary = sales.reduce((acc, sale) => { const id = sale.contactId; if (!acc[id]) { acc[id] = { id: id, name: sale.contactName, purchaseCount: 0, totalSpent: 0, lastPurchaseDate: null, items: {} }; } acc[id].purchaseCount += 1; acc[id].totalSpent += sale.total; if (!acc[id].lastPurchaseDate || sale.date.seconds > acc[id].lastPurchaseDate.seconds) { acc[id].lastPurchaseDate = sale.date; } sale.items.forEach(item => { if (!acc[id].items[item.name]) { acc[id].items[item.name] = 0; } acc[id].items[item.name] += item.qty; }); return acc; }, {});
                 const sortedSummary = Object.values(summary).sort((a, b) => b.totalSpent - a.totalSpent);
                 sortedSummary.forEach((customer, index) => {
@@ -422,10 +440,19 @@
                 if (!listEl) return;
 
                 listEl.innerHTML = '';
-                const completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+                let completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+
+                const searchTerm = document.getElementById('completedOrderSearchInput')?.value.toLowerCase() || '';
+                if (searchTerm) {
+                    completedOrders = completedOrders.filter(order => {
+                        const nameMatch = order.contactName.toLowerCase().includes(searchTerm);
+                        const itemMatch = order.items.some(item => item.name.toLowerCase().includes(searchTerm));
+                        return nameMatch || itemMatch;
+                    });
+                }
 
                 if (completedOrders.length === 0) {
-                    listEl.innerHTML = `<div class="text-center py-8"><p class="text-sm text-gray-500">Belum ada pesanan yang selesai.</p></div>`;
+                    listEl.innerHTML = `<div class="text-center py-8"><p class="text-sm text-gray-500">Tidak ada pesanan selesai yang cocok.</p></div>`;
                     return;
                 }
 
@@ -471,7 +498,7 @@
                 const availableMonths = [...new Set(completedOrders.map(order => 
                     new Date(order.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
                 ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
-                
+
                 const currentFilterValue = monthFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Ekspor Semua Bulan</option>';
                 availableMonths.forEach(month => {
@@ -489,11 +516,11 @@
                 const monthlyExpensesTotal = state.monthlyExpenses.filter(ex => ex.date && new Date(ex.date.seconds * 1000).getMonth() === currentMonth && new Date(ex.date.seconds * 1000).getFullYear() === currentYear).reduce((sum, ex) => sum + ex.total, 0);
                 document.getElementById('monthly-sales-card').textContent = formatCurrency(monthlySales);
                 document.getElementById('monthly-expenses-card').textContent = formatCurrency(monthlyExpensesTotal);
-                
+
                 const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
                 document.getElementById('active-orders-count').textContent = `${pendingOrders.length} Pesanan`;
                 document.getElementById('active-orders-total').textContent = formatCurrency(pendingOrders.reduce((sum, order) => sum + order.total, 0));
-                
+
                 document.querySelectorAll('.chart-week-btn').forEach(btn => {
                     const week = parseInt(btn.dataset.week);
                     if (week === chartSelectedWeek) {
@@ -511,31 +538,19 @@
                 let startDate, endDate;
 
                 switch (chartSelectedWeek) {
-                    case 1:
-                        startDate = new Date(currentYear, currentMonth, 1);
-                        endDate = new Date(currentYear, currentMonth, 7);
-                        break;
-                    case 2:
-                        startDate = new Date(currentYear, currentMonth, 8);
-                        endDate = new Date(currentYear, currentMonth, 14);
-                        break;
-                    case 3:
-                        startDate = new Date(currentYear, currentMonth, 15);
-                        endDate = new Date(currentYear, currentMonth, 21);
-                        break;
-                    case 4:
-                        startDate = new Date(currentYear, currentMonth, 22);
-                        endDate = new Date(currentYear, currentMonth + 1, 0);
-                        break;
+                    case 1: startDate = new Date(currentYear, currentMonth, 1); endDate = new Date(currentYear, currentMonth, 7); break;
+                    case 2: startDate = new Date(currentYear, currentMonth, 8); endDate = new Date(currentYear, currentMonth, 14); break;
+                    case 3: startDate = new Date(currentYear, currentMonth, 15); endDate = new Date(currentYear, currentMonth, 21); break;
+                    case 4: startDate = new Date(currentYear, currentMonth, 22); endDate = new Date(currentYear, currentMonth + 1, 0); break;
                 }
-                
+
                 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                     if (d.getMonth() !== currentMonth) continue;
                     const startOfDay = new Date(d); startOfDay.setHours(0, 0, 0, 0);
                     const endOfDay = new Date(d); endOfDay.setHours(23, 59, 59, 999);
                     const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
                     const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
-                    
+
                     const dailySales = state.transactions.filter(tx => tx.type === 'sale' && tx.date && tx.date >= startOfDayTimestamp && tx.date <= endOfDayTimestamp).reduce((sum, tx) => sum + tx.total, 0);
                     const dailyExpenses = state.monthlyExpenses.filter(ex => ex.date && ex.date >= startOfDayTimestamp && ex.date <= endOfDayTimestamp).reduce((sum, ex) => sum + ex.total, 0);
 
@@ -543,10 +558,48 @@
                     salesData.push(dailySales);
                     expensesData.push(dailyExpenses);
                 }
-                renderFunctions.updateChart(labels, salesData, expensesData);
+                renderFunctions.updateSalesChart(labels, salesData);
+                renderFunctions.updateExpensesChart(labels, expensesData);
             },
             renderProfile: () => { const name = state.businessProfile.name; const initial = name ? name.charAt(0).toUpperCase() : 'B'; document.getElementById('business-name-header').textContent = name; document.getElementById('business-initial-header').textContent = initial; document.getElementById('business-name-settings').textContent = name; document.getElementById('business-initial-settings').textContent = initial; },
-            updateChart: (labels, salesData, expensesData) => { const ctx = document.getElementById('cashflow-chart').getContext('2d'); if (cashflowChart) { cashflowChart.destroy(); } cashflowChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: salesData, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderRadius: 4 }, { label: 'Uang Keluar', data: expensesData, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
+            updateSalesChart: (labels, data) => {
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                if (salesChart) { salesChart.destroy(); }
+                salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Uang Masuk',
+                            data: data,
+                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            },
+            updateExpensesChart: (labels, data) => {
+                const ctx = document.getElementById('expenses-chart').getContext('2d');
+                if (expensesChart) { expensesChart.destroy(); }
+                expensesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Uang Keluar',
+                            data: data,
+                            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+                });
+            },
             generateInvoice: async (purchaseId) => {
                 const purchase = state.transactions.find(p => p.id === purchaseId);
                 if (!purchase) return;
@@ -590,44 +643,44 @@
             const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => { const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); let resolvePromise; const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); }; const hide = () => modalEl.classList.add('hidden'); modalEl.querySelector('.confirm-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(true); }); modalEl.querySelector('.cancel-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(false); }); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } }); return { show }; };
 
             const profileModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Bisnis</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Simpan Profil</button>`;
-            const contactModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">No. Telepon</label><input type="tel" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Alamat</label><textarea name="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pihak</button>`;
+            const contactModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">No. Telepon</label><input type="tel" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Alamat</label><textarea name="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pelanggan</button>`;
             const itemModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Harga Jual</label><input type="number" name="price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Barang</button>`;
             const expenseModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pembelian</label><input type="date" name="purchaseDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Nama Toko</label><input type="text" name="storeName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Jumlah/Satuan</label><input type="text" name="quantity" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Total Harga</label><input type="number" name="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Belanja</button>`;
-            const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pihak</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
-            const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pihak</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
+            const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
+            const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
 
             const profileModal = createModal('profile-modal', 'Edit Profil Bisnis', profileModalContent, async (data) => { await setDoc(doc(db, 'config', 'businessProfile'), { name: data.name }); return 'Profil bisnis berhasil diperbarui!'; });
-            const contactModal = createModal('contact-modal', 'Tambah/Edit Pihak', contactModalContent, async (data) => { 
+            const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { 
                 const payload = { name: data.name, phone: data.phone, address: data.address }; 
                 if (data.id) { 
                     await updateDoc(doc(db, 'contacts', data.id), payload); 
-                    return 'Pihak berhasil diperbarui!'; 
+                    return 'Pelanggan berhasil diperbarui!'; 
                 } else { 
                     await addDoc(collection(db, 'contacts'), payload); 
-                    return 'Pihak baru berhasil ditambahkan!'; 
+                    return 'Pelanggan baru berhasil ditambahkan!'; 
                 } 
             });
             const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
             const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate }; await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
             const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
-            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { showToast("Tambahkan minimal satu barang."); return Promise.reject(new Error("No items selected.")); } if (!data.contactId) { showToast("Pilih pihak terlebih dahulu."); return Promise.reject(new Error("No contact selected.")); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
-            
+            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { showToast("Tambahkan minimal satu barang."); return Promise.reject(new Error("No items selected.")); } if (!data.contactId) { showToast("Pilih pelanggan terlebih dahulu."); return Promise.reject(new Error("No contact selected.")); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
+
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { 
                 const customerName = data.customerName.trim(); 
                 const customerPhone = data.customerPhone.trim(); 
                 const customerAddress = form.elements['alamat'].value.trim();
-                
+
                 if (!customerName) { 
-                    showToast("Nama pihak harus diisi."); 
+                    showToast("Nama pelanggan harus diisi."); 
                     return Promise.reject(new Error("Customer name is required.")); 
                 } 
-                
+
                 let contactId;
                 let contactName = customerName; 
                 const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); 
-                
+
                 if (existingContact) { 
                     contactId = existingContact.id; 
                     if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) {
@@ -638,9 +691,9 @@
                     const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; 
                     const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); 
                     contactId = newContactRef.id; 
-                    showToast(`Pihak baru "${contactName}" telah ditambahkan.`); 
+                    showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); 
                 } 
-                
+
                 const items = []; 
                 form.querySelectorAll('.order-item-row').forEach(row => { 
                     const itemId = row.querySelector('select[name="itemId"]').value; 
@@ -650,12 +703,12 @@
                         items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); 
                     } 
                 }); 
-                
+
                 if (items.length === 0) { 
                     showToast("Tambahkan minimal satu barang pesanan."); 
                     return Promise.reject(new Error("No items selected.")); 
                 } 
-                
+
                 const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); 
                 const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); 
                 const payload = { 
@@ -671,16 +724,16 @@
                 return 'Pesanan baru berhasil disimpan!'; 
             });
 
-            const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pihak', customerDetailModalContent, () => {});
+            const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
 
             const updateSaleTotal = () => { let total = 0; document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
             const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateSaleTotal(); };
             const updateOrderTotal = () => { let total = 0; document.querySelectorAll('#order-items-container .order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('order-total-amount').textContent = formatCurrency(total); };
             const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateOrderTotal(); };
-            
+
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
-            
+
             const populateContactInfo = (contactName) => {
                 const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase());
                 if (contact) {
@@ -703,7 +756,7 @@
                     suggestionsBox.classList.add('hidden'); 
                 } 
             });
-            
+
             nameInput.addEventListener('blur', (e) => {
                 setTimeout(() => {
                     populateContactInfo(e.target.value);
@@ -728,7 +781,7 @@
                 const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; 
                 const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; 
                 if (pageId === 'page-pihak') { 
-                    fabHTML = `<button title="Tambah Pihak" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; 
+                    fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; 
                 } else if (pageId === 'page-inventaris') { 
                     fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; 
                 } else if (pageId === 'page-penjualan') { 
@@ -745,10 +798,10 @@
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
             document.getElementById('shortcut-new-item').addEventListener('click', () => navigateTo('page-inventaris'));
             document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
-            document.getElementById('shortcut-new-sale').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } if (state.contacts.length === 0) { showToast("Tambahkan data pihak."); return; } const contactSelect = document.getElementById('sale-contact-select'); contactSelect.innerHTML = state.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); document.getElementById('sale-items-container').innerHTML = ''; addSaleItemRow(); saleModal.show(); });
+            document.getElementById('shortcut-new-sale').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } if (state.contacts.length === 0) { showToast("Tambahkan data pelanggan."); return; } const contactSelect = document.getElementById('sale-contact-select'); contactSelect.innerHTML = state.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); document.getElementById('sale-items-container').innerHTML = ''; addSaleItemRow(); saleModal.show(); });
             document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
             document.getElementById('btn-edit-profile').addEventListener('click', () => profileModal.show(state.businessProfile));
-            
+
             document.querySelectorAll('.chart-week-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     chartSelectedWeek = parseInt(button.dataset.week);
@@ -777,7 +830,7 @@
                 if (target.id === 'fab-add-sale') navigateTo('page-penjualan'); 
                 if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click(); 
                 if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); } 
-                if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id)); showToast('Pihak berhasil dihapus.'); } } 
+                if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id)); showToast('Pelanggan berhasil dihapus.'); } } 
                 if (target.classList.contains('edit-item-btn')) { const item = state.inventory.find(i => i.id === target.dataset.id); if (item) itemModal.show(item); } 
                 if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id)); showToast('Barang berhasil dihapus.'); } } 
                 if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
@@ -813,7 +866,7 @@
                         }).join('');
                         detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`;
                     } else {
-                        detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pihak ini.</p>`;
+                        detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`;
                     }
                     customerDetailModal.show();
                 }
@@ -823,12 +876,16 @@
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = ''; document.getElementById('salesMonthFilter').value = ''; renderFunctions.renderSalesReport(); });
-            document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pihak", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
             
+            document.getElementById('contactSearchInput').addEventListener('input', renderFunctions.renderContactList);
+            document.getElementById('completedOrderSearchInput').addEventListener('input', renderFunctions.renderCompletedOrderList);
+
+            document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
+
             document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { 
                 const selectedMonth = document.getElementById('expenseMonthFilter').value;
                 const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"];
-                
+
                 let dataToExport = state.monthlyExpenses;
                 if (selectedMonth) {
                     dataToExport = dataToExport.filter(ex => 
@@ -854,9 +911,9 @@
 
             document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => {
                 const selectedMonth = document.getElementById('completedOrderMonthFilter').value;
-                const headers = ["Tanggal Pesan", "Nama Pihak", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"];
+                const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"];
                 let dataToExport = state.customerOrders.filter(o => o.status === 'completed');
-                
+
                 if (selectedMonth) {
                     dataToExport = dataToExport.filter(o => 
                         new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
@@ -879,7 +936,7 @@
                         item.qty * item.price
                     ])
                 );
-                
+
                 const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
                 exportToCsv(filename, headers, data);
                 showToast('Laporan pesanan selesai sedang diunduh...');
@@ -898,7 +955,7 @@
                 if (user) {
                     if (isAppInitialized) return; 
                     isAppInitialized = true;
-                    loadingText.textContent = 'Menyiapkan aplikasi...';
+                    loadingText.textContent = 'Tah Beres...';
                     initializeApplication(db);
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
