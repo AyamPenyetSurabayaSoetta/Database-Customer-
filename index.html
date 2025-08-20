@@ -201,11 +201,19 @@
                                 <span>Laporan Kebersihan</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
+                            <button id="btn-kalkulator-omset" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                <span>Kalkulator Omset</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button id="btn-impor-laporan" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                <span>Impor Laporan Harian</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div id="page-checklist" class="page hidden">
                 <header class="flex items-center gap-4 mb-4">
                     <button id="back-to-lainnya-btn" class="text-gray-600">
@@ -224,6 +232,98 @@
                     Ekspor Laporan Kebersihan (CSV)
                 </button>
                 <div id="checklist-report-list" class="space-y-4"></div>
+            </div>
+            
+            <div id="page-kalkulator-omset" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-calc-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Kalkulator Omset</h2>
+                </header>
+            
+                <div class="space-y-4 p-4 bg-gray-50 rounded-lg border">
+                    <div>
+                        <label for="start-date" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                        <input type="date" id="start-date" name="start-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="end-date" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                        <input type="date" id="end-date" name="end-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <button id="hitung-omset-btn" class="w-full bg-emerald-600 text-white py-2.5 px-4 rounded-lg font-semibold">
+                        Hitung Omset
+                    </button>
+                </div>
+            
+                <!-- TAMPILAN HASIL BARU -->
+                <div id="hasil-omset-container" class="mt-6 hidden">
+                    <h3 class="font-bold text-lg mb-4 text-center">Hasil Perhitungan Omset</h3>
+                    
+                    <!-- Ayam Penyet Surabaya -->
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Ayam Penyet Surabaya</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-2 text-gray-700">
+                            <div class="flex justify-between"><span>Makan ditempat:</span> <span id="aps-makan" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Naskot:</span> <span id="aps-naskot" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Online:</span> <span id="aps-online" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between border-t pt-2 mt-2">
+                                <span class="font-bold">Total:</span> 
+                                <span id="aps-total" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Mie Jogja -->
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Mie Jogja</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-2 text-gray-700">
+                            <div class="flex justify-between"><span>Makan ditempat:</span> <span id="mj-makan" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Naskot:</span> <span id="mj-naskot" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Online:</span> <span id="mj-online" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between border-t pt-2 mt-2">
+                                <span class="font-bold">Total:</span> 
+                                <span id="mj-total" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Grand Total -->
+                    <div class="bg-emerald-600 text-white p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-bold text-2xl">Grand Total</span>
+                        <span id="grand-total-omset" class="font-bold text-3xl">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-laporan-harian" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-laporan-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Impor Laporan Harian</h2>
+                </header>
+            
+                <div class="p-4 bg-gray-50 rounded-lg border mb-6">
+                    <label for="laporan-harian-input" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tempelkan teks laporan dari WhatsApp di sini:
+                    </label>
+                    <textarea id="laporan-harian-input" rows="10" class="w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Contoh: Laporan harian Ayam penyet surabaya..."></textarea>
+                    <button id="proses-laporan-btn" class="mt-4 w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-semibold">
+                        Simpan & Proses Laporan
+                    </button>
+                </div>
+            
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Riwayat Laporan Tersimpan</h3>
+                    <div id="daily-report-history-list" class="space-y-3">
+                        <!-- Riwayat laporan akan muncul di sini -->
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -263,10 +363,10 @@
                     <button id="broadcast-cancel-btn" class="w-full text-gray-600 py-2">Batalkan Broadcast</button>
                 </div>
                 <div id="broadcast-complete" class="hidden">
-                     <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                     <h3 class="font-bold text-lg mt-4">Broadcast Selesai</h3>
-                     <p class="text-gray-600 mb-6">Semua pesan telah diproses.</p>
-                     <button id="broadcast-close-btn" class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">Tutup</button>
+                   <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                   <h3 class="font-bold text-lg mt-4">Broadcast Selesai</h3>
+                   <p class="text-gray-600 mb-6">Semua pesan telah diproses.</p>
+                   <button id="broadcast-close-btn" class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">Tutup</button>
                 </div>
             </div>
         </div>
@@ -291,11 +391,10 @@
         const companyInfo = { name: "Ayam Penyet Surabaya", address: "Jl. Soekarno Hatta no. 725A", city: "Kota Bandung, 40286", phone: "0811-6594-527", email: "ayampenyetsurabaya725@gmail.com" };
         const companyLogoUrl = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
 
-        let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [] };
+        let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
         let salesChart, expensesChart;
         let toastTimer;
 
-        // State untuk broadcast
         let broadcastQueue = [];
         let currentBroadcastIndex = 0;
         let broadcastMessageTemplate = '';
@@ -313,6 +412,7 @@
 
         const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount || 0);
         const formatDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}) : '';
+        const formatFullDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
         const showToast = (message) => { const toast = document.getElementById('toast'); if (toastTimer) clearTimeout(toastTimer); toast.textContent = message; toast.classList.add('show'); toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); };
 
         const formatWhatsappNumber = (phone) => {
@@ -321,7 +421,7 @@
             if (formatted.startsWith('0')) {
                 formatted = '62' + formatted.substring(1);
             } else if (!formatted.startsWith('62')) {
-                if(formatted.length > 5) { // Basic check to avoid prepending 62 to invalid numbers
+                if(formatted.length > 5) {
                     formatted = '62' + formatted;
                 }
             }
@@ -340,12 +440,114 @@
             link.remove();
         };
 
+        const parseDailyReport = (rawText) => {
+            const report = {
+                date: null,
+                grandTotal: 0,
+                totalNaskot: 0,
+                restaurants: {
+                    "Ayam Penyet Surabaya": { total: 0, phones: {} },
+                    "Mie Jogja": { total: 0, phones: {} }
+                }
+            };
+            
+            const lines = rawText.trim().split('\n').map(line => line.trim()).filter(Boolean);
+            const parseNumber = (str) => parseInt(String(str).replace(/[.,Rp\sbox]/g, ''), 10) || 0;
+
+            let dateFound = false;
+            lines.forEach(line => {
+                if (!dateFound) {
+                    const dateMatch = line.match(/(\d{1,2}\s\w+\s\d{4})/);
+                    if (dateMatch) {
+                        const [day, monthName, year] = dateMatch[1].split(' ');
+                        const monthIndex = Object.keys(monthMap).findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+                        if (monthIndex > -1) {
+                            const jsDate = new Date(year, monthIndex, day);
+                            report.date = Timestamp.fromDate(jsDate);
+                            dateFound = true;
+                        }
+                    }
+                }
+                const totalMatch = line.match(/^\*Total\s*:\s*\*\s*([\d.,]+)/i);
+                if (totalMatch) {
+                    report.grandTotal = parseNumber(totalMatch[1]);
+                }
+                const naskotMatch = line.match(/^\*total naskot\*\s*:\s*(\d+)/i);
+                if (naskotMatch) {
+                    report.totalNaskot = parseNumber(naskotMatch[1]);
+                }
+            });
+            
+            if (!dateFound) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                report.date = Timestamp.fromDate(today);
+            }
+
+            let currentRestaurantKey = null;
+            let currentPhoneKey = null;
+
+            for (const line of lines) {
+                if (line.toLowerCase().includes('ayam penyet surabaya')) {
+                    currentRestaurantKey = "Ayam Penyet Surabaya";
+                    currentPhoneKey = null;
+                    continue;
+                }
+                if (line.toLowerCase().includes('mie jogja')) {
+                    currentRestaurantKey = "Mie Jogja";
+                    currentPhoneKey = null;
+                    continue;
+                }
+                
+                if (!currentRestaurantKey) {
+                    continue;
+                }
+
+                const hpMatch = line.match(/^(Hp\d+)\s*:\s*([\d.,]+)/);
+                if (hpMatch) {
+                    currentPhoneKey = hpMatch[1];
+                    const phoneTotal = parseNumber(hpMatch[2]);
+                    report.restaurants[currentRestaurantKey].phones[currentPhoneKey] = {
+                        total: phoneTotal,
+                        "Makan ditempat": 0,
+                        "Naskot": 0,
+                        "Online": 0
+                    };
+                    continue;
+                }
+
+                const categoryMatch = line.match(/^-\s*([A-Za-z\s]+)\s*:\s*([\d.,]+)/);
+                if (categoryMatch) {
+                    if (!currentPhoneKey) continue;
+                    
+                    const categoryName = categoryMatch[1].trim();
+                    const categoryValue = parseNumber(categoryMatch[2]);
+
+                    if (report.restaurants[currentRestaurantKey].phones[currentPhoneKey].hasOwnProperty(categoryName)) {
+                        report.restaurants[currentRestaurantKey].phones[currentPhoneKey][categoryName] = categoryValue;
+                    }
+                }
+            }
+
+            for (const key in report.restaurants) {
+                const restaurant = report.restaurants[key];
+                restaurant.total = Object.values(restaurant.phones).reduce((sum, phone) => sum + phone.total, 0);
+            }
+            
+            const hasAyamPenyetData = report.restaurants["Ayam Penyet Surabaya"].total > 0;
+            const hasMieJogjaData = report.restaurants["Mie Jogja"].total > 0;
+            if (!hasAyamPenyetData && !hasMieJogjaData) {
+                throw new Error("Tidak ada data penjualan yang dapat dibaca. Cek kembali format teks Anda.");
+            }
+            
+            return report;
+        };
+
         const renderFunctions = {
             renderContactList: () => {
                 const listEl = document.getElementById('contact-list');
                 listEl.innerHTML = '';
                 const whatsappSvgIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
-
                 const searchTerm = document.getElementById('contactSearchInput')?.value.toLowerCase() || '';
                 const filteredContacts = state.contacts.filter(contact => {
                     const nameMatch = contact.name.toLowerCase().includes(searchTerm);
@@ -353,7 +555,6 @@
                     const addressMatch = contact.address && contact.address.toLowerCase().includes(searchTerm);
                     return nameMatch || phoneMatch || addressMatch;
                 });
-
                 if (filteredContacts.length === 0) {
                     listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 11a4 4 0 110-5.292" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Pelanggan tidak ditemukan</h3><p class="mt-1 text-sm text-gray-500">Coba kata kunci lain atau tambahkan pelanggan baru.</p></div>`;
                 } else {
@@ -362,7 +563,6 @@
                         item.className = 'p-3 border rounded-lg flex justify-between items-center';
                         const whatsappNumber = formatWhatsappNumber(contact.phone);
                         const whatsappButton = whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="text-green-600 hover:text-green-700" title="Kirim WhatsApp">${whatsappSvgIcon}</a>` : '';
-
                         item.innerHTML = `
                             <div class="flex-grow flex items-center gap-3">
                                 <input type="checkbox" data-id="${contact.id}" class="contact-checkbox h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 flex-shrink-0">
@@ -377,7 +577,6 @@
                                 <button data-id="${contact.id}" class="edit-contact-btn text-blue-500 font-semibold text-sm">Edit</button>
                                 <button data-id="${contact.id}" class="delete-contact-btn text-red-500 font-semibold text-sm">Hapus</button>
                             </div>`;
-
                         listEl.appendChild(item);
                     });
                 }
@@ -432,43 +631,16 @@
                 const listEl = document.getElementById('expense-report-list');
                 const monthFilterEl = document.getElementById('expenseMonthFilter');
                 listEl.innerHTML = '';
-
-                const availableMonths = [...new Set(state.monthlyExpenses.map(ex => 
-                    new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
-                ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
-
+                const availableMonths = [...new Set(state.monthlyExpenses.map(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
                 const currentFilterValue = monthFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
                 availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
                 monthFilterEl.value = currentFilterValue;
-
                 const selectedMonth = monthFilterEl.value;
-                const filteredExpenses = state.monthlyExpenses.filter(ex => 
-                    !selectedMonth || new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
-                );
-
-                if (filteredExpenses.length === 0) { 
-                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui tombol (+).</p></div>`; 
-                    return; 
-                }
-
-                const expensesByMonth = filteredExpenses.reduce((acc, expense) => { 
-                    const date = new Date(expense.date.seconds * 1000); 
-                    const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); 
-                    if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } 
-                    acc[monthYear].items.push(expense); 
-                    acc[monthYear].total += expense.total; 
-                    return acc; 
-                }, {});
-
-                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { 
-                    const monthData = expensesByMonth[month]; 
-                    const monthEl = document.createElement('div'); 
-                    monthEl.className = 'border rounded-lg'; 
-                    const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); 
-                    monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; 
-                    listEl.appendChild(monthEl); 
-                });
+                const filteredExpenses = state.monthlyExpenses.filter(ex => !selectedMonth || new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth);
+                if (filteredExpenses.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui tombol (+).</p></div>`; return; }
+                const expensesByMonth = filteredExpenses.reduce((acc, expense) => { const date = new Date(expense.date.seconds * 1000); const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense); acc[monthYear].total += expense.total; return acc; }, {});
+                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = expensesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; listEl.appendChild(monthEl); });
             },
             renderCustomerSummary: () => {
                 const listEl = document.getElementById('customer-summary-list');
@@ -503,10 +675,8 @@
             renderCompletedOrderList: () => {
                 const listEl = document.getElementById('completed-order-list');
                 if (!listEl) return;
-
                 listEl.innerHTML = '';
                 let completedOrders = state.customerOrders.filter(o => o.status === 'completed');
-
                 const searchTerm = document.getElementById('completedOrderSearchInput')?.value.toLowerCase() || '';
                 if (searchTerm) {
                     completedOrders = completedOrders.filter(order => {
@@ -515,21 +685,12 @@
                         return nameMatch || itemMatch;
                     });
                 }
-
                 if (completedOrders.length === 0) {
                     listEl.innerHTML = `<div class="text-center py-8"><p class="text-sm text-gray-500">Tidak ada pesanan selesai yang cocok.</p></div>`;
                     return;
                 }
-
                 completedOrders.forEach(order => {
-                    const matchingTransaction = state.transactions.find(tx => 
-                        tx.type === 'sale' &&
-                        tx.contactId === order.contactId &&
-                        tx.total === order.total &&
-                        tx.date && order.orderDate &&
-                        tx.date.seconds === order.orderDate.seconds
-                    );
-
+                    const matchingTransaction = state.transactions.find(tx => tx.type === 'sale' && tx.contactId === order.contactId && tx.total === order.total && tx.date && order.orderDate && tx.date.seconds === order.orderDate.seconds);
                     const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
                     const item = document.createElement('div');
                     item.className = 'p-3 border rounded-lg bg-gray-50/70';
@@ -544,13 +705,7 @@
                         <div class="text-sm space-y-1 mt-2 pt-2 border-t">
                             <ul class="list-disc pl-5 text-gray-600 text-xs">${itemsHtml}</ul>
                         </div>
-                        ${matchingTransaction ? `
-                        <div class="text-right mt-3">
-                            <button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">
-                                CETAK ULANG FAKTUR
-                            </button>
-                        </div>
-                        ` : ''}
+                        ${matchingTransaction ? `<div class="text-right mt-3"><button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">CETAK ULANG FAKTUR</button></div>` : ''}
                     `;
                     listEl.appendChild(item);
                 });
@@ -558,12 +713,8 @@
             renderCompletedOrderFilters: () => {
                 const monthFilterEl = document.getElementById('completedOrderMonthFilter');
                 if (!monthFilterEl) return;
-
                 const completedOrders = state.customerOrders.filter(o => o.status === 'completed');
-                const availableMonths = [...new Set(completedOrders.map(order => 
-                    new Date(order.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })
-                ))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
-
+                const availableMonths = [...new Set(completedOrders.map(order => new Date(order.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
                 const currentFilterValue = monthFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Ekspor Semua Bulan</option>';
                 availableMonths.forEach(month => {
@@ -576,49 +727,34 @@
                 const now = new Date();
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();
-
                 const monthlySales = state.transactions.filter(tx => tx.date && tx.type === 'sale' && new Date(tx.date.seconds * 1000).getMonth() === currentMonth && new Date(tx.date.seconds * 1000).getFullYear() === currentYear).reduce((sum, tx) => sum + tx.total, 0);
                 const monthlyExpensesTotal = state.monthlyExpenses.filter(ex => ex.date && new Date(ex.date.seconds * 1000).getMonth() === currentMonth && new Date(ex.date.seconds * 1000).getFullYear() === currentYear).reduce((sum, ex) => sum + ex.total, 0);
                 document.getElementById('monthly-sales-card').textContent = formatCurrency(monthlySales);
                 document.getElementById('monthly-expenses-card').textContent = formatCurrency(monthlyExpensesTotal);
-
                 const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
                 document.getElementById('active-orders-count').textContent = `${pendingOrders.length} Pesanan`;
                 document.getElementById('active-orders-total').textContent = formatCurrency(pendingOrders.reduce((sum, order) => sum + order.total, 0));
-
                 document.querySelectorAll('.chart-week-btn').forEach(btn => {
                     const week = parseInt(btn.dataset.week);
-                    if (week === chartSelectedWeek) {
-                        btn.classList.add('bg-emerald-100', 'text-emerald-800');
-                        btn.classList.remove('text-gray-500');
-                    } else {
-                        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
-                        btn.classList.add('text-gray-500');
-                    }
+                    if (week === chartSelectedWeek) { btn.classList.add('bg-emerald-100', 'text-emerald-800'); btn.classList.remove('text-gray-500'); } 
+                    else { btn.classList.remove('bg-emerald-100', 'text-emerald-800'); btn.classList.add('text-gray-500'); }
                 });
-
-                const labels = [];
-                const salesData = [];
-                const expensesData = [];
+                const labels = []; const salesData = []; const expensesData = [];
                 let startDate, endDate;
-
                 switch (chartSelectedWeek) {
                     case 1: startDate = new Date(currentYear, currentMonth, 1); endDate = new Date(currentYear, currentMonth, 7); break;
                     case 2: startDate = new Date(currentYear, currentMonth, 8); endDate = new Date(currentYear, currentMonth, 14); break;
                     case 3: startDate = new Date(currentYear, currentMonth, 15); endDate = new Date(currentYear, currentMonth, 21); break;
                     case 4: startDate = new Date(currentYear, currentMonth, 22); endDate = new Date(currentYear, currentMonth + 1, 0); break;
                 }
-
                 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                     if (d.getMonth() !== currentMonth) continue;
                     const startOfDay = new Date(d); startOfDay.setHours(0, 0, 0, 0);
                     const endOfDay = new Date(d); endOfDay.setHours(23, 59, 59, 999);
                     const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
                     const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
-
                     const dailySales = state.transactions.filter(tx => tx.type === 'sale' && tx.date && tx.date >= startOfDayTimestamp && tx.date <= endOfDayTimestamp).reduce((sum, tx) => sum + tx.total, 0);
                     const dailyExpenses = state.monthlyExpenses.filter(ex => ex.date && ex.date >= startOfDayTimestamp && ex.date <= endOfDayTimestamp).reduce((sum, ex) => sum + ex.total, 0);
-
                     labels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
                     salesData.push(dailySales);
                     expensesData.push(dailyExpenses);
@@ -627,64 +763,22 @@
                 renderFunctions.updateExpensesChart(labels, expensesData);
             },
             renderProfile: () => { const name = state.businessProfile.name; const initial = name ? name.charAt(0).toUpperCase() : 'B'; document.getElementById('business-name-header').textContent = name; document.getElementById('business-initial-header').textContent = initial; document.getElementById('business-name-settings').textContent = name; document.getElementById('business-initial-settings').textContent = initial; },
-            updateSalesChart: (labels, data) => {
-                const ctx = document.getElementById('sales-chart').getContext('2d');
-                if (salesChart) { salesChart.destroy(); }
-                salesChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Uang Masuk',
-                            data: data,
-                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-                });
-            },
-            updateExpensesChart: (labels, data) => {
-                const ctx = document.getElementById('expenses-chart').getContext('2d');
-                if (expensesChart) { expensesChart.destroy(); }
-                expensesChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Uang Keluar',
-                            data: data,
-                            backgroundColor: 'rgba(239, 68, 68, 0.5)',
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-                });
-            },
+            updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
+            updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
             generateInvoice: async (purchaseId) => {
-                const purchase = state.transactions.find(p => p.id === purchaseId);
-                if (!purchase) return;
-                showToast('Membuat faktur PDF...');
+                const purchase = state.transactions.find(p => p.id === purchaseId); if (!purchase) return; showToast('Membuat faktur PDF...');
                 const contact = state.contacts.find(c => c.id === purchase.contactId);
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 const imageUrlToBase64 = async url => { try { const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`); const blob = await response.blob(); return new Promise(resolve => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); }); } catch (e) { console.error(e); return null; } };
-                let logoBase64 = null;
-                if (companyLogoUrl && companyLogoUrl.startsWith('http')) { logoBase64 = await imageUrlToBase64(companyLogoUrl); }
+                let logoBase64 = null; if (companyLogoUrl && companyLogoUrl.startsWith('http')) { logoBase64 = await imageUrlToBase64(companyLogoUrl); }
                 if (logoBase64) { doc.addImage(logoBase64, 'JPEG', 14, 15, 25, 25); }
                 doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text(companyInfo.name, 45, 20);
-                doc.setFontSize(9); doc.setFont("helvetica", "normal");
-                doc.text(companyInfo.address, 45, 25); doc.text(companyInfo.city, 45, 29); doc.text(`Telp: ${companyInfo.phone} | Email: ${companyInfo.email}`, 45, 33);
+                doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(companyInfo.address, 45, 25); doc.text(companyInfo.city, 45, 29); doc.text(`Telp: ${companyInfo.phone} | Email: ${companyInfo.email}`, 45, 33);
                 doc.setLineWidth(0.5); doc.line(14, 45, 196, 45);
                 let yPos = 55;
                 doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("FAKTUR PENJUALAN", 196, yPos, { align: 'right' });
                 doc.setFontSize(10); doc.setFont("helvetica", "normal");
-                const d = purchase.date.toDate();
-                const numericInvoiceId = `${d.getFullYear().toString().slice(-2)}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}${purchase.date.toMillis().toString().slice(-4)}`;
+                const d = purchase.date.toDate(); const numericInvoiceId = `${d.getFullYear().toString().slice(-2)}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}${purchase.date.toMillis().toString().slice(-4)}`;
                 doc.text(`No. Faktur: INV/${numericInvoiceId}`, 196, yPos + 6, { align: 'right' });
                 doc.text(`Tanggal: ${formatDate(purchase.date)}`, 196, yPos + 11, { align: 'right' });
                 doc.text("Kepada Yth:", 14, yPos + 6); yPos += 11;
@@ -704,69 +798,104 @@
                 const listEl = document.getElementById('checklist-report-list');
                 const monthFilterEl = document.getElementById('checklistMonthFilter');
                 if (!listEl || !monthFilterEl) return;
-
                 listEl.innerHTML = '';
-
-                // Populate month filter
-                const availableMonths = [...new Set(state.checklistHistory.map(report =>
-                    report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) : null
-                ).filter(Boolean))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
-
+                const availableMonths = [...new Set(state.checklistHistory.map(report => report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) : null).filter(Boolean))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
                 const currentFilterValue = monthFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
                 availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
                 monthFilterEl.value = currentFilterValue;
-
-                // Filter reports by selected month
                 const selectedMonth = monthFilterEl.value;
-                const filteredReports = state.checklistHistory.filter(report =>
-                    !selectedMonth || (report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth)
-                );
-
+                const filteredReports = state.checklistHistory.filter(report => !selectedMonth || (report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth));
                 if (filteredReports.length === 0) {
                     listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada laporan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data laporan kebersihan yang cocok dengan filter Anda.</p></div>`;
                     return;
                 }
-
-                // Render the filtered reports
                 filteredReports.forEach(report => {
                     const dateEl = document.createElement('div');
                     const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
-
-                    const tasksHtml = (report.tasks || [])
-                        .filter(task => task.done)
-                        .map(task => {
-                            const imageHtml = task.proofUrl
-                                ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>`
-                                : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
-
-                            return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">
-                                        ${imageHtml}
-                                        <div class="flex-1">
-                                            <p class="font-medium">${task.text}</p>
-                                            <p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p>
-                                        </div>
-                                    </li>`;
-                        }).join('');
-
+                    const tasksHtml = (report.tasks || []).filter(task => task.done).map(task => {
+                        const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+                        return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
+                    }).join('');
                     if (tasksHtml) {
-                        dateEl.innerHTML = `
-                            <div class="border rounded-lg mb-4">
-                                <header class="bg-gray-50 p-3 rounded-t-lg">
-                                    <h3 class="font-bold text-lg">${reportDate}</h3>
-                                </header>
-                                <ul class="px-3">${tasksHtml}</ul>
-                            </div>`;
+                        dateEl.innerHTML = `<div class="border rounded-lg mb-4"><header class="bg-gray-50 p-3 rounded-t-lg"><h3 class="font-bold text-lg">${reportDate}</h3></header><ul class="px-3">${tasksHtml}</ul></div>`;
                         listEl.appendChild(dateEl);
                     }
                 });
             },
+            renderDailyReportHistory: () => {
+                const listEl = document.getElementById('daily-report-history-list');
+                if (!listEl) return;
+                listEl.innerHTML = '';
+                if (state.dailyReports.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-10"><p class="text-sm text-gray-500">Belum ada laporan yang diimpor.</p></div>`;
+                    return;
+                }
+                state.dailyReports.forEach(report => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'p-3 border rounded-lg flex justify-between items-center';
+                    itemEl.innerHTML = `
+                        <div data-id="${report.id}" class="flex-grow cursor-pointer hover:bg-gray-50 flex justify-between items-center view-daily-report-btn">
+                            <div>
+                                <p class="font-bold">${formatFullDate(report.date)}</p>
+                                <p class="text-sm text-gray-500">${Object.keys(report.restaurants).length} Restoran</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-green-600">${formatCurrency(report.grandTotal)}</p>
+                                <p class="text-xs text-gray-500">${report.totalNaskot} Nasi Kotak</p>
+                            </div>
+                        </div>
+                        <button data-id="${report.id}" class="delete-daily-report-btn ml-4 text-gray-400 hover:text-red-500 p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    `;
+                    itemEl.querySelector('.view-daily-report-btn').addEventListener('click', (e) => {
+                        const reportId = e.currentTarget.dataset.id;
+                        const reportData = state.dailyReports.find(r => r.id === reportId);
+                        if (!reportData) return;
+                        const detailModal = document.getElementById('daily-report-detail-modal');
+                        const detailContent = document.getElementById('daily-report-detail-content');
+                        let contentHtml = `<h4 class="font-bold text-lg mb-2">${formatFullDate(reportData.date)}</h4>`;
+                        for (const [name, data] of Object.entries(reportData.restaurants)) {
+                            contentHtml += `<div class="mt-4 border-t pt-2">
+                                                <div class="flex justify-between items-center">
+                                                    <h5 class="font-bold">${name}</h5>
+                                                    <p class="font-semibold">${formatCurrency(data.total)}</p>
+                                                </div>`;
+                            for (const [phone, phoneData] of Object.entries(data.phones)) {
+                                contentHtml += `<div class="pl-4 mt-2">
+                                                    <p class="font-medium text-sm">${phone}: ${formatCurrency(phoneData.total)}</p>
+                                                    <ul class="list-disc pl-5 text-xs text-gray-600">
+                                                        <li>Makan ditempat: ${formatCurrency(phoneData['Makan ditempat'])}</li>
+                                                        <li>Naskot: ${formatCurrency(phoneData['Naskot'])}</li>
+                                                        <li>Online: ${formatCurrency(phoneData['Online'])}</li>
+                                                    </ul>
+                                                </div>`;
+                            }
+                            contentHtml += `</div>`;
+                        }
+                        contentHtml += `<div class="mt-6 border-t pt-4 text-center space-y-2">
+                                            <p>Total Nasi Kotak: <strong class="text-lg">${reportData.totalNaskot}</strong></p>
+                                            <p>Grand Total: <strong class="text-2xl text-green-700">${formatCurrency(reportData.grandTotal)}</strong></p>
+                                       </div>`;
+                        detailContent.innerHTML = contentHtml;
+                        detailModal.classList.remove('hidden');
+                    });
+                    listEl.appendChild(itemEl);
+                });
+            }
         };
 
         function initializeApplication(db) {
             const modalContainer = document.getElementById('modal-container');
             const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset(); formEl.dataset.id = data.id || ''; Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; }); modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden'); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); }); modalEl.querySelector('.close-modal-btn').addEventListener('click', hide); formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML; submitBtn.disabled = true; submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries()); data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error); else showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
             const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => { const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); let resolvePromise; const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); }; const hide = () => modalEl.classList.add('hidden'); modalEl.querySelector('.confirm-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(true); }); modalEl.querySelector('.cancel-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(false); }); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } }); return { show }; };
+            
+            const dailyReportDetailModalHTML = `<div id="daily-report-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-[60] hidden"><div class="modal-content bg-white w-full rounded-t-2xl relative"><header class="p-4 border-b flex justify-between items-center"><h3 class="font-bold text-lg">Detail Laporan Harian</h3><button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button></header><div id="daily-report-detail-content" class="p-4 max-h-[65vh] overflow-y-auto"></div></div></div>`;
+            modalContainer.insertAdjacentHTML('beforeend', dailyReportDetailModalHTML);
+            const dailyReportDetailModal = document.getElementById('daily-report-detail-modal');
+            dailyReportDetailModal.querySelector('.close-modal-btn').addEventListener('click', () => dailyReportDetailModal.classList.add('hidden'));
+            dailyReportDetailModal.addEventListener('click', (e) => { if(e.target === dailyReportDetailModal) dailyReportDetailModal.classList.add('hidden'); });
 
             const profileModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Bisnis</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Simpan Profil</button>`;
             const contactModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">No. Telepon</label><input type="tel" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Alamat</label><textarea name="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pelanggan</button>`;
@@ -775,223 +904,35 @@
             const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
             const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
-            const broadcastModalContent = `
-                <div class="space-y-4">
-                    <div>
-                        <label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label>
-                        <textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea>
-                        <p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p>
-                    </div>
-                </div>
-                <button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>
-            `;
-
+            const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
             const profileModal = createModal('profile-modal', 'Edit Profil Bisnis', profileModalContent, async (data) => { await setDoc(doc(db, 'config', 'businessProfile'), { name: data.name }); return 'Profil bisnis berhasil diperbarui!'; });
-            const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { 
-                const payload = { name: data.name, phone: data.phone, address: data.address }; 
-                if (data.id) { 
-                    await updateDoc(doc(db, 'contacts', data.id), payload); 
-                    return 'Pelanggan berhasil diperbarui!'; 
-                } else { 
-                    await addDoc(collection(db, 'contacts'), payload); 
-                    return 'Pelanggan baru berhasil ditambahkan!'; 
-                } 
-            });
+            const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { const payload = { name: data.name, phone: data.phone, address: data.address }; if (data.id) { await updateDoc(doc(db, 'contacts', data.id), payload); return 'Pelanggan berhasil diperbarui!'; } else { await addDoc(collection(db, 'contacts'), payload); return 'Pelanggan baru berhasil ditambahkan!'; } });
             const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
             const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate }; await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
             const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
             const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); } if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
-            const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { 
-                const customerName = data.customerName.trim(); 
-                const customerPhone = data.customerPhone.trim(); 
-                const customerAddress = form.elements['alamat'].value.trim();
-
-                if (!customerName) { 
-                    throw new Error("Nama pelanggan harus diisi."); 
-                } 
-
-                let contactId;
-                let contactName = customerName; 
-                const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); 
-
-                if (existingContact) { 
-                    contactId = existingContact.id; 
-                    if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) {
-                        await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress });
-                        showToast(`Info kontak ${customerName} diperbarui.`);
-                    }
-                } else { 
-                    const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; 
-                    const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); 
-                    contactId = newContactRef.id; 
-                    showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); 
-                } 
-
-                const items = []; 
-                form.querySelectorAll('.order-item-row').forEach(row => { 
-                    const itemId = row.querySelector('select[name="itemId"]').value; 
-                    const itemData = state.inventory.find(i => i.id === itemId); 
-                    const qty = Number(row.querySelector('input[name="qty"]').value); 
-                    if(itemData && qty > 0) { 
-                        items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); 
-                    } 
-                }); 
-
-                if (items.length === 0) { 
-                    throw new Error("Tambahkan minimal satu barang pesanan."); 
-                } 
-
-                const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); 
-                const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); 
-                const payload = { 
-                    contactId: contactId, 
-                    contactName: contactName, 
-                    alamat: customerAddress,
-                    items: items, 
-                    total: total, 
-                    status: 'pending', 
-                    orderDate: orderDate 
-                }; 
-                await addDoc(collection(db, 'customer_orders'), payload); 
-                return 'Pesanan baru berhasil disimpan!'; 
-            });
+            const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { const customerName = data.customerName.trim(); const customerPhone = data.customerPhone.trim(); const customerAddress = form.elements['alamat'].value.trim(); if (!customerName) { throw new Error("Nama pelanggan harus diisi."); } let contactId; let contactName = customerName; const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); if (existingContact) { contactId = existingContact.id; if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) { await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress }); showToast(`Info kontak ${customerName} diperbarui.`); } } else { const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); contactId = newContactRef.id; showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); } const items = []; form.querySelectorAll('.order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang pesanan."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); const payload = { contactId: contactId, contactName: contactName, alamat: customerAddress, items: items, total: total, status: 'pending', orderDate: orderDate }; await addDoc(collection(db, 'customer_orders'), payload); return 'Pesanan baru berhasil disimpan!'; });
             const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
-            
-            // --- MODIFIKASI DISINI: Logika baru untuk broadcast ---
-            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => {
-                broadcastMessageTemplate = data.message;
-                const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked');
-
-                if (!broadcastMessageTemplate) {
-                    throw new Error("Pesan tidak boleh kosong.");
-                }
-
-                broadcastQueue = Array.from(checkedBoxes)
-                    .map(cb => state.contacts.find(c => c.id === cb.dataset.id))
-                    .filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone));
-
-                if (broadcastQueue.length === 0) {
-                    throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid.");
-                }
-
-                currentBroadcastIndex = 0;
-                setupAndShowBroadcastProgress();
-                return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`;
-            });
-
-            // --- FUNGSI BARU: Untuk mengelola modal progress broadcast ---
+            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => { broadcastMessageTemplate = data.message; const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked'); if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone)); if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0; setupAndShowBroadcastProgress(); return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`; });
             const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
-            const setupAndShowBroadcastProgress = () => {
-                document.getElementById('broadcast-actions').classList.remove('hidden');
-                document.getElementById('broadcast-complete').classList.add('hidden');
-                broadcastProgressModalEl.classList.remove('hidden');
-                updateBroadcastProgressUI();
-            };
-
-            const updateBroadcastProgressUI = () => {
-                if (currentBroadcastIndex >= broadcastQueue.length) {
-                    // Selesai
-                    document.getElementById('broadcast-actions').classList.add('hidden');
-                    document.getElementById('broadcast-complete').classList.remove('hidden');
-                } else {
-                    // Lanjut ke berikutnya
-                    const contact = broadcastQueue[currentBroadcastIndex];
-                    document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`;
-                    document.getElementById('broadcast-next-contact-name').textContent = contact.name;
-                }
-            };
-
-            const hideBroadcastProgress = () => {
-                broadcastProgressModalEl.classList.add('hidden');
-                broadcastQueue = [];
-                currentBroadcastIndex = 0;
-                broadcastMessageTemplate = '';
-                // Uncheck all boxes
-                document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false);
-                document.getElementById('broadcast-controls').classList.add('hidden');
-            };
-            // --- Akhir dari fungsi baru ---
-
-
+            const setupAndShowBroadcastProgress = () => { document.getElementById('broadcast-actions').classList.remove('hidden'); document.getElementById('broadcast-complete').classList.add('hidden'); broadcastProgressModalEl.classList.remove('hidden'); updateBroadcastProgressUI(); };
+            const updateBroadcastProgressUI = () => { if (currentBroadcastIndex >= broadcastQueue.length) { document.getElementById('broadcast-actions').classList.add('hidden'); document.getElementById('broadcast-complete').classList.remove('hidden'); } else { const contact = broadcastQueue[currentBroadcastIndex]; document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`; document.getElementById('broadcast-next-contact-name').textContent = contact.name; } };
+            const hideBroadcastProgress = () => { broadcastProgressModalEl.classList.add('hidden'); broadcastQueue = []; currentBroadcastIndex = 0; broadcastMessageTemplate = ''; document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false); document.getElementById('broadcast-controls').classList.add('hidden'); };
             const updateSaleTotal = () => { let total = 0; document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
             const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateSaleTotal(); };
             const updateOrderTotal = () => { let total = 0; document.querySelectorAll('#order-items-container .order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('order-total-amount').textContent = formatCurrency(total); };
             const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateOrderTotal(); };
-
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
-            const populateContactInfo = (contactName) => {
-                const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase());
-                if (contact) {
-                    customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || '';
-                    customerOrderModal.formEl.elements['alamat'].value = contact.address || '';
-                }
-            };
-            nameInput.addEventListener('input', (e) => { 
-                const searchTerm = e.target.value.toLowerCase(); 
-                if (searchTerm.length === 0) { 
-                    suggestionsBox.classList.add('hidden'); 
-                    return; 
-                } 
-                const filteredContacts = state.contacts.filter(contact => contact.name.toLowerCase().includes(searchTerm)); 
-                if (filteredContacts.length > 0) { 
-                    suggestionsBox.innerHTML = filteredContacts.map(contact => `<div class="p-2 hover:bg-emerald-50 cursor-pointer suggestion-item" data-name="${contact.name}">${contact.name}</div>`).join(''); 
-                    suggestionsBox.classList.remove('hidden'); 
-                } else { 
-                    suggestionsBox.classList.add('hidden'); 
-                } 
-            });
-            nameInput.addEventListener('blur', (e) => {
-                setTimeout(() => {
-                    populateContactInfo(e.target.value);
-                    suggestionsBox.classList.add('hidden');
-                }, 200);
-            });
-            suggestionsBox.addEventListener('click', (e) => { 
-                if (e.target.classList.contains('suggestion-item')) { 
-                    const selectedName = e.target.dataset.name;
-                    nameInput.value = selectedName; 
-                    suggestionsBox.classList.add('hidden'); 
-                    populateContactInfo(selectedName);
-                } 
-            });
+            const populateContactInfo = (contactName) => { const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase()); if (contact) { customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || ''; customerOrderModal.formEl.elements['alamat'].value = contact.address || ''; } };
+            nameInput.addEventListener('input', (e) => { const searchTerm = e.target.value.toLowerCase(); if (searchTerm.length === 0) { suggestionsBox.classList.add('hidden'); return; } const filteredContacts = state.contacts.filter(contact => contact.name.toLowerCase().includes(searchTerm)); if (filteredContacts.length > 0) { suggestionsBox.innerHTML = filteredContacts.map(contact => `<div class="p-2 hover:bg-emerald-50 cursor-pointer suggestion-item" data-name="${contact.name}">${contact.name}</div>`).join(''); suggestionsBox.classList.remove('hidden'); } else { suggestionsBox.classList.add('hidden'); } });
+            nameInput.addEventListener('blur', (e) => { setTimeout(() => { populateContactInfo(e.target.value); suggestionsBox.classList.add('hidden'); }, 200); });
+            suggestionsBox.addEventListener('click', (e) => { if (e.target.classList.contains('suggestion-item')) { const selectedName = e.target.dataset.name; nameInput.value = selectedName; suggestionsBox.classList.add('hidden'); populateContactInfo(selectedName); } });
 
             const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
-            const navigateTo = (pageId) => { 
-                pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); 
-                navButtons.forEach(btn => { 
-                    const isActive = btn.dataset.target === pageId; 
-                    btn.classList.toggle('nav-active', isActive); 
-                    const berandaIcon = btn.querySelector('.beranda-icon'); 
-                    if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; 
-                }); 
-                updateFAB(pageId); 
-
-                if (pageId !== 'page-pihak') {
-                    document.getElementById('broadcast-controls').classList.add('hidden');
-                    document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false);
-                }
-            };
-
-            const updateFAB = (pageId) => { 
-                fabContainer.innerHTML = ''; 
-                let fabHTML = ''; 
-                const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; 
-                const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; 
-                if (pageId === 'page-pihak') { 
-                    fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; 
-                } else if (pageId === 'page-inventaris') { 
-                    fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; 
-                } else if (pageId === 'page-penjualan') { 
-                    fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; 
-                } else if (pageId === 'page-pesanan') { 
-                    fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; 
-                } else if (pageId === 'page-laporan') {
-                    fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`;
-                }
-                fabContainer.innerHTML = fabHTML; 
-            };
+            const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); } };
+            const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
 
             navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
@@ -1000,35 +941,129 @@
             document.getElementById('shortcut-new-sale').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } if (state.contacts.length === 0) { showToast("Tambahkan data pelanggan."); return; } const contactSelect = document.getElementById('sale-contact-select'); contactSelect.innerHTML = state.contacts.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); document.getElementById('sale-items-container').innerHTML = ''; addSaleItemRow(); saleModal.show(); });
             document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
             document.getElementById('btn-edit-profile').addEventListener('click', () => profileModal.show(state.businessProfile));
-
             document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
             document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
 
-            document.querySelectorAll('.chart-week-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    chartSelectedWeek = parseInt(button.dataset.week);
-                    renderFunctions.renderDashboard();
+            document.getElementById('btn-kalkulator-omset').addEventListener('click', () => navigateTo('page-kalkulator-omset'));
+            document.getElementById('back-to-lainnya-from-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('btn-impor-laporan').addEventListener('click', () => navigateTo('page-laporan-harian'));
+            document.getElementById('back-to-lainnya-from-laporan-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+
+            document.querySelectorAll('.chart-week-btn').forEach(button => { button.addEventListener('click', () => { chartSelectedWeek = parseInt(button.dataset.week); renderFunctions.renderDashboard(); }); });
+
+            // --- LOGIKA KALKULATOR OMSET BARU ---
+            document.getElementById('hitung-omset-btn').addEventListener('click', () => {
+                const startDateEl = document.getElementById('start-date');
+                const endDateEl = document.getElementById('end-date');
+                if (!startDateEl.value || !endDateEl.value) {
+                    showToast("Silakan pilih tanggal mulai dan selesai.");
+                    return;
+                }
+                const startDate = new Date(startDateEl.value);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(endDateEl.value);
+                endDate.setHours(23, 59, 59, 999);
+
+                if (startDate > endDate) {
+                    showToast("Tanggal mulai tidak boleh lebih dari tanggal selesai.");
+                    return;
+                }
+
+                const filteredReports = state.dailyReports.filter(report => {
+                    if (!report.date) return false;
+                    const reportDate = report.date.toDate();
+                    return reportDate >= startDate && reportDate <= endDate;
                 });
+
+                if (filteredReports.length === 0) {
+                    showToast("Tidak ada data laporan harian pada rentang tanggal tersebut.");
+                    document.getElementById('hasil-omset-container').classList.add('hidden');
+                    return;
+                }
+
+                const totals = {
+                    aps: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
+                    mj: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
+                };
+
+                filteredReports.forEach(report => {
+                    const apsData = report.restaurants["Ayam Penyet Surabaya"];
+                    if (apsData && apsData.phones) {
+                        Object.values(apsData.phones).forEach(phoneData => {
+                            totals.aps["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                            totals.aps["Naskot"] += phoneData["Naskot"] || 0;
+                            totals.aps["Online"] += phoneData["Online"] || 0;
+                        });
+                    }
+
+                    const mjData = report.restaurants["Mie Jogja"];
+                    if (mjData && mjData.phones) {
+                        Object.values(mjData.phones).forEach(phoneData => {
+                            totals.mj["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                            totals.mj["Naskot"] += phoneData["Naskot"] || 0;
+                            totals.mj["Online"] += phoneData["Online"] || 0;
+                        });
+                    }
+                });
+
+                totals.aps.total = totals.aps["Makan ditempat"] + totals.aps["Naskot"] + totals.aps["Online"];
+                totals.mj.total = totals.mj["Makan ditempat"] + totals.mj["Naskot"] + totals.mj["Online"];
+                const grandTotal = totals.aps.total + totals.mj.total;
+
+                document.getElementById('aps-makan').textContent = formatCurrency(totals.aps["Makan ditempat"]);
+                document.getElementById('aps-naskot').textContent = formatCurrency(totals.aps["Naskot"]);
+                document.getElementById('aps-online').textContent = formatCurrency(totals.aps["Online"]);
+                document.getElementById('aps-total').textContent = formatCurrency(totals.aps.total);
+
+                document.getElementById('mj-makan').textContent = formatCurrency(totals.mj["Makan ditempat"]);
+                document.getElementById('mj-naskot').textContent = formatCurrency(totals.mj["Naskot"]);
+                document.getElementById('mj-online').textContent = formatCurrency(totals.mj["Online"]);
+                document.getElementById('mj-total').textContent = formatCurrency(totals.mj.total);
+
+                document.getElementById('grand-total-omset').textContent = formatCurrency(grandTotal);
+
+                document.getElementById('hasil-omset-container').classList.remove('hidden');
+            });
+
+            document.getElementById('proses-laporan-btn').addEventListener('click', async () => {
+                const textarea = document.getElementById('laporan-harian-input');
+                const rawText = textarea.value;
+                if (!rawText.trim()) { showToast("Kotak teks tidak boleh kosong."); return; }
+                try {
+                    const reportData = parseDailyReport(rawText);
+                    const dateString = reportData.date.toDate().toISOString().split('T')[0];
+                    const docRef = doc(db, 'daily_reports', dateString);
+                    await setDoc(docRef, reportData);
+                    showToast(`Laporan untuk tanggal ${dateString} berhasil disimpan!`);
+                    textarea.value = '';
+                } catch (error) {
+                    console.error("Gagal memproses laporan:", error);
+                    showToast(error.message);
+                }
             });
 
             document.body.addEventListener('click', async (e) => { 
                 const target = e.target.closest('button'); 
                 if (!target) return; 
 
-                if (target.classList.contains('reprint-invoice-btn')) {
-                    const transactionId = target.dataset.id;
-                    if (transactionId) {
-                        renderFunctions.generateInvoice(transactionId);
-                    } else {
-                        showToast("ID Faktur tidak ditemukan.");
+                if (target.classList.contains('delete-daily-report-btn')) {
+                    const reportId = target.dataset.id;
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        try {
+                            await deleteDoc(doc(db, 'daily_reports', reportId));
+                            showToast('Laporan harian berhasil dihapus.');
+                        } catch (error) {
+                            console.error("Gagal menghapus laporan:", error);
+                            showToast("Gagal menghapus laporan.");
+                        }
                     }
                 }
 
+                if (target.classList.contains('reprint-invoice-btn')) { const transactionId = target.dataset.id; if (transactionId) { renderFunctions.generateInvoice(transactionId); } else { showToast("ID Faktur tidak ditemukan."); } } 
                 if (target.id === 'fab-add-contact') contactModal.show(); 
                 if (target.id === 'fab-add-item') itemModal.show(); 
-                if (target.id === 'fab-add-expense') {
-                    expenseModal.show({ purchaseDate: new Date().toISOString().split('T')[0] });
-                }
+                if (target.id === 'fab-add-expense') { expenseModal.show({ purchaseDate: new Date().toISOString().split('T')[0] }); } 
                 if (target.id === 'fab-add-sale') navigateTo('page-penjualan'); 
                 if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click(); 
                 if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); } 
@@ -1037,178 +1072,37 @@
                 if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id)); showToast('Barang berhasil dihapus.'); } } 
                 if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
                 if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id)); showToast('Pesanan berhasil dihapus.'); } } 
-                if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } }
-                if (target.classList.contains('invoice-btn')) renderFunctions.generateInvoice(target.dataset.id); if (target.id === 'add-sale-item-btn') addSaleItemRow(); if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); }
-                if (target.id === 'add-order-item-btn') addOrderItemRow();
-                if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); }
-                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } }
-                if (target.classList.contains('view-customer-details-btn')) {
-                    const customerId = target.dataset.id;
-                    const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId);
-                    const detailsEl = document.getElementById('customer-item-details');
-
-                    if (sales.length > 0) {
-                        const historyHtml = sales.map(sale => {
-                            const itemsHtml = sale.items.map(item => 
-                                `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`
-                            ).join('');
-
-                            return `
-                                <div class="border rounded-lg p-3 mb-3">
-                                    <div class="flex justify-between items-center mb-2 pb-2 border-b">
-                                        <p class="font-semibold text-gray-700">${formatDate(sale.date)}</p>
-                                        <p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p>
-                                    </div>
-                                    <ul class="list-disc pl-5 mb-3">${itemsHtml}</ul>
-                                    <div class="text-right">
-                                        <button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                        detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`;
-                    } else {
-                        detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`;
-                    }
-                    customerDetailModal.show();
-                }
+                if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } } 
+                if (target.classList.contains('invoice-btn')) renderFunctions.generateInvoice(target.dataset.id); 
+                if (target.id === 'add-sale-item-btn') addSaleItemRow(); 
+                if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); } 
+                if (target.id === 'add-order-item-btn') addOrderItemRow(); 
+                if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); } 
+                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } } 
+                if (target.classList.contains('view-customer-details-btn')) { const customerId = target.dataset.id; const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId); const detailsEl = document.getElementById('customer-item-details'); if (sales.length > 0) { const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button></div></div>`; }).join(''); detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`; } else { detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`; } customerDetailModal.show(); } 
             });
             saleModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
             customerOrderModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = ''; document.getElementById('salesMonthFilter').value = ''; renderFunctions.renderSalesReport(); });
-
             document.getElementById('contactSearchInput').addEventListener('input', renderFunctions.renderContactList);
             document.getElementById('completedOrderSearchInput').addEventListener('input', renderFunctions.renderCompletedOrderList);
-            
-            // Event listener untuk checkbox pelanggan
             const contactListEl = document.getElementById('contact-list');
             const broadcastControlsEl = document.getElementById('broadcast-controls');
             const selectedCountEl = document.getElementById('selected-count');
-
-            contactListEl.addEventListener('change', e => {
-                if (e.target.classList.contains('contact-checkbox')) {
-                    const checkedCount = contactListEl.querySelectorAll('.contact-checkbox:checked').length;
-                    if (checkedCount > 0) {
-                        selectedCountEl.textContent = checkedCount;
-                        broadcastControlsEl.classList.remove('hidden');
-                    } else {
-                        broadcastControlsEl.classList.add('hidden');
-                    }
-                }
-            });
-
-            document.getElementById('show-broadcast-modal').addEventListener('click', () => {
-                broadcastModal.show();
-            });
-            
-            // --- EVENT LISTENERS BARU untuk progress modal ---
-            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => {
-                if(currentBroadcastIndex < broadcastQueue.length) {
-                    const contact = broadcastQueue[currentBroadcastIndex];
-                    const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]);
-                    const whatsappNumber = formatWhatsappNumber(contact.phone);
-                    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-                    window.open(url, '_blank');
-                    currentBroadcastIndex++;
-                    updateBroadcastProgressUI();
-                }
-            });
-
+            contactListEl.addEventListener('change', e => { if (e.target.classList.contains('contact-checkbox')) { const checkedCount = contactListEl.querySelectorAll('.contact-checkbox:checked').length; if (checkedCount > 0) { selectedCountEl.textContent = checkedCount; broadcastControlsEl.classList.remove('hidden'); } else { broadcastControlsEl.classList.add('hidden'); } } });
+            document.getElementById('show-broadcast-modal').addEventListener('click', () => { broadcastModal.show(); });
+            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => { if(currentBroadcastIndex < broadcastQueue.length) { const contact = broadcastQueue[currentBroadcastIndex]; const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]); const whatsappNumber = formatWhatsappNumber(contact.phone); const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`; window.open(url, '_blank'); currentBroadcastIndex++; updateBroadcastProgressUI(); } });
             document.getElementById('broadcast-cancel-btn').addEventListener('click', hideBroadcastProgress);
             document.getElementById('broadcast-close-btn').addEventListener('click', hideBroadcastProgress);
-
-
             document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
-
-            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { 
-                const selectedMonth = document.getElementById('expenseMonthFilter').value;
-                const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"];
-
-                let dataToExport = state.monthlyExpenses;
-                if (selectedMonth) {
-                    dataToExport = dataToExport.filter(ex => 
-                        new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
-                    );
-                }
-
-                if (dataToExport.length === 0) {
-                    showToast('Tidak ada data belanja untuk diekspor.');
-                    return;
-                }
-
-                const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); 
-                const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
-                exportToCsv(filename, headers, data); 
-            });
-
+            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('expenseMonthFilter').value; const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"]; let dataToExport = state.monthlyExpenses; if (selectedMonth) { dataToExport = dataToExport.filter(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data belanja untuk diekspor.'); return; } const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
             document.getElementById('expenseMonthFilter').addEventListener('change', renderFunctions.renderExpenseReport);
-            document.getElementById('resetExpenseFilter').addEventListener('click', () => {
-                document.getElementById('expenseMonthFilter').value = '';
-                renderFunctions.renderExpenseReport();
-            });
-
-            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => {
-                const selectedMonth = document.getElementById('completedOrderMonthFilter').value;
-                const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"];
-                let dataToExport = state.customerOrders.filter(o => o.status === 'completed');
-
-                if (selectedMonth) {
-                    dataToExport = dataToExport.filter(o => 
-                        new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
-                    );
-                }
-
-                if (dataToExport.length === 0) {
-                    showToast('Tidak ada data pesanan selesai untuk diekspor.');
-                    return;
-                }
-
-                const data = dataToExport.flatMap(order => 
-                    order.items.map(item => [
-                        formatDate(order.orderDate),
-                        order.contactName,
-                        order.alamat || '-',
-                        item.name,
-                        item.qty,
-                        item.price,
-                        item.qty * item.price
-                    ])
-                );
-
-                const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
-                exportToCsv(filename, headers, data);
-                showToast('Laporan pesanan selesai sedang diunduh...');
-            });
-
+            document.getElementById('resetExpenseFilter').addEventListener('click', () => { document.getElementById('expenseMonthFilter').value = ''; renderFunctions.renderExpenseReport(); });
+            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('completedOrderMonthFilter').value; const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.customerOrders.filter(o => o.status === 'completed'); if (selectedMonth) { dataToExport = dataToExport.filter(o => new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data pesanan selesai untuk diekspor.'); return; } const data = dataToExport.flatMap(order => order.items.map(item => [formatDate(order.orderDate), order.contactName, order.alamat || '-', item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan pesanan selesai sedang diunduh...'); });
             document.getElementById('checklistMonthFilter').addEventListener('change', renderFunctions.renderChecklistReport);
-            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => {
-                const selectedMonth = document.getElementById('checklistMonthFilter').value;
-                const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"];
-                let dataToExport = state.checklistHistory;
-                if (selectedMonth) {
-                    dataToExport = dataToExport.filter(report =>
-                        report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth
-                    );
-                }
-                if (dataToExport.length === 0) {
-                    showToast('Tidak ada data kebersihan untuk diekspor.');
-                    return;
-                }
-                const data = dataToExport.flatMap(report =>
-                    (report.tasks || []).filter(t => t.done).map(task => [
-                        formatDate(report.tanggal),
-                        task.text,
-                        task.completedBy || 'N/A',
-                        task.proofUrl || 'N/A'
-                    ])
-                );
-                const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
-                exportToCsv(filename, headers, data);
-                showToast('Laporan kebersihan sedang diunduh...');
-            });
-
+            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('checklistMonthFilter').value; const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"]; let dataToExport = state.checklistHistory; if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; } const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A'])); const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan kebersihan sedang diunduh...'); });
             navigateTo('page-beranda');
         }
 
@@ -1228,25 +1122,15 @@
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
                     onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
                     onSnapshot(doc(db, 'config', 'businessProfile'), (doc) => { if (doc.exists()) { state.businessProfile = doc.data(); } renderFunctions.renderProfile(); }, (error) => console.error("Error fetching profile:", error));
-                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { 
-                        state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-                        renderFunctions.renderOrderList(); 
-                        renderFunctions.renderCompletedOrderList();
-                        renderFunctions.renderDashboard();
-                        renderFunctions.renderCompletedOrderFilters();
-                    }, (error) => console.error("Error fetching customer orders:", error));
-                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { 
-                        state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-                        renderFunctions.renderExpenseReport(); 
-                        renderFunctions.renderDashboard(); 
-                    }, (error) => console.error("Error fetching monthly expenses:", error));
-
-                    // Mengambil data dari koleksi 'checklist_history'
-                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => {
-                        state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderFunctions.renderChecklistReport();
-                    }, (error) => console.error("Error fetching checklist history:", error));
+                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderOrderList(); renderFunctions.renderCompletedOrderList(); renderFunctions.renderDashboard(); renderFunctions.renderCompletedOrderFilters(); }, (error) => console.error("Error fetching customer orders:", error));
+                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderExpenseReport(); renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching monthly expenses:", error));
+                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => { state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderChecklistReport(); }, (error) => console.error("Error fetching checklist history:", error));
                     
+                    onSnapshot(query(collection(db, 'daily_reports'), orderBy('date', 'desc')), (snapshot) => {
+                        state.dailyReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderDailyReportHistory();
+                    }, (error) => console.error("Error fetching daily reports:", error));
+
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
