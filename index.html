@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Database APS SOETTA </title>
+    <title>Database APS SOETTA</title>
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -300,6 +300,13 @@
 
                     <div id="omset-trend-chart-container" class="mt-8">
                         <h3 class="font-bold text-lg mb-4 text-center">Grafik Tren Omset Harian</h3>
+                        <div class="flex items-center justify-center border border-gray-200 rounded-md text-xs font-semibold w-fit mx-auto mb-4">
+                            <button data-week="0" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 rounded-l-md">Semua</button>
+                            <button data-week="1" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-l border-r">M1</button>
+                            <button data-week="2" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-r">M2</button>
+                            <button data-week="3" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-r">M3</button>
+                            <button data-week="4" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 rounded-r-md border-l">M4</button>
+                        </div>
                         <canvas id="omset-trend-chart"></canvas>
                     </div>
 
@@ -330,7 +337,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div id="page-laporan-bulanan" class="page hidden">
                 <header class="flex items-center gap-4 mb-4">
                     <button id="back-to-lainnya-from-monthly-btn" class="text-gray-600">
@@ -426,6 +433,8 @@
         let omsetTrendChart;
         let monthlyTurnoverChart;
         let toastTimer;
+        let turnoverChartSelectedWeek = 0;
+        let calculatedDailyData = {};
 
         let broadcastQueue = [];
         let currentBroadcastIndex = 0;
@@ -1074,6 +1083,48 @@
             nameInput.addEventListener('blur', (e) => { setTimeout(() => { populateContactInfo(e.target.value); suggestionsBox.classList.add('hidden'); }, 200); });
             suggestionsBox.addEventListener('click', (e) => { if (e.target.classList.contains('suggestion-item')) { const selectedName = e.target.dataset.name; nameInput.value = selectedName; suggestionsBox.classList.add('hidden'); populateContactInfo(selectedName); } });
 
+            function updateTurnoverTrendChart() {
+                const filteredData = {};
+                const startDateValue = document.getElementById('start-date').value;
+                if (!startDateValue) return;
+
+                const startDateOfMonth = new Date(startDateValue.substring(0, 8) + '01');
+                const firstDayOfMonth = startDateOfMonth.getDay();
+
+                for (const dateStr in calculatedDailyData) {
+                    const date = new Date(dateStr.replace(/-/g, '/'));
+                    const dayOfMonth = date.getDate();
+                    let weekOfMonth = Math.ceil((dayOfMonth + firstDayOfMonth) / 7);
+
+                    if (turnoverChartSelectedWeek === 0 || turnoverChartSelectedWeek === weekOfMonth) {
+                        filteredData[dateStr] = calculatedDailyData[dateStr];
+                    }
+                }
+
+                const sortedDates = Object.keys(filteredData).sort();
+                const chartLabels = sortedDates.map(dateStr => {
+                    const [year, month, day] = dateStr.split('-');
+                    const localDate = new Date(year, month - 1, day);
+                    return localDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                });
+                const makanData = sortedDates.map(date => filteredData[date]["Makan ditempat"]);
+                const naskotData = sortedDates.map(date => filteredData[date]["Naskot"]);
+                const onlineData = sortedDates.map(date => filteredData[date]["Online"]);
+
+                renderFunctions.renderOmsetTrendChart(chartLabels, makanData, naskotData, onlineData);
+
+                document.querySelectorAll('.turnover-chart-week-btn').forEach(btn => {
+                    const week = parseInt(btn.dataset.week);
+                    if (week === turnoverChartSelectedWeek) {
+                        btn.classList.add('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.remove('text-gray-500');
+                    } else {
+                        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.add('text-gray-500');
+                    }
+                });
+            }
+
             const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
             const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); } };
             const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
@@ -1103,7 +1154,6 @@
                 const startDateEl = document.getElementById('start-date');
                 const endDateEl = document.getElementById('end-date');
                 const hasilContainer = document.getElementById('hasil-omset-container');
-                const chartContainer = document.getElementById('omset-trend-chart-container');
                 if (!startDateEl.value || !endDateEl.value) {
                     showToast("Silakan pilih tanggal mulai dan selesai.");
                     return;
@@ -1130,7 +1180,7 @@
                     aps: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
                     mj: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
                 };
-                const dailyDataForChart = {};
+                calculatedDailyData = {};
                 filteredReports.forEach(report => {
                     const apsData = report.restaurants["Ayam Penyet Surabaya"];
                     if (apsData && apsData.phones) {
@@ -1149,19 +1199,16 @@
                         });
                     }
                     const jsDate = report.date.toDate();
-                    const year = jsDate.getFullYear();
-                    const month = String(jsDate.getMonth() + 1).padStart(2, '0');
-                    const day = String(jsDate.getDate()).padStart(2, '0');
-                    const dateString = `${year}-${month}-${day}`;
-                    if (!dailyDataForChart[dateString]) {
-                        dailyDataForChart[dateString] = { "Makan ditempat": 0, "Naskot": 0, "Online": 0 };
+                    const dateString = `${jsDate.getFullYear()}-${String(jsDate.getMonth() + 1).padStart(2, '0')}-${String(jsDate.getDate()).padStart(2, '0')}`;
+                    if (!calculatedDailyData[dateString]) {
+                        calculatedDailyData[dateString] = { "Makan ditempat": 0, "Naskot": 0, "Online": 0 };
                     }
                     Object.values(report.restaurants).forEach(restoData => {
                         if (restoData && restoData.phones) {
                             Object.values(restoData.phones).forEach(phoneData => {
-                                dailyDataForChart[dateString]["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
-                                dailyDataForChart[dateString]["Naskot"] += phoneData["Naskot"] || 0;
-                                dailyDataForChart[dateString]["Online"] += phoneData["Online"] || 0;
+                                calculatedDailyData[dateString]["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                                calculatedDailyData[dateString]["Naskot"] += phoneData["Naskot"] || 0;
+                                calculatedDailyData[dateString]["Online"] += phoneData["Online"] || 0;
                             });
                         }
                     });
@@ -1178,17 +1225,17 @@
                 document.getElementById('mj-online').textContent = formatCurrency(totals.mj["Online"]);
                 document.getElementById('mj-total').textContent = formatCurrency(totals.mj.total);
                 document.getElementById('grand-total-omset').textContent = formatCurrency(grandTotal);
-                const sortedDates = Object.keys(dailyDataForChart).sort();
-                const chartLabels = sortedDates.map(dateStr => {
-                    const [year, month, day] = dateStr.split('-');
-                    const localDate = new Date(year, month - 1, day);
-                    return localDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-                });
-                const makanData = sortedDates.map(date => dailyDataForChart[date]["Makan ditempat"]);
-                const naskotData = sortedDates.map(date => dailyDataForChart[date]["Naskot"]);
-                const onlineData = sortedDates.map(date => dailyDataForChart[date]["Online"]);
-                renderFunctions.renderOmsetTrendChart(chartLabels, makanData, naskotData, onlineData);
+                turnoverChartSelectedWeek = 0;
+                updateTurnoverTrendChart();
                 hasilContainer.classList.remove('hidden');
+            });
+
+            document.getElementById('omset-trend-chart-container').addEventListener('click', (e) => {
+                const target = e.target.closest('.turnover-chart-week-btn');
+                if (target) {
+                    turnoverChartSelectedWeek = parseInt(target.dataset.week);
+                    updateTurnoverTrendChart();
+                }
             });
 
             document.getElementById('proses-laporan-btn').addEventListener('click', async () => {
