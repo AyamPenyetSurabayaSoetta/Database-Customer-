@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+"<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -1671,7 +1671,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
             document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('checklistMonthFilter').value; const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"]; let dataToExport = state.checklistHistory; if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; } const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A'])); const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan kebersihan sedang diunduh...'); });
             // ... (di dalam fungsi initializeApplication)
 
-// ▼▼▼ TAMBAHKAN SELURUH BLOK KODE INI ▼▼▼
+
 document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
     // Set tanggal hari ini saat halaman dibuka
     const today = new Date().toISOString().split('T')[0];
@@ -1762,7 +1762,7 @@ const absensiLoading = document.getElementById('absensi-loading');
  * @returns {object} - Objek berisi kelas ikon dan warna.
  */
 const getStatusInfo = (status) => {
-    // Kumpulan ikon SVG baru yang lebih relevan
+
     const icons = {
         H: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>`,
         S: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
