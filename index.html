@@ -1690,10 +1690,13 @@ const hitungUangFisik = () => {
     const modalKasir = parseInput(document.getElementById('uf-modal-kasir'));
     const totalPenjualanSistem = parseInput(document.getElementById('uf-total-penjualan-sistem'));
     
-    // Total uang bersih yang diterima (fisik dan non-tunai)
-    const uangTunaiBersih = totalFisikDiLaci - totalPengeluaran - modalKasir;
-    const totalUangSeharusnya = uangTunaiBersih + totalNonTunai;
-    document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
+const grossCash = totalFisikDiLaci + totalPengeluaran;
+
+const totalUangFisikBaru = grossCash - modalKasir;
+
+const totalUangSeharusnya = totalUangFisikBaru + totalNonTunai;
+
+document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
     
     // Hitung Selisih
     const selisih = totalUangSeharusnya - totalPenjualanSistem;
