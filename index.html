@@ -1320,7 +1320,11 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 });
             }
         };
-
+const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
+            const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); }
+            localStorage.setItem('lastActivePage', pageId);};
+            
+            const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
         function initializeApplication(db) {
             const modalContainer = document.getElementById('modal-container');
             const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset(); formEl.dataset.id = data.id || ''; Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; }); modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden'); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); }); modalEl.querySelector('.close-modal-btn').addEventListener('click', hide); formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML; submitBtn.disabled = true; submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries()); data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error); else showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
@@ -1409,9 +1413,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 });
             }
 
-            const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
-            const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); } };
-            const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
+            
 
             navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
@@ -1903,12 +1905,29 @@ absensiDateFilter.addEventListener('change', (e) => {
             const db = getFirestore(app);
             const loadingText = document.getElementById('loading-text');
             let isAppInitialized = false;
+            if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then((registration) => {
+                console.log('Service Worker berhasil didaftarkan: ', registration);
+            })
+            .catch((error) => {
+                console.log('Pendaftaran Service Worker gagal: ', error);
+            });
+    });
+}
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     if (isAppInitialized) return; 
                     isAppInitialized = true;
                     loadingText.textContent = 'Tah Beres...';
                     initializeApplication(db);
+                    const lastPage = localStorage.getItem('lastActivePage');
+if (lastPage) {
+    navigateTo(lastPage); // Arahkan ke halaman terakhir yang disimpan
+} else {
+    navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
+}
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
                     onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
@@ -1921,6 +1940,7 @@ absensiDateFilter.addEventListener('change', (e) => {
                         state.dailyReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderDailyReportHistory();
                     }, (error) => console.error("Error fetching daily reports:", error));
+                    
 
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
