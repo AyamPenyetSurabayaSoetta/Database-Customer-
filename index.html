@@ -47,10 +47,43 @@
 </head>
 <body class="bg-gray-50 text-gray-800 overflow-hidden">
 
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p id="loading-text" class="mt-4 text-gray-600">Antosan Sekedap ...</p>
+    <div id="loading-overlay" class="p-4 max-w-md mx-auto">
+    <div class="flex items-center gap-3 mb-6 animate-pulse">
+        <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+        <div class="w-32 h-4 bg-gray-200 rounded"></div>
     </div>
+    
+    <div class="grid grid-cols-2 gap-4 mb-4 animate-pulse">
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+    </div>
+    
+    <div class="w-full h-24 bg-gray-200 rounded-lg mb-6 animate-pulse"></div>
+    
+    <div class="h-5 w-24 bg-gray-200 rounded mb-4 animate-pulse"></div>
+    <div class="grid grid-cols-5 gap-2 text-center animate-pulse">
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+    </div>
+</div>
 
     <div id="app-container" class="max-w-md mx-auto bg-white shadow-lg h-screen hidden flex flex-col">
 
@@ -1894,16 +1927,12 @@ absensiDateFilter.addEventListener('change', (e) => {
         fetchAttendanceReport(e.target.value);
     }
 });
-
-
-            navigateTo('page-beranda');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
-            const loadingText = document.getElementById('loading-text');
             let isAppInitialized = false;
             if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -1920,7 +1949,6 @@ absensiDateFilter.addEventListener('change', (e) => {
                 if (user) {
                     if (isAppInitialized) return; 
                     isAppInitialized = true;
-                    loadingText.textContent = 'Tah Beres...';
                     initializeApplication(db);
                     const lastPage = localStorage.getItem('lastActivePage');
 if (lastPage) {
@@ -1946,8 +1974,7 @@ if (lastPage) {
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
                 } else {
-                    loadingText.textContent = 'Mengautentikasi...';
-                    signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error); loadingText.textContent = 'Gagal terhubung. Coba refresh halaman.'; });
+                    signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error);  });
                 }
             });
         });
