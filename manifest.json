@@ -1,7 +1,7 @@
 {
   "name": "Aplikasi Database Pelanggan",
   "short_name": "Database Pelanggan",
-  "start_url": ".",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#10B981",
