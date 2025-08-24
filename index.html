@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Database APS SOETTA</title>
-    <link rel="manifest" href="manifest.json">
+<!-- TEMA WARNA UNTUK BROWSER -->
+<meta name="theme-color" content="#10B981" />
+
+<!-- TAUTAN KE FILE MANIFEST -->
+<link rel="manifest" href="favicon/site.webmanifest">
+
+<!-- TAUTAN UNTUK FAVICON -->
+<link rel="icon" href="favicon/favicon.ico" sizes="any">
+<link rel="icon" href="favicon/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1974,7 +1983,7 @@ if (lastPage) {
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
                 } else {
-                    signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error);  });
+                    signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error);    });
                 }
             });
         });
