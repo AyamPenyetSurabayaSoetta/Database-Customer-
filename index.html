@@ -217,12 +217,12 @@
                                      <span>Kalkulator Online</span>
                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                                  </button>
-                                 
+
                                  <button id="btn-hitung-fisik" class="w-full text-left p-4 flex justify-between items-center border-t">
                                      <span>Hitung Uang Fisik</span>
                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                                  </button>
-                                
+
                             <button id="btn-impor-laporan" class="w-full text-left p-4 flex justify-between items-center border-t">
                                 <span>Impor Laporan Harian</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -351,7 +351,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="page-laporan-bulanan" class="page hidden">
                 <header class="flex items-center gap-4 mb-4">
                     <button id="back-to-lainnya-from-monthly-btn" class="text-gray-600">
@@ -359,7 +359,7 @@
                     </button>
                     <h2 class="font-bold text-2xl">Laporan Omset Bulanan</h2>
                 </header>
-                
+
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                         <p class="text-sm text-gray-600">Omset Rata-rata/Bulan</p>
@@ -370,13 +370,13 @@
                         <p id="best-month-name" class="font-bold text-lg text-green-700">-</p>
                     </div>
                 </div>
-                
+
                 <div class="mb-6 border-t pt-4">
                     <h3 class="font-bold text-lg text-center mb-4">Grafik Omset Bulanan</h3>
                     <canvas id="monthly-turnover-chart"></canvas>
                 </div>
             </div>
-            
+
             <div id="page-kalkulator-online" class="page hidden">
                 <header class="flex items-center gap-4 mb-4">
                     <button id="back-to-lainnya-from-online-calc-btn" class="text-gray-600">
@@ -491,7 +491,7 @@
                         <span id="total-bersih-shopee" class="font-bold text-lg">Rp 0</span>
                     </div>
                 </div>
-                
+
 <div class="bg-emerald-600 text-white p-4 rounded-lg flex justify-between items-center">
     <span class="font-bold text-xl">Grand Total Bersih</span>
     <span id="grand-total-online" class="font-bold text-2xl">Rp 0</span>
@@ -582,7 +582,7 @@
                 <span id="uf-total-pengeluaran" class="font-bold text-lg text-red-700">Rp 0</span>
             </div>
         </div>
-        
+
         <div class="p-4 bg-gray-50 border rounded-lg">
              <label for="uf-modal-kasir" class="block text-sm font-medium text-gray-700">Modal Kasir</label>
              <input type="number" id="uf-modal-kasir" placeholder="Rp 0" class="uf-input mt-1 w-full border-gray-300 rounded-md p-1.5">
@@ -617,7 +617,7 @@
                 </div>
              </div>
         </div>
-        
+
         <button id="uf-reset-btn" class="w-full bg-gray-200 text-gray-800 py-2.5 px-4 rounded-lg font-semibold mt-6">
             Reset Form
         </button>
@@ -1269,7 +1269,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 const monthlyData = state.dailyReports.reduce((acc, report) => {
                     const date = report.date.toDate();
                     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                    
+
                     if (!acc[monthKey]) {
                         acc[monthKey] = { total: 0, label: date.toLocaleString('id-ID', { month: 'short', year: 'numeric' }) };
                     }
@@ -1340,7 +1340,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
             const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
             const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
-            
+
             const profileModal = createModal('profile-modal', 'Edit Profil Bisnis', profileModalContent, async (data) => { await setDoc(doc(db, 'config', 'businessProfile'), { name: data.name }); return 'Profil bisnis berhasil diperbarui!'; });
             const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { const payload = { name: data.name, phone: data.phone, address: data.address }; if (data.id) { await updateDoc(doc(db, 'contacts', data.id), payload); return 'Pelanggan berhasil diperbarui!'; } else { await addDoc(collection(db, 'contacts'), payload); return 'Pelanggan baru berhasil ditambahkan!'; } });
             const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
@@ -1351,7 +1351,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { const customerName = data.customerName.trim(); const customerPhone = data.customerPhone.trim(); const customerAddress = form.elements['alamat'].value.trim(); if (!customerName) { throw new Error("Nama pelanggan harus diisi."); } let contactId; let contactName = customerName; const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); if (existingContact) { contactId = existingContact.id; if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) { await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress }); showToast(`Info kontak ${customerName} diperbarui.`); } } else { const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); contactId = newContactRef.id; showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); } const items = []; form.querySelectorAll('.order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang pesanan."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); const payload = { contactId: contactId, contactName: contactName, alamat: customerAddress, items: items, total: total, status: 'pending', orderDate: orderDate }; await addDoc(collection(db, 'customer_orders'), payload); return 'Pesanan baru berhasil disimpan!'; });
             const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
             const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => { broadcastMessageTemplate = data.message; const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked'); if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone)); if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0; setupAndShowBroadcastProgress(); return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`; });
-            
+
             const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
             const setupAndShowBroadcastProgress = () => { document.getElementById('broadcast-actions').classList.remove('hidden'); document.getElementById('broadcast-complete').classList.add('hidden'); broadcastProgressModalEl.classList.remove('hidden'); updateBroadcastProgressUI(); };
             const updateBroadcastProgressUI = () => { if (currentBroadcastIndex >= broadcastQueue.length) { document.getElementById('broadcast-actions').classList.add('hidden'); document.getElementById('broadcast-complete').classList.remove('hidden'); } else { const contact = broadcastQueue[currentBroadcastIndex]; document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`; document.getElementById('broadcast-next-contact-name').textContent = contact.name; } };
@@ -1545,7 +1545,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
 
             document.getElementById('btn-kalkulator-online').addEventListener('click', () => navigateTo('page-kalkulator-online'));
             document.getElementById('back-to-lainnya-from-online-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
-            
+
             document.getElementById('hitung-online-btn').addEventListener('click', () => {
                 const parseInput = (id) => parseFloat(document.getElementById(id).value) || 0;
 
@@ -1564,7 +1564,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 const apsGojekBersih = apsGojekPendapatan - apsGojekKomisi;
                 const apsShopeeBersih = apsShopeePendapatan - apsShopeeKomisi;
                 const apsTotalBersih = apsGrabBersih + apsGojekBersih + apsShopeeBersih;
-                
+
                 const mjGrabKomisi = Math.floor((mjGrabPendapatan * 0.10) / 1.1);
                 const mjGojekKomisi = Math.floor((mjGojekPendapatan * 0.13) / 1.1);
                 const mjShopeeKomisi = Math.floor(mjShopeePendapatan * 0.10);
@@ -1573,13 +1573,13 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 const mjGojekBersih = mjGojekPendapatan - mjGojekKomisi;
                 const mjShopeeBersih = mjShopeePendapatan - mjShopeeKomisi;
                 const mjTotalBersih = mjGrabBersih + mjGojekBersih + mjShopeeBersih;
-                
+
                 const grandTotalOnline = apsTotalBersih + mjTotalBersih;
                 const totalBersihGrab = apsGrabBersih + mjGrabBersih;
                 const totalBersihGojek = apsGojekBersih + mjGojekBersih;
                 const totalBersihShopee = apsShopeeBersih + mjShopeeBersih;
-                
-                
+
+
 
                 document.getElementById('aps-grab-komisi').textContent = formatCurrency(apsGrabKomisi);
                 document.getElementById('aps-grab-bersih').textContent = formatCurrency(apsGrabBersih);
@@ -1601,7 +1601,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 document.getElementById('total-bersih-gojek').textContent = formatCurrency(totalBersihGojek);
                 document.getElementById('total-bersih-shopee').textContent = formatCurrency(totalBersihShopee);
 
-                
+
                 document.getElementById('grand-total-online').textContent = formatCurrency(grandTotalOnline);
 
                 document.getElementById('hasil-online-container').classList.remove('hidden');
@@ -1646,7 +1646,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
                 if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } } 
                 if (target.classList.contains('view-customer-details-btn')) { const customerId = target.dataset.id; const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId); const detailsEl = document.getElementById('customer-item-details'); if (sales.length > 0) { const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button></div></div>`; }).join(''); detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`; } else { detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`; } customerDetailModal.show(); } 
             });
-            
+
             saleModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
             customerOrderModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
@@ -1685,7 +1685,7 @@ const formHitungFisik = document.getElementById('form-hitung-fisik');
 const hitungUangFisik = () => {
     const parseInput = (el) => parseFloat(el.value) || 0;
     
-    // 1. Hitung Uang Kertas & Koin
+    // Menghitung total uang fisik di laci (Uang Kertas + Koin)
     let totalUangKertas = 0;
     formHitungFisik.querySelectorAll('.uf-input-kertas').forEach(input => {
         const qty = parseInput(input);
@@ -1698,33 +1698,35 @@ const hitungUangFisik = () => {
     const totalFisikDiLaci = totalUangKertas + totalKoin;
     document.getElementById('uf-total-fisik-laci').textContent = formatCurrency(totalFisikDiLaci);
     
-    // 2. Hitung Pengeluaran
+    // Menghitung total pengeluaran
     let totalPengeluaran = 0;
     formHitungFisik.querySelectorAll('.uf-input-pengeluaran').forEach(input => {
         totalPengeluaran += parseInput(input);
     });
     document.getElementById('uf-total-pengeluaran').textContent = formatCurrency(totalPengeluaran);
     
-    // 3. Hitung Non Tunai
+    // Menghitung total non-tunai
     let totalNonTunai = 0;
     formHitungFisik.querySelectorAll('.uf-input-nontunai').forEach(input => {
         totalNonTunai += parseInput(input);
     });
     document.getElementById('uf-total-nontunai').textContent = formatCurrency(totalNonTunai);
     
-    // 4. Hitung Rekonsiliasi Akhir
+    // Menghitung rekonsiliasi akhir dengan LOGIKA BARU DARI ANDA
     const modalKasir = parseInput(document.getElementById('uf-modal-kasir'));
     const totalPenjualanSistem = parseInput(document.getElementById('uf-total-penjualan-sistem'));
     
-const grossCash = totalFisikDiLaci + totalPengeluaran;
-
-const totalUangFisikBaru = grossCash - modalKasir;
-
-const totalUangSeharusnya = totalUangFisikBaru + totalNonTunai;
-
-document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
+    // Langkah 1: (Uang fisik + pengeluaran)
+    const grossCash = totalFisikDiLaci + totalPengeluaran;
     
-    // Hitung Selisih
+    // Langkah 2: (Hasil Langkah 1 - modal kasir)
+    const totalUangFisikBaru = grossCash - modalKasir;
+    
+    // Langkah 3: (Hasil Langkah 2 + uang non tunai)
+    const totalUangSeharusnya = totalUangFisikBaru + totalNonTunai;
+    document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
+    
+    // Hitung Selisih (membandingkan hasil akhir dengan penjualan sistem)
     const selisih = totalUangSeharusnya - totalPenjualanSistem;
     const selisihEl = document.getElementById('uf-selisih');
     selisihEl.textContent = formatCurrency(selisih);
@@ -1785,7 +1787,7 @@ const fetchAttendanceReport = async (date) => {
     absensiListContainer.innerHTML = '';
     absensiListContainer.classList.add('hidden');
     absensiLoading.classList.remove('hidden');
-    
+
     try {
         const url = `${ATTENDANCE_SCRIPT_URL}?action=read&date=${date}`;
         const response = await fetch(url);
@@ -1794,46 +1796,56 @@ const fetchAttendanceReport = async (date) => {
         }
         const result = await response.json();
         const attendanceData = result.data || result;
-        
+
         if (Array.isArray(attendanceData) && attendanceData.length > 0) {
             const sortedData = attendanceData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            
+
             sortedData.forEach(entry => {
                 // Log data untuk debugging
                 console.log(`Mencoba membuat peta untuk ${entry.nama_karyawan}:`, { lat: entry.latitude, lon: entry.longitude, tipeLat: typeof entry.latitude, tipeLon: typeof entry.longitude });
-                
+
                 if (!entry.timestamp || !entry.nama_karyawan) {
                     console.warn('Data entri tidak lengkap, dilewati:', entry);
                     return;
                 }
-                
+
                 const item = document.createElement('div');
                 item.className = 'bg-white p-3 border rounded-lg flex items-start gap-3 shadow-sm';
-                
+
                 const time = new Date(entry.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 const statusInfo = getStatusInfo(entry.keterangan);
-                
+
                 let locationHtml = '';
-                
-                // === LOGIKA BARU YANG LEBIH KUAT ===
+
+                // === LOGIKA BARU DENGAN IFRAME ===
                 // 1. Coba ubah data menjadi angka
                 const lat = parseFloat(entry.latitude);
                 const lon = parseFloat(entry.longitude);
-                
-                // 2. Cek apakah hasilnya adalah angka yang valid (bukan NaN - Not a Number)
+
+                // 2. Cek apakah hasilnya adalah angka yang valid (bukan NaN)
                 if (!isNaN(lat) && !isNaN(lon)) {
-                    const staticMapUrl = `https://static-map.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=16&size=300x150&marker=${lat},${lon},red-pushpin`;
-                    const interactiveMapUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`;
+                    // Definisikan area (bounding box) kecil di sekitar titik lokasi
+                    const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
                     
+                    // Buat URL untuk iframe
+                    const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+
                     locationHtml = `
-                        <a href="${interactiveMapUrl}" target="_blank" rel="noopener noreferrer" class="block mt-2 rounded-lg overflow-hidden border hover:border-blue-500 transition-all" title="Klik untuk membuka peta interaktif">
-                            <img src="${staticMapUrl}" alt="Peta Lokasi Absensi" class="w-full h-auto bg-gray-200" loading="lazy">
-                        </a>
+                        <div class="mt-2 rounded-lg overflow-hidden border" title="Peta Lokasi Absensi">
+                           <iframe
+                                width="100%"
+                                height="150"
+                                style="border:0;"
+                                loading="lazy"
+                                src="${iframeSrc}">
+                           </iframe>
+                        </div>
                     `;
                 } else {
                     locationHtml = '<p class="text-xs text-gray-400 mt-2">Lokasi tidak terekam</p>';
                 }
-                
+
+
                 item.innerHTML = `
                     <div class="flex-shrink-0 w-16 text-center">
                         <p class="font-bold text-lg text-gray-800">${time}</p>
@@ -1881,7 +1893,7 @@ absensiDateFilter.addEventListener('change', (e) => {
     }
 });
 
-            
+
             navigateTo('page-beranda');
         }
 
