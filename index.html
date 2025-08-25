@@ -61,14 +61,14 @@
         <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
         <div class="w-32 h-4 bg-gray-200 rounded"></div>
     </div>
-    
+
     <div class="grid grid-cols-2 gap-4 mb-4 animate-pulse">
         <div class="h-20 bg-gray-200 rounded-lg"></div>
         <div class="h-20 bg-gray-200 rounded-lg"></div>
     </div>
-    
+
     <div class="w-full h-24 bg-gray-200 rounded-lg mb-6 animate-pulse"></div>
-    
+
     <div class="h-5 w-24 bg-gray-200 rounded mb-4 animate-pulse"></div>
     <div class="grid grid-cols-5 gap-2 text-center animate-pulse">
         <div class="flex flex-col items-center gap-1">
@@ -753,7 +753,7 @@
         const companyInfo = { name: "Ayam Penyet Surabaya", address: "Jl. Soekarno Hatta no. 725A", city: "Kota Bandung, 40286", phone: "0811-6594-527", email: "ayampenyetsurabaya725@gmail.com" };
         const companyLogoUrl = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
         // Pastikan terlihat persis seperti ini, dengan URL Anda di dalamnya
-const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQwyaFNmQ4qYyjJMHRHHchPGwaPWxPxtieyOMH5g7MrhQsu9GQtkQXWu-S9db/exec";
+const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVVENDSXow4OTEl3a9AZ1rdIFliit0-AhTQN1eCLyFXBBN9I7dxSdtHkk7yhyRsKnc/exec";
         let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
         let salesChart, expensesChart;
         let omsetTrendChart;
@@ -1365,7 +1365,7 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMGPlFQw
 const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
             const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); }
             localStorage.setItem('lastActivePage', pageId);};
-            
+
             const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
         function initializeApplication(db) {
             const modalContainer = document.getElementById('modal-container');
@@ -1455,7 +1455,7 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
                 });
             }
 
-            
+
 
             navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
@@ -1728,7 +1728,7 @@ const formHitungFisik = document.getElementById('form-hitung-fisik');
 
 const hitungUangFisik = () => {
     const parseInput = (el) => parseFloat(el.value) || 0;
-    
+
     // Menghitung total uang fisik di laci (Uang Kertas + Koin)
     let totalUangKertas = 0;
     formHitungFisik.querySelectorAll('.uf-input-kertas').forEach(input => {
@@ -1741,40 +1741,40 @@ const hitungUangFisik = () => {
     const totalKoin = parseInput(document.getElementById('uf-input-koin'));
     const totalFisikDiLaci = totalUangKertas + totalKoin;
     document.getElementById('uf-total-fisik-laci').textContent = formatCurrency(totalFisikDiLaci);
-    
+
     // Menghitung total pengeluaran
     let totalPengeluaran = 0;
     formHitungFisik.querySelectorAll('.uf-input-pengeluaran').forEach(input => {
         totalPengeluaran += parseInput(input);
     });
     document.getElementById('uf-total-pengeluaran').textContent = formatCurrency(totalPengeluaran);
-    
+
     // Menghitung total non-tunai
     let totalNonTunai = 0;
     formHitungFisik.querySelectorAll('.uf-input-nontunai').forEach(input => {
         totalNonTunai += parseInput(input);
     });
     document.getElementById('uf-total-nontunai').textContent = formatCurrency(totalNonTunai);
-    
+
     // Menghitung rekonsiliasi akhir dengan LOGIKA BARU DARI ANDA
     const modalKasir = parseInput(document.getElementById('uf-modal-kasir'));
     const totalPenjualanSistem = parseInput(document.getElementById('uf-total-penjualan-sistem'));
-    
+
     // Langkah 1: (Uang fisik + pengeluaran)
     const grossCash = totalFisikDiLaci + totalPengeluaran;
-    
+
     // Langkah 2: (Hasil Langkah 1 - modal kasir)
     const totalUangFisikBaru = grossCash - modalKasir;
-    
+
     // Langkah 3: (Hasil Langkah 2 + uang non tunai)
     const totalUangSeharusnya = totalUangFisikBaru + totalNonTunai;
     document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
-    
+
     // Hitung Selisih (membandingkan hasil akhir dengan penjualan sistem)
     const selisih = totalUangSeharusnya - totalPenjualanSistem;
     const selisihEl = document.getElementById('uf-selisih');
     selisihEl.textContent = formatCurrency(selisih);
-    
+
     if (selisih < 0) {
         selisihEl.classList.remove('text-emerald-600');
         selisihEl.classList.add('text-red-600');
@@ -1870,7 +1870,7 @@ const fetchAttendanceReport = async (date) => {
                 if (!isNaN(lat) && !isNaN(lon)) {
                     // Definisikan area (bounding box) kecil di sekitar titik lokasi
                     const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
-                    
+
                     // Buat URL untuk iframe
                     const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
 
@@ -1977,7 +1977,7 @@ if (lastPage) {
                         state.dailyReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderDailyReportHistory();
                     }, (error) => console.error("Error fetching daily reports:", error));
-                    
+
 
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
