@@ -761,6 +761,43 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQ
         let toastTimer;
         let turnoverChartSelectedWeek = 0;
         let calculatedDailyData = {};
+        // --- KONFIGURASI UNTUK FITUR ABSENSI BARU ---
+
+// Koordinat akurat sesuai data dari Anda
+        const OFFICE_COORDS = { lat: -6.9385360, lon: 107.6662661 };
+
+
+// Jarak toleransi maksimal dari kantor dalam kilometer (0.1 km = 100 meter)
+        const ALLOWED_RADIUS_KM = 0.1; 
+// Jam masuk untuk setiap shift (format 24 jam)
+        const SHIFT_TIMES = {
+            'PAGI':  { hour: 7,  minute: 40, grace: 0 },
+            'SIANG': { hour: 12, minute: 5,  grace: 0 },
+            'MALAM': { hour: 13, minute: 40, grace: 0 }
+        };
+
+// --- AKHIR DARI KONFIGURASI ---
+
+/**
+ * Fungsi untuk menghitung jarak antara dua koordinat GPS (Haversine Formula).
+ * @returns {number} Jarak dalam kilometer.
+ */
+        const haversineDistance = (coords1, coords2) => {
+            const toRad = (x) => x * Math.PI / 180;
+            const R = 6371; // Radius bumi dalam km
+        
+            const dLat = toRad(coords2.lat - coords1.lat);
+            const dLon = toRad(coords2.lon - coords1.lon);
+            const lat1 = toRad(coords1.lat);
+            const lat2 = toRad(coords2.lat);
+        
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+            
+            return R * c;
+        };
+
 
         let broadcastQueue = [];
         let currentBroadcastIndex = 0;
@@ -1181,23 +1218,23 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQ
                     const dateEl = document.createElement('div');
                     const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
                     // Ambil data tasks dari laporan
-const tasks = report.tasks; 
-let tasksArray = []; // Siapkan array kosong sebagai dasar
-
-// Cek apakah 'tasks' adalah array. Jika ya, langsung gunakan.
-if (Array.isArray(tasks)) {
-    tasksArray = tasks;
-} 
-// Jika bukan array tapi merupakan object, ubah menjadi array
-else if (tasks && typeof tasks === 'object') {
-    tasksArray = Object.values(tasks);
-}
-
-// Sekarang, 'tasksArray' dijamin sebuah array, jadi kita bisa memfilter dengan aman
-const tasksHtml = tasksArray.filter(task => task && task.done).map(task => {
-    const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
-    return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
-}).join('');
+            const tasks = report.tasks; 
+            let tasksArray = []; // Siapkan array kosong sebagai dasar
+            
+            // Cek apakah 'tasks' adalah array. Jika ya, langsung gunakan.
+            if (Array.isArray(tasks)) {
+                tasksArray = tasks;
+            } 
+            // Jika bukan array tapi merupakan object, ubah menjadi array
+            else if (tasks && typeof tasks === 'object') {
+                tasksArray = Object.values(tasks);
+            }
+            
+            // Sekarang, 'tasksArray' dijamin sebuah array, jadi kita bisa memfilter dengan aman
+            const tasksHtml = tasksArray.filter(task => task && task.done).map(task => {
+                const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+                return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
+            }).join('');
 
                     if (tasksHtml) {
                         dateEl.innerHTML = `<div class="border rounded-lg mb-4"><header class="bg-gray-50 p-3 rounded-t-lg"><h3 class="font-bold text-lg">${reportDate}</h3></header><ul class="px-3">${tasksHtml}</ul></div>`;
@@ -1858,11 +1895,7 @@ const fetchAttendanceReport = async (date) => {
 
         if (Array.isArray(attendanceData) && attendanceData.length > 0) {
             const sortedData = attendanceData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
             sortedData.forEach(entry => {
-                // Log data untuk debugging
-                console.log(`Mencoba membuat peta untuk ${entry.nama_karyawan}:`, { lat: entry.latitude, lon: entry.longitude, tipeLat: typeof entry.latitude, tipeLon: typeof entry.longitude });
-
                 if (!entry.timestamp || !entry.nama_karyawan) {
                     console.warn('Data entri tidak lengkap, dilewati:', entry);
                     return;
@@ -1870,41 +1903,63 @@ const fetchAttendanceReport = async (date) => {
 
                 const item = document.createElement('div');
                 item.className = 'bg-white p-3 border rounded-lg flex items-start gap-3 shadow-sm';
-
-                const time = new Date(entry.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                const attendanceTime = new Date(entry.timestamp);
+                const time = attendanceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 const statusInfo = getStatusInfo(entry.keterangan);
 
-                let locationHtml = '';
-
-                // === LOGIKA BARU DENGAN IFRAME ===
-                // 1. Coba ubah data menjadi angka
+                // --- LOGIKA BARU UNTUK LOKASI & KETERLAMBATAN ---
+                let locationStatus = { text: 'Lokasi T/A', color: 'text-gray-400', distance: null };
                 const lat = parseFloat(entry.latitude);
                 const lon = parseFloat(entry.longitude);
 
-                // 2. Cek apakah hasilnya adalah angka yang valid (bukan NaN)
                 if (!isNaN(lat) && !isNaN(lon)) {
-                    // Definisikan area (bounding box) kecil di sekitar titik lokasi
-                    const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
-
-                    // Buat URL untuk iframe
-                    const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
-
-                    locationHtml = `
-                        <div class="mt-2 rounded-lg overflow-hidden border" title="Peta Lokasi Absensi">
-                           <iframe
-                                width="100%"
-                                height="150"
-                                style="border:0;"
-                                loading="lazy"
-                                src="${iframeSrc}">
-                           </iframe>
-                        </div>
-                    `;
-                } else {
-                    locationHtml = '<p class="text-xs text-gray-400 mt-2">Lokasi tidak terekam</p>';
+                    const distance = haversineDistance(OFFICE_COORDS, { lat, lon });
+                    locationStatus.distance = distance;
+                    if (distance <= ALLOWED_RADIUS_KM) {
+                        locationStatus = { text: 'Di Lokasi', color: 'text-green-600' };
+                    } else {
+                        locationStatus = { text: `Di Luar Lokasi (${(distance * 1000).toFixed(0)} m)`, color: 'text-red-600' };
+                    }
                 }
 
+                let lateStatus = { text: 'T/A', color: 'text-gray-400' };
+// Logika baru untuk mencari shift yang lebih fleksibel
+let shiftKey = null;
+const entryShift = entry.shift?.toUpperCase() || '';
+if (entryShift.includes('PAGI')) {
+    shiftKey = 'PAGI';
+} else if (entryShift.includes('SIANG')) {
+    shiftKey = 'SIANG';
+} else if (entryShift.includes('MALAM')) {
+    shiftKey = 'MALAM';
+}
+const shiftRule = shiftKey ? SHIFT_TIMES[shiftKey] : null;
+if (shiftRule && entry.keterangan === 'H') { // Hanya cek keterlambatan jika statusnya 'Hadir'
+    // Buat waktu deadline berdasarkan jam masuk + toleransi
+    const deadline = new Date(attendanceTime);
+    deadline.setHours(shiftRule.hour, shiftRule.minute, 0, 0); // Set ke jam & menit masuk
+    deadline.setMinutes(deadline.getMinutes() + shiftRule.grace); // Tambahkan menit toleransi
 
+    if (attendanceTime > deadline) {
+        lateStatus = { text: 'Terlambat', color: 'text-red-600' };
+    } else {
+        lateStatus = { text: 'Tepat Waktu', color: 'text-green-600' };
+    }
+}
+
+                
+                let locationHtml = '<p class="text-xs text-gray-400 mt-2">Peta tidak tersedia (lokasi tidak terekam)</p>';
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
+                    const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+                    locationHtml = `
+                        <div class="mt-2 rounded-lg overflow-hidden border" title="Peta Lokasi Absensi">
+                           <iframe width="100%" height="150" style="border:0;" loading="lazy" src="${iframeSrc}"></iframe>
+                        </div>`;
+                }
+                
+                // --- KONTEN HTML BARU DENGAN INFO TAMBAHAN ---
                 item.innerHTML = `
                     <div class="flex-shrink-0 w-16 text-center">
                         <p class="font-bold text-lg text-gray-800">${time}</p>
@@ -1915,9 +1970,12 @@ const fetchAttendanceReport = async (date) => {
                     <div class="flex-grow border-l pl-3">
                         <p class="font-bold text-gray-900">${entry.nama_karyawan}</p>
                         <p class="text-sm text-gray-600">${entry.bagian || 'N/A'} - ${entry.shift || 'N/A'}</p>
+                        <div class="flex items-center gap-3 text-xs mt-2">
+                            <span class="font-semibold px-2 py-0.5 rounded-full ${lateStatus.color} bg-opacity-10 ${lateStatus.color.replace('text', 'bg')}">${lateStatus.text}</span>
+                            <span class="font-semibold px-2 py-0.5 rounded-full ${locationStatus.color} bg-opacity-10 ${locationStatus.color.replace('text', 'bg')}">${locationStatus.text}</span>
+                        </div>
                         ${locationHtml}
-                    </div>
-                `;
+                    </div>`;
                 absensiListContainer.appendChild(item);
             });
         } else {
@@ -1931,6 +1989,7 @@ const fetchAttendanceReport = async (date) => {
         absensiListContainer.classList.remove('hidden');
     }
 };
+
 
 // Navigasi ke halaman laporan absensi
 document.getElementById('btn-laporan-absensi').addEventListener('click', () => {
@@ -1975,11 +2034,11 @@ absensiDateFilter.addEventListener('change', (e) => {
                     isAppInitialized = true;
                     initializeApplication(db);
                     const lastPage = localStorage.getItem('lastActivePage');
-if (lastPage) {
-    navigateTo(lastPage); // Arahkan ke halaman terakhir yang disimpan
-} else {
-    navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
-}
+                if (lastPage) {
+                    navigateTo(lastPage); // Arahkan ke halaman terakhir yang disimpan
+                } else {
+                    navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
+                }
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
                     onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
