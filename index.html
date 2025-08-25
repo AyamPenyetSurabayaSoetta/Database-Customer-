@@ -1180,10 +1180,25 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQ
                 filteredReports.forEach(report => {
                     const dateEl = document.createElement('div');
                     const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
-                    const tasksHtml = (report.tasks || []).filter(task => task.done).map(task => {
-                        const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
-                        return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
-                    }).join('');
+                    // Ambil data tasks dari laporan
+const tasks = report.tasks; 
+let tasksArray = []; // Siapkan array kosong sebagai dasar
+
+// Cek apakah 'tasks' adalah array. Jika ya, langsung gunakan.
+if (Array.isArray(tasks)) {
+    tasksArray = tasks;
+} 
+// Jika bukan array tapi merupakan object, ubah menjadi array
+else if (tasks && typeof tasks === 'object') {
+    tasksArray = Object.values(tasks);
+}
+
+// Sekarang, 'tasksArray' dijamin sebuah array, jadi kita bisa memfilter dengan aman
+const tasksHtml = tasksArray.filter(task => task && task.done).map(task => {
+    const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+    return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
+}).join('');
+
                     if (tasksHtml) {
                         dateEl.innerHTML = `<div class="border rounded-lg mb-4"><header class="bg-gray-50 p-3 rounded-t-lg"><h3 class="font-bold text-lg">${reportDate}</h3></header><ul class="px-3">${tasksHtml}</ul></div>`;
                         listEl.appendChild(dateEl);
