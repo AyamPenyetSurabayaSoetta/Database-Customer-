@@ -1173,143 +1173,157 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQ
             updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
             updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
 generateInvoice: async (purchaseId) => {
-    const purchase = state.transactions.find(p => p.id === purchaseId);
-    if (!purchase) return;
-    showToast('Membuat faktur PDF...');
+                const purchase = state.transactions.find(p => p.id === purchaseId);
+                if (!purchase) {
+                    showToast('Gagal memuat data transaksi.');
+                    return;
+                }
+                showToast('Membuat faktur PDF...');
 
-    const contact = state.contacts.find(c => c.id === purchase.contactId);
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+                const contact = state.contacts.find(c => c.id === purchase.contactId);
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-    doc.setFont('helvetica', 'normal');
+                doc.setFont('helvetica', 'normal');
 
-    if (companyLogoBase64) {
-        doc.addImage(companyLogoBase64, 'JPEG', 15, 12, 30, 30);
-    }
+                // --- PERUBAHAN LOGO DIMULAI DI SINI ---
+                try {
+                    // Path ke file logo di folder favicon Anda
+                    const logoUrl = 'favicon/apple-touch-icon.png';
 
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INVOICE', 195, 20, { align: 'right' });
+                    // Fungsi untuk memuat gambar secara asynchronous
+                    const loadImage = (url) => new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = (err) => reject(new Error(`Gagal memuat gambar dari: ${url}`));
+                        img.src = url;
+                    });
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    const d = purchase.date.toDate();
-    const numericInvoiceId = `INV/${d.getFullYear().toString()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}/${purchase.date.toMillis().toString().slice(-5)}`;
-    doc.text(numericInvoiceId, 195, 26, { align: 'right' });
+                    // Tunggu hingga gambar selesai dimuat
+                    const logoImage = await loadImage(logoUrl);
+                    
+                    // Tambahkan gambar yang sudah dimuat ke dalam PDF
+                    doc.addImage(logoImage, 'PNG', 15, 12, 30, 30);
 
-    doc.setLineWidth(0.1);
-    doc.line(15, 48, 195, 48);
+                } catch (error) {
+                    console.error(error.message);
+                    // Lanjutkan pembuatan PDF tanpa logo jika gambar gagal dimuat
+                }
+                // --- PERUBAHAN LOGO SELESAI ---
 
-    let yPos = 60;
-    doc.setFontSize(8);
-    doc.setTextColor(100);
-    doc.text('DITERBITKAN ATAS NAMA', 15, yPos);
-    doc.text('UNTUK', 110, yPos);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('INVOICE', 195, 20, { align: 'right' });
 
-    doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.setFont('helvetica', 'bold');
-    doc.text(companyInfo.name, 15, yPos + 6);
-    doc.text(purchase.contactName, 110, yPos + 6);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.text(companyInfo.address, 15, yPos + 11);
-    
-    const customerAddress = contact?.address || 'Alamat tidak tersedia';
-    const customerPhone = contact?.phone || '';
-    const addressLines = doc.splitTextToSize(`Alamat Pengiriman:\n${customerAddress}\n${customerPhone}`, 85);
-    doc.text(addressLines, 110, yPos + 11);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                const d = purchase.date.toDate();
+                const numericInvoiceId = `INV/${d.getFullYear().toString()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}/${purchase.date.toMillis().toString().slice(-5)}`;
+                doc.text(numericInvoiceId, 195, 26, { align: 'right' });
 
-    yPos += addressLines.length * 5 + 15;
+                doc.setLineWidth(0.1);
+                doc.line(15, 48, 195, 48);
 
-    const tableHead = [['INFO PRODUK', 'JUMLAH', 'HARGA SATUAN', 'TOTAL HARGA']];
-    const tableBody = purchase.items.map(item => [
-        item.name,
-        item.qty,
-        formatCurrency(item.price),
-        formatCurrency(item.qty * item.price)
-    ]);
+                let yPos = 60;
+                doc.setFontSize(8);
+                doc.setTextColor(100);
+                doc.text('DITERBITKAN ATAS NAMA', 15, yPos);
+                doc.text('UNTUK', 110, yPos);
 
-    doc.autoTable({
-        head: tableHead,
-        body: tableBody,
-        startY: yPos,
-        theme: 'plain',
-        styles: {
-            fontSize: 9,
-            cellPadding: { top: 2.5, right: 2, bottom: 2.5, left: 2 }
-        },
-        headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [50, 50, 50],
-            fontStyle: 'bold',
-        },
-        columnStyles: {
-            0: { cellWidth: 80 },
-            1: { halign: 'center' },
-            2: { halign: 'right' },
-            3: { halign: 'right' }
-        },
-        didDrawPage: (data) => {
-            doc.setLineWidth(0.2);
-            doc.setDrawColor(220, 220, 220);
-            doc.line(data.settings.margin.left, data.table.startY, doc.internal.pageSize.width - data.settings.margin.right, data.table.startY);
-            doc.line(data.settings.margin.left, data.table.finalY, doc.internal.pageSize.width - data.settings.margin.right, data.table.finalY);
-        }
-    });
+                doc.setFontSize(10);
+                doc.setTextColor(0);
+                doc.setFont('helvetica', 'bold');
+                doc.text(companyInfo.name, 15, yPos + 6);
+                doc.text(purchase.contactName, 110, yPos + 6);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(companyInfo.address, 15, yPos + 11);
+                const customerAddress = contact?.address || 'Alamat tidak tersedia';
+                const customerPhone = contact?.phone || '';
+                const addressLines = doc.splitTextToSize(`Alamat Pengiriman:\n${customerAddress}\n${customerPhone}`, 85);
+                doc.text(addressLines, 110, yPos + 11);
 
-    const finalY = doc.autoTable.previous.finalY;
-    let summaryY = finalY + 10;
-    const ongkosKirim = 10000;
-    const diskonOngkir = -10000;
-    const totalTagihan = purchase.total + ongkosKirim + diskonOngkir;
+                yPos += addressLines.length * 5 + 15;
+                const tableHead = [['INFO PRODUK', 'JUMLAH', 'HARGA SATUAN', 'TOTAL HARGA']];
+                const tableBody = purchase.items.map(item => [
+                    item.name,
+                    item.qty,
+                    formatCurrency(item.price),
+                    formatCurrency(item.qty * item.price)
+                ]);
+                doc.autoTable({
+                    head: tableHead,
+                    body: tableBody,
+                    startY: yPos,
+                    theme: 'plain',
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: { top: 2.5, right: 2, bottom: 2.5, left: 2 }
+                    },
+                    headStyles: {
+                        fillColor: [240, 240, 240],
+                        textColor: [50, 50, 50],
+                        fontStyle: 'bold',
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 80 },
+                        1: { halign: 'center' },
+                        2: { halign: 'right' },
+                        3: { halign: 'right' }
+                    },
+                    didDrawPage: (data) => {
+                        doc.setLineWidth(0.2);
+                        doc.setDrawColor(220, 220, 220);
+                        doc.line(data.settings.margin.left, data.table.startY, doc.internal.pageSize.width - data.settings.margin.right, data.table.startY);
+                        doc.line(data.settings.margin.left, data.table.finalY, doc.internal.pageSize.width - data.settings.margin.right, data.table.finalY);
+                    }
+                });
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+                const finalY = doc.autoTable.previous.finalY;
+                let summaryY = finalY + 10;
+                const ongkosKirim = 10000;
+                const diskonOngkir = -10000;
+                const totalTagihan = purchase.total + ongkosKirim + diskonOngkir;
 
-    doc.text('SUBTOTAL HARGA BARANG', 120, summaryY);
-    doc.text(formatCurrency(purchase.total), 195, summaryY, { align: 'right' });
-    summaryY += 6;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
 
-    doc.text('Total Ongkos Kirim', 120, summaryY);
-    doc.text(formatCurrency(ongkosKirim), 195, summaryY, { align: 'right' });
-    summaryY += 6;
+                doc.text('SUBTOTAL HARGA BARANG', 120, summaryY);
+                doc.text(formatCurrency(purchase.total), 195, summaryY, { align: 'right' });
+                summaryY += 6;
 
-    doc.setTextColor(22, 163, 74);
-    doc.text('Kupon Diskon Ongkos Kirim', 120, summaryY);
-    doc.text(formatCurrency(diskonOngkir), 195, summaryY, { align: 'right' });
-    summaryY += 8;
-    doc.setTextColor(0);
+                doc.text('Total Ongkos Kirim', 120, summaryY);
+                doc.text(formatCurrency(ongkosKirim), 195, summaryY, { align: 'right' });
+                summaryY += 6;
 
-    doc.setLineWidth(0.2);
-    doc.setDrawColor(220, 220, 220);
-    doc.line(120, summaryY, 195, summaryY);
-    summaryY += 6;
+                doc.setTextColor(22, 163, 74);
+                doc.text('Kupon Diskon Ongkos Kirim', 120, summaryY);
+                doc.text(formatCurrency(diskonOngkir), 195, summaryY, { align: 'right' });
+                summaryY += 8;
+                doc.setTextColor(0);
 
-    doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL TAGIHAN', 120, summaryY);
-    doc.text(formatCurrency(totalTagihan), 195, summaryY, { align: 'right' });
-    
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.text("Invoice ini sah dan diproses oleh komputer.", 15, 280);
+                doc.setLineWidth(0.2);
+                doc.setDrawColor(220, 220, 220);
+                doc.line(120, summaryY, 195, summaryY);
+                summaryY += 6;
 
-    const filename = `invoice-${purchase.contactName.replaceAll(' ', '_')}-${numericInvoiceId.replaceAll('/', '-')}.pdf`;
-    try {
-        const pdfBlob = doc.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error("Gagal menyimpan PDF:", error);
-        doc.save(filename);
-    }
-},
+                doc.setFont('helvetica', 'bold');
+                doc.text('TOTAL TAGIHAN', 120, summaryY);
+                doc.text(formatCurrency(totalTagihan), 195, summaryY, { align: 'right' });
+                
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text("Invoice ini sah dan diproses oleh komputer.", 15, 280);
+
+                const filename = `invoice-${purchase.contactName.replaceAll(' ', '_')}-${numericInvoiceId.replaceAll('/', '-')}.pdf`;
+                
+                try {
+                    doc.save(filename);
+                } catch (error) {
+                    console.error("Gagal menyimpan PDF:", error);
+                    showToast("Gagal membuat PDF. Cek konsol untuk detail.");
+                }
+            },
 
 
             renderChecklistReport: () => {
