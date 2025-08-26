@@ -1,11 +1,14 @@
 // Nama cache unik. Ubah nama ini jika Anda membuat perubahan besar pada file aplikasi.
-const CACHE_NAME = 'database-aps-soetta-v2';
+const CACHE_NAME = 'database-aps-soetta-v1.3';
+// URL Google Apps Script yang harus selalu diambil dari internet
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMEmykWQdLjTOEvqwRpbNcoK9fXHrE6reNIBMrP27JajZ7A_X9Yj3mAsO0Fm5EiCBW/exec';
 
 // Daftar lengkap file yang akan disimpan di cache untuk penggunaan offline.
+// Diambil dari daftar file di kode lama Anda.
 const URLS_TO_CACHE = [
   '/',
-  'index.html', // Nama file HTML utama Anda
-  
+  'index.html', // Sesuaikan jika nama file HTML Anda berbeda, misal: index.html
+
   // File dari folder 'favicon'
   'favicon/site.webmanifest',
   'favicon/favicon.ico',
@@ -27,46 +30,56 @@ const URLS_TO_CACHE = [
 ];
 
 // Event 'install': Dipanggil saat Service Worker pertama kali diinstal.
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-    .then((cache) => {
-      console.log('Cache dibuka, menambahkan file inti aplikasi');
-      // fetch(request, { cache: "reload" }) digunakan untuk memastikan file dari CDN selalu yang terbaru saat instalasi.
-      const cachePromises = URLS_TO_CACHE.map(url => {
-          const request = new Request(url, { cache: 'reload' });
-          return fetch(request).then(response => {
-              if (response.status === 200) {
-                  return cache.put(url, response);
-              }
-          }).catch(err => console.warn(`Gagal cache ${url}:`, err));
-      });
-      return Promise.all(cachePromises);
-    })
+      .then(cache => {
+        console.log('Cache dibuka, menambahkan file inti aplikasi');
+        return cache.addAll(URLS_TO_CACHE);
+      })
   );
 });
 
 // Event 'fetch': Dipanggil setiap kali aplikasi meminta sebuah resource.
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
+
+  // STRATEGI UNTUK DATA DINAMIS (LAPORAN ABSENSI)
+  // Jika permintaan adalah ke Google Apps Script, gunakan strategi Network First.
+  if (requestUrl.href.startsWith(SCRIPT_URL)) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // STRATEGI UNTUK FILE STATIS (CANGKANG APLIKASI)
+  // Untuk semua permintaan lainnya, gunakan strategi Cache First.
   event.respondWith(
     caches.match(event.request)
-    .then((response) => {
-      // Jika resource ditemukan di cache, kembalikan dari cache.
-      // Jika tidak, ambil dari jaringan.
-      return response || fetch(event.request);
-    })
+      .then(response => {
+        return response || fetch(event.request);
+      })
   );
 });
 
 // Event 'activate': Membersihkan cache lama yang tidak digunakan lagi.
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
+        cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Menghapus cache lama:', cacheName);
             return caches.delete(cacheName);
           }
         })
