@@ -98,7 +98,7 @@
 
         <main id="main-content" class="flex-grow p-4 pb-24 overflow-y-auto">
             <div id="page-beranda" class="page">
-                
+
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
                         <p class="text-sm text-gray-600">Penjualan (Bulan Ini)</p>
@@ -722,9 +722,7 @@
     <div id="toast" class="toast"></div>
 
     <script type="module">
-    
-// Di dekat bagian atas <script type="module">
-const HIGH_QUALITY_LOGO_URL = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
+const HIGH_QUALITY_LOGO_URL = "favicon/logo-faktur.png";
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -741,8 +739,8 @@ const HIGH_QUALITY_LOGO_URL = "https://raw.githubusercontent.com/AyamPenyetSurab
         };
 
         const companyInfo = { name: "Ayam Penyet Surabaya", address: "Jl. Soekarno Hatta no. 725A", city: "Kota Bandung, 40286", phone: "0811-6594-527", email: "ayampenyetsurabaya725@gmail.com" };
-        const companyLogoUrl = "https://raw.githubusercontent.com/AyamPenyetSurabayaSoetta/Lauk-minuman/refs/heads/main/IMG-20250808-WA0023.jpg";
-        // Pastikan terlihat persis seperti ini, dengan URL Anda di dalamnya
+        // 
+const companyLogoUrl = "favicon/logo-faktur.png";
 const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQdLjTOEvqwRpbNcoK9fXHrE6reNIBMrP27JajZ7A_X9Yj3mAsO0Fm5EiCBW/exec";
         let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
         let salesChart, expensesChart;
@@ -775,16 +773,16 @@ const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQ
         const haversineDistance = (coords1, coords2) => {
             const toRad = (x) => x * Math.PI / 180;
             const R = 6371; // Radius bumi dalam km
-        
+
             const dLat = toRad(coords2.lat - coords1.lat);
             const dLon = toRad(coords2.lon - coords1.lon);
             const lat1 = toRad(coords1.lat);
             const lat2 = toRad(coords2.lat);
-        
+
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                       Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2); 
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
-            
+
             return R * c;
         };
 
@@ -1213,7 +1211,7 @@ generateInvoice: async (purchaseId) => {
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.text("INVOICE", pageWidth - margin, margin + 10, { align: 'right' });
-        
+
         const d = purchase.date.toDate();
         const startOfDay = new Date(d);
         startOfDay.setHours(0, 0, 0, 0);
@@ -1226,7 +1224,7 @@ generateInvoice: async (purchaseId) => {
         });
         const dailySequence = (transactionsToday.length + 1).toString().padStart(3, '0');
         const numericInvoiceId = `INV/${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}/${dailySequence}`;
-        
+
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text(numericInvoiceId, pageWidth - margin, margin + 25, { align: 'right' });
@@ -1312,7 +1310,7 @@ generateInvoice: async (purchaseId) => {
             }
         });
         // --- AKHIR PERUBAHAN ---
-        
+
         // 4. RINCIAN TOTAL TAGIHAN
         let finalY = doc.autoTable.previous.finalY;
         const subtotal = purchase.total;
@@ -1382,7 +1380,7 @@ generateInvoice: async (purchaseId) => {
                     // Ambil data tasks dari laporan
             const tasks = report.tasks; 
             let tasksArray = []; // Siapkan array kosong sebagai dasar
-            
+
             // Cek apakah 'tasks' adalah array. Jika ya, langsung gunakan.
             if (Array.isArray(tasks)) {
                 tasksArray = tasks;
@@ -1391,7 +1389,7 @@ generateInvoice: async (purchaseId) => {
             else if (tasks && typeof tasks === 'object') {
                 tasksArray = Object.values(tasks);
             }
-            
+
             // Sekarang, 'tasksArray' dijamin sebuah array, jadi kita bisa memfilter dengan aman
             const tasksHtml = tasksArray.filter(task => task && task.done).map(task => {
                 const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
@@ -1775,7 +1773,7 @@ document.getElementById('shortcut-attendance').addEventListener('click', () => d
 
             document.getElementById('omset-trend-chart-container').addEventListener('click', (e) => {
                 const target = e.target.closest('.turnover-chart-week-btn');
-                
+
                 if (target) {
                     turnoverChartSelectedWeek = parseInt(target.dataset.week);
                     updateTurnoverTrendChart();
@@ -1873,22 +1871,22 @@ document.getElementById('shortcut-attendance').addEventListener('click', () => d
                 if (target.classList.contains('delete-completed-order-btn')) {
                     const orderId = target.dataset.orderId;
                     const transactionId = target.dataset.transactionId;
-                    
+
                     if (!orderId || !transactionId) {
                         showToast("Error: ID pesanan atau transaksi tidak ditemukan.");
                         return;
                     }
-                    
+
                     const confirmed = await confirmDeleteModal.show();
                     if (confirmed) {
                         try {
             const batch = writeBatch(db);
             const orderRef = doc(db, "customer_orders", orderId);
             const transactionRef = doc(db, "transactions", transactionId);
-            
+
             batch.delete(orderRef);
             batch.delete(transactionRef);
-            
+
             // Jalankan batch
             await batch.commit();
             showToast("Pesanan dan faktur terkait berhasil dihapus.");
@@ -1898,7 +1896,7 @@ document.getElementById('shortcut-attendance').addEventListener('click', () => d
         }
     }
 }
-                 
+
 
                 if (target.classList.contains('delete-daily-report-btn')) {
                     const reportId = target.dataset.id;
@@ -1935,7 +1933,7 @@ document.getElementById('shortcut-attendance').addEventListener('click', () => d
                 if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
                 if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id)); showToast('Pesanan berhasil dihapus.'); } } 
                 if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } } 
-  
+
                 if (target.id === 'add-sale-item-btn') addSaleItemRow(); 
                 if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); } 
                 if (target.id === 'add-order-item-btn') addOrderItemRow(); 
@@ -2082,7 +2080,7 @@ const getStatusInfo = (status) => {
                 absensiListContainer.innerHTML = '';
                 absensiListContainer.classList.add('hidden');
                 absensiLoading.classList.remove('hidden');
-            
+
                 try {
                     const url = `${ATTENDANCE_SCRIPT_URL}?action=read&date=${date}`;
                     const response = await fetch(url);
@@ -2091,7 +2089,7 @@ const getStatusInfo = (status) => {
                     }
                     const result = await response.json();
                     const attendanceData = result.data || result;
-            
+
                     if (Array.isArray(attendanceData) && attendanceData.length > 0) {
                         const sortedData = attendanceData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                         sortedData.forEach(entry => {
@@ -2102,7 +2100,7 @@ const getStatusInfo = (status) => {
 
                 const item = document.createElement('div');
                 item.className = 'bg-white p-3 border rounded-lg flex items-start gap-3 shadow-sm';
-                
+
                 const attendanceTime = new Date(entry.timestamp);
                 const time = attendanceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 const statusInfo = getStatusInfo(entry.keterangan);
@@ -2137,7 +2135,7 @@ const getStatusInfo = (status) => {
                     const deadline = new Date(attendanceTime);
                     deadline.setHours(shiftRule.hour, shiftRule.minute, 0, 0);
                     deadline.setMinutes(deadline.getMinutes() + shiftRule.grace);
-                
+
                     if (attendanceTime > deadline) {
                         lateStatus = { text: 'Terlambat', color: 'text-red-600' };
                     } else {
@@ -2145,7 +2143,7 @@ const getStatusInfo = (status) => {
                     }
                 }
 
-                
+
                 let locationHtml = '<p class="text-xs text-gray-400 mt-2">Peta tidak tersedia (lokasi tidak terekam)</p>';
                 if (!isNaN(lat) && !isNaN(lon)) {
                     const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
