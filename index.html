@@ -221,10 +221,7 @@
                     <div>
                         <h3 class="font-bold text-gray-500 text-sm mb-2">Manajemen</h3>
                         <div class="bg-white rounded-lg">
-                            <button id="btn-edit-profile" class="w-full text-left p-4 flex justify-between items-center border-b">
-                                <span>Profil Bisnis</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </button>
+
                 <button id="btn-laporan-absensi" class="w-full text-left p-4 flex justify-between items-center border-b">
         <span>Laporan Absensi</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -742,29 +739,21 @@ const HIGH_QUALITY_LOGO_URL = "favicon/logo-faktur.png";
         // 
 const companyLogoUrl = "favicon/logo-faktur.png";
 const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQdLjTOEvqwRpbNcoK9fXHrE6reNIBMrP27JajZ7A_X9Yj3mAsO0Fm5EiCBW/exec";
-        let state = { contacts: [], inventory: [], transactions: [], businessProfile: { name: "Bisnis Saya" }, customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
+        let state = { contacts: [], inventory: [], transactions: [], customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
         let salesChart, expensesChart;
         let omsetTrendChart;
         let monthlyTurnoverChart;
         let toastTimer;
         let turnoverChartSelectedWeek = 0;
         let calculatedDailyData = {};
-        // --- KONFIGURASI UNTUK FITUR ABSENSI BARU ---
-
-// Koordinat akurat sesuai data dari Anda
         const OFFICE_COORDS = { lat: -6.9385360, lon: 107.6662661 };
 
-
-// Jarak toleransi maksimal dari kantor dalam kilometer (0.1 km = 100 meter)
         const ALLOWED_RADIUS_KM = 0.1; 
-// Jam masuk untuk setiap shift (format 24 jam)
         const SHIFT_TIMES = {
             'PAGI':  { hour: 7,  minute: 40, grace: 0 },
             'SIANG': { hour: 12, minute: 5,  grace: 0 },
             'MALAM': { hour: 13, minute: 40, grace: 0 }
         };
-
-// --- AKHIR DARI KONFIGURASI ---
 
 /**
  * Fungsi untuk menghitung jarak antara dua koordinat GPS (Haversine Formula).
@@ -1162,10 +1151,10 @@ renderCompletedOrderList: () => {
                 renderFunctions.updateSalesChart(labels, salesData);
                 renderFunctions.updateExpensesChart(labels, expensesData);
             },
-            renderProfile: () => { const name = state.businessProfile.name; const initial = name ? name.charAt(0).toUpperCase() : 'B'; document.getElementById('business-name-header').textContent = name; document.getElementById('business-initial-header').textContent = initial; document.getElementById('business-name-settings').textContent = name; document.getElementById('business-initial-settings').textContent = initial; },
+            renderProfile: () => {},
             updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
             updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
-// GANTI SELURUH FUNGSI generateInvoice ANDA DENGAN KODE LENGKAP INI
+
 generateInvoice: async (purchaseId) => {
     const purchase = state.transactions.find(p => p.id === purchaseId);
     if (!purchase) {
@@ -1377,25 +1366,55 @@ generateInvoice: async (purchaseId) => {
                 filteredReports.forEach(report => {
                     const dateEl = document.createElement('div');
                     const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
-                    // Ambil data tasks dari laporan
             const tasks = report.tasks; 
-            let tasksArray = []; // Siapkan array kosong sebagai dasar
-
-            // Cek apakah 'tasks' adalah array. Jika ya, langsung gunakan.
+            let tasksArray = [];
             if (Array.isArray(tasks)) {
                 tasksArray = tasks;
             } 
-            // Jika bukan array tapi merupakan object, ubah menjadi array
             else if (tasks && typeof tasks === 'object') {
                 tasksArray = Object.values(tasks);
             }
-
-            // Sekarang, 'tasksArray' dijamin sebuah array, jadi kita bisa memfilter dengan aman
-            const tasksHtml = tasksArray.filter(task => task && task.done).map(task => {
-                const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
-                return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">${imageHtml}<div class="flex-1"><p class="font-medium">${task.text}</p><p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p></div></li>`;
-            }).join('');
-
+            const tasksHtml = tasksArray.filter(task => task && task.done).map((task, index) => {
+    const taskId = Object.keys(report.tasks).find(key => report.tasks[key].text === task.text && report.tasks[key].completedBy === task.completedBy);
+    
+    const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+    
+    const staffReviewHtml = `
+                    <div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700">
+                            <input type="checkbox" 
+                                   class="staff-check-task w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500" 
+                                   data-report-id="${report.id}" 
+                                   data-task-id="${taskId}" 
+                                   ${task.isChecked ? 'checked' : ''}>
+                            Tandai sudah dicek
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" 
+                                   class="staff-comment-input flex-grow border-gray-300 rounded-md shadow-sm text-sm p-1.5" 
+                                   placeholder="Beri komentar..." 
+                                   data-report-id="${report.id}" 
+                                   data-task-id="${taskId}"
+                                   value="${task.staffComment || ''}">
+                             <button 
+                                class="save-comment-btn bg-indigo-500 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-indigo-600"
+                                data-report-id="${report.id}"
+                                data-task-id="${taskId}">
+                                Simpan
+                             </button>
+                        </div>
+                    </div>
+                `;
+    
+    return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">
+                            ${imageHtml}
+                            <div class="flex-1">
+                                <p class="font-medium">${task.text}</p>
+                                <p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p>
+                                ${staffReviewHtml}
+                            </div>
+                        </li>`;
+}).join('');
                     if (tasksHtml) {
                         dateEl.innerHTML = `<div class="border rounded-lg mb-4"><header class="bg-gray-50 p-3 rounded-t-lg"><h3 class="font-bold text-lg">${reportDate}</h3></header><ul class="px-3">${tasksHtml}</ul></div>`;
                         listEl.appendChild(dateEl);
@@ -1590,7 +1609,7 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
             dailyReportDetailModal.querySelector('.close-modal-btn').addEventListener('click', () => dailyReportDetailModal.classList.add('hidden'));
             dailyReportDetailModal.addEventListener('click', (e) => { if(e.target === dailyReportDetailModal) dailyReportDetailModal.classList.add('hidden'); });
 
-            const profileModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Bisnis</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">Simpan Profil</button>`;
+
             const contactModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">No. Telepon</label><input type="tel" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Alamat</label><textarea name="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pelanggan</button>`;
             const itemModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Harga Jual</label><input type="number" name="price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Barang</button>`;
             const expenseModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pembelian</label><input type="date" name="purchaseDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Nama Toko</label><input type="text" name="storeName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Jumlah/Satuan</label><input type="text" name="quantity" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Total Harga</label><input type="number" name="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Belanja</button>`;
@@ -1599,7 +1618,7 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
             const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
 
-            const profileModal = createModal('profile-modal', 'Edit Profil Bisnis', profileModalContent, async (data) => { await setDoc(doc(db, 'config', 'businessProfile'), { name: data.name }); return 'Profil bisnis berhasil diperbarui!'; });
+
             const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { const payload = { name: data.name, phone: data.phone, address: data.address }; if (data.id) { await updateDoc(doc(db, 'contacts', data.id), payload); return 'Pelanggan berhasil diperbarui!'; } else { await addDoc(collection(db, 'contacts'), payload); return 'Pelanggan baru berhasil ditambahkan!'; } });
             const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
             const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate }; await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
@@ -1673,10 +1692,9 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
             document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
             document.getElementById('shortcut-new-item').addEventListener('click', () => navigateTo('page-inventaris'));
             document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
-           // Tambahkan baris ini bersama event listener shortcut lainnya
-document.getElementById('shortcut-attendance').addEventListener('click', () => document.getElementById('btn-laporan-absensi').click());
+            document.getElementById('shortcut-attendance').addEventListener('click', () => document.getElementById('btn-laporan-absensi').click());
             document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
-            document.getElementById('btn-edit-profile').addEventListener('click', () => profileModal.show(state.businessProfile));
+
             document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
             document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
             document.getElementById('btn-kalkulator-omset').addEventListener('click', () => navigateTo('page-kalkulator-omset'));
@@ -1866,6 +1884,59 @@ document.getElementById('shortcut-attendance').addEventListener('click', () => d
             });
 
             document.body.addEventListener('click', async (e) => { 
+            document.getElementById('checklist-report-list').addEventListener('change', async (e) => {
+                if (e.target.classList.contains('staff-check-task')) {
+                    const checkbox = e.target;
+                    const reportId = checkbox.dataset.reportId;
+                    const taskId = checkbox.dataset.taskId;
+                    const isChecked = checkbox.checked;
+
+                    if (!reportId || !taskId) {
+                        showToast("Error: ID Laporan atau Tugas tidak ditemukan.");
+                        return;
+                    }
+
+                    try {
+                        const reportRef = doc(db, 'checklist_history', reportId);
+                        await updateDoc(reportRef, {
+                            [`tasks.${taskId}.isChecked`]: isChecked
+                        });
+                        showToast(`Status cek untuk tugas #${taskId.substring(0,4)} diperbarui.`);
+                    } catch (error) {
+                        console.error("Gagal memperbarui status cek:", error);
+                        showToast("Gagal menyimpan perubahan.");
+                        checkbox.checked = !isChecked; // Kembalikan ke state semula jika gagal
+                    }
+                }
+            });
+
+            document.getElementById('checklist-report-list').addEventListener('click', async (e) => {
+                if (e.target.classList.contains('save-comment-btn')) {
+                    const button = e.target;
+                    const reportId = button.dataset.reportId;
+                    const taskId = button.dataset.taskId;
+                    
+                    const inputEl = button.previousElementSibling;
+                    const commentText = inputEl.value;
+
+                    if (!reportId || !taskId) {
+                        showToast("Error: ID Laporan atau Tugas tidak ditemukan.");
+                        return;
+                    }
+
+                    try {
+                        const reportRef = doc(db, 'checklist_history', reportId);
+                        await updateDoc(reportRef, {
+                            [`tasks.${taskId}.staffComment`]: commentText
+                        });
+                        showToast(`Komentar untuk tugas #${taskId.substring(0,4)} disimpan.`);
+                    } catch (error) {
+                        console.error("Gagal menyimpan komentar:", error);
+                        showToast("Gagal menyimpan komentar.");
+                    }
+                }
+            });
+
                 const target = e.target.closest('button'); 
                 if (!target) return;
                 if (target.classList.contains('delete-completed-order-btn')) {
@@ -2233,7 +2304,7 @@ absensiDateFilter.addEventListener('change', (e) => {
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
                     onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
                     onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
-                    onSnapshot(doc(db, 'config', 'businessProfile'), (doc) => { if (doc.exists()) { state.businessProfile = doc.data(); } renderFunctions.renderProfile(); }, (error) => console.error("Error fetching profile:", error));
+
                     onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderOrderList(); renderFunctions.renderCompletedOrderList(); renderFunctions.renderDashboard(); renderFunctions.renderCompletedOrderFilters(); }, (error) => console.error("Error fetching customer orders:", error));
                     onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderExpenseReport(); renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching monthly expenses:", error));
                     onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => { state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderChecklistReport(); }, (error) => console.error("Error fetching checklist history:", error));
