@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Database APS SOETTA</title>
+<!-- TEMA WARNA UNTUK BROWSER -->
+<meta name="theme-color" content="#10B981" />
+
+<!-- TAUTAN KE FILE MANIFEST -->
+<link rel="manifest" href="favicon/site.webmanifest">
+
+<!-- TAUTAN UNTUK FAVICON -->
+<link rel="icon" href="favicon/favicon.ico" sizes="any">
+<link rel="icon" href="favicon/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-active svg, .nav-active span { color: #10B981; }
+        .nav-active svg.beranda-icon { fill: #D1FAE5; }
+        .modal-content { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .toast {
+            position: fixed; bottom: 80px; left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white; padding: 10px 20px; border-radius: 9999px;
+            z-index: 100; opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; bottom: 90px; }
+        #loading-overlay {
+            position: fixed; inset: 0; background-color: white; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.3s ease-out;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px; height: 36px; border-radius: 50%;
+            border-left-color: #10B981;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 overflow-hidden">
+
+    <div id="loading-overlay" class="p-4 max-w-md mx-auto">
+    <div class="flex items-center gap-3 mb-6 animate-pulse">
+        <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+        <div class="w-32 h-4 bg-gray-200 rounded"></div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4 animate-pulse">
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+    </div>
+
+    <div class="w-full h-24 bg-gray-200 rounded-lg mb-6 animate-pulse"></div>
+
+    <div class="h-5 w-24 bg-gray-200 rounded mb-4 animate-pulse"></div>
+    <div class="grid grid-cols-5 gap-2 text-center animate-pulse">
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+            <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div class="w-10 h-2 bg-gray-200 rounded"></div>
+        </div>
+    </div>
+</div>
+
+    <div id="app-container" class="max-w-md mx-auto bg-white shadow-lg h-screen hidden flex flex-col">
+
+        <main id="main-content" class="flex-grow p-4 pb-24 overflow-y-auto">
+            <div id="page-beranda" class="page">
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                        <p class="text-sm text-gray-600">Penjualan (Bulan Ini)</p>
+                        <p id="monthly-sales-card" class="font-bold text-lg text-green-700">Rp 0</p>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg">
+                        <p class="text-sm text-gray-600">Belanja (Bulan Ini)</p>
+                        <p id="monthly-expenses-card" class="font-bold text-lg text-red-700">Rp 0</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-6">
+                    <p class="text-sm text-gray-600">Pesanan Aktif (Belum Difakturkan)</p>
+                    <div class="flex justify-between items-center mt-1">
+                        <p id="active-orders-count" class="font-bold text-2xl text-blue-700">0 Pesanan</p>
+                        <p id="active-orders-total" class="font-semibold text-lg text-blue-700">Rp 0</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-lg mb-4">Pintasan</h3>
+                <div class="grid grid-cols-5 gap-2 text-center text-xs text-gray-700 mb-6">
+                    <button id="shortcut-new-order" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><span>Pesanan Baru</span></button>
+                   <button id="shortcut-attendance"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path></svg></div><span>Absensi</span></button>
+                    <button id="shortcut-new-item" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span>Menu</span></button>
+                    <button id="shortcut-new-contact" class="shortcut-btn"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Pelanggan</span></button>
+                    <button id="shortcut-new-expense"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2.5h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6l1.6-8.4H7.1"/></svg></div><span>Belanja</span></button>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Grafik Mingguan</h3>
+                    <div class="flex items-center border border-gray-200 rounded-md text-xs font-semibold">
+                        <button data-week="1" class="chart-week-btn px-4 py-1 text-gray-500 rounded-l-md">M1</button>
+                        <button data-week="2" class="chart-week-btn px-4 py-1 text-gray-500 border-l border-r">M2</button>
+                        <button data-week="3" class="chart-week-btn px-4 py-1 text-gray-500 border-r">M3</button>
+                        <button data-week="4" class="chart-week-btn px-4 py-1 text-gray-500 rounded-r-md">M4</button>
+                    </div>
+                </div>
+                <div class="space-y-8 mt-6">
+                    <div>
+                        <h4 class="font-semibold text-md mb-2 text-center text-gray-700">Penjualan (Uang Masuk)</h4>
+                        <canvas id="sales-chart"></canvas>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-md mb-2 text-center text-gray-700">Belanja (Uang Keluar)</h4>
+                        <canvas id="expenses-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-penjualan" class="page hidden">
+                <h2 class="font-bold text-2xl mb-4">Laporan Penjualan</h2>
+                <div class="space-y-4 mb-4">
+                    <input type="text" id="salesSearchInput" placeholder="Cari berdasarkan nama pelanggan..." class="w-full px-3 py-1.5 border rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <select id="salesMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                            <option value="">Semua Bulan</option>
+                        </select>
+                        <button id="resetSalesFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+                    </div>
+                </div>
+                <button id="exportSalesCsvBtn" class="w-full bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">Ekspor Laporan Penjualan (CSV)</button>
+                <div id="sales-report-list" class="space-y-6"></div>
+            </div>
+
+            <div id="page-pesanan" class="page hidden">
+                <h2 class="font-bold text-2xl mb-6">Daftar Pesanan</h2>
+                <div id="order-list" class="space-y-3"></div>
+
+                <div class="mt-12 border-t pt-6">
+                    <h3 class="font-bold text-xl mb-4">Riwayat Pesanan Selesai</h3>
+                    <div class="space-y-4 mb-4">
+                        <input type="text" id="completedOrderSearchInput" placeholder="Cari berdasarkan nama pelanggan atau item..." class="w-full px-3 py-1.5 border rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <select id="completedOrderMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                <option value="">Ekspor Semua Bulan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="exportCompletedOrdersCsvBtn" class="w-full bg-teal-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                        Ekspor Pesanan Selesai (CSV)
+                    </button>
+                    <div id="completed-orders-list" class="space-y-3 mt-4"></div>
+                </div>
+            </div>
+
+            <div id="page-pihak" class="page hidden">
+                <h2 class="font-bold text-2xl mb-6">Daftar Pelanggan</h2>
+                <input type="text" id="contactSearchInput" placeholder="Cari nama, no. telp, atau alamat..." class="w-full px-3 py-1.5 border rounded-lg mb-4">
+                <div id="contact-list" class="space-y-3"></div>
+            </div>
+
+            <div id="page-inventaris" class="page hidden">
+                <h2 class="font-bold text-2xl mb-6">Menu</h2>
+                <div id="inventory-list" class="space-y-3"></div>
+            </div>
+
+            <div id="page-laporan" class="page hidden">
+                <h2 class="font-bold text-2xl mb-4">Laporan Belanja</h2>
+                 <div class="space-y-4 mb-4">
+                        <div class="flex items-center gap-2">
+                            <select id="expenseMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                <option value="">Semua Bulan</option>
+                            </select>
+                            <button id="resetExpenseFilter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+                        </div>
+                 </div>
+                 <button id="exportExpensesCsvBtn" class="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                    Ekspor Laporan Belanja (CSV)
+                 </button>
+                 <div id="expense-report-list" class="space-y-6"></div>
+            </div>
+
+            <div id="page-pelanggan" class="page hidden">
+                <h2 class="font-bold text-2xl mb-6">Rangkuman Pelanggan</h2>
+                <div id="customer-summary-list" class="space-y-4"></div>
+            </div>
+
+            <div id="page-lainnya" class="page hidden">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-gray-500 text-sm mb-2">Manajemen</h3>
+                        <div class="bg-white rounded-lg">
+
+                <button id="btn-laporan-absensi" class="w-full text-left p-4 flex justify-between items-center border-b">
+        <span>Laporan Absensi</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+                            <button id="btn-view-checklist" class="w-full text-left p-4 flex justify-between items-center">
+                                <span>Laporan Kebersihan</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button id="btn-kalkulator-omset" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                <span>Kalkulator Omset</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button id="btn-laporan-bulanan" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                <span>Laporan Omset Bulanan</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                            <button id="btn-kalkulator-online" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                     <span>Kalkulator Online</span>
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                 </button>
+
+                                 <button id="btn-hitung-fisik" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                     <span>Hitung Uang Fisik</span>
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                 </button>
+
+                            <button id="btn-impor-laporan" class="w-full text-left p-4 flex justify-between items-center border-t">
+                                <span>Impor Laporan Harian</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-checklist" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Laporan Kebersihan</h2>
+                </header>
+                <div class="space-y-4 mb-4">
+                        <div class="flex items-center gap-2">
+                            <select id="checklistMonthFilter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                                <option value="">Semua Bulan</option>
+                            </select>
+                        </div>
+                </div>
+                <button id="exportChecklistCsvBtn" class="w-full bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-semibold mb-4">
+                    Ekspor Laporan Kebersihan (CSV)
+                </button>
+                <div id="checklist-report-list" class="space-y-4"></div>
+            </div>
+
+            <div id="page-kalkulator-omset" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-calc-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Kalkulator Omset</h2>
+                </header>
+
+                <div class="space-y-4 p-4 bg-gray-50 rounded-lg border">
+                    <div>
+                        <label for="start-date" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                        <input type="date" id="start-date" name="start-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="end-date" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                        <input type="date" id="end-date" name="end-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <button id="hitung-omset-btn" class="w-full bg-emerald-600 text-white py-2.5 px-4 rounded-lg font-semibold">
+                        Hitung Omset
+                    </button>
+                </div>
+
+                <div id="hasil-omset-container" class="mt-6 hidden">
+                    <h3 class="font-bold text-lg mb-4 text-center">Hasil Perhitungan Omset</h3>
+
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Ayam Penyet Surabaya</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-2 text-gray-700">
+                            <div class="flex justify-between"><span>Makan ditempat:</span> <span id="aps-makan" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Naskot:</span> <span id="aps-naskot" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Online:</span> <span id="aps-online" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between border-t pt-2 mt-2">
+                                <span class="font-bold">Total:</span> 
+                                <span id="aps-total" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Mie Jogja</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-2 text-gray-700">
+                            <div class="flex justify-between"><span>Makan ditempat:</span> <span id="mj-makan" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Naskot:</span> <span id="mj-naskot" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between"><span>Online:</span> <span id="mj-online" class="font-semibold">Rp 0</span></div>
+                            <div class="flex justify-between border-t pt-2 mt-2">
+                                <span class="font-bold">Total:</span> 
+                                <span id="mj-total" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-600 text-white p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-bold text-2xl">Grand Total</span>
+                        <span id="grand-total-omset" class="font-bold text-3xl">Rp 0</span>
+                    </div>
+
+                    <div id="omset-trend-chart-container" class="mt-8">
+                        <h3 class="font-bold text-lg mb-4 text-center">Grafik Tren Omset Harian</h3>
+                        <div class="flex items-center justify-center border border-gray-200 rounded-md text-xs font-semibold w-fit mx-auto mb-4">
+                            <button data-week="0" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 rounded-l-md">Semua</button>
+                            <button data-week="1" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-l border-r">M1</button>
+                            <button data-week="2" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-r">M2</button>
+                            <button data-week="3" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 border-r">M3</button>
+                            <button data-week="4" class="turnover-chart-week-btn px-4 py-1.5 text-gray-500 rounded-r-md border-l">M4</button>
+                        </div>
+                        <canvas id="omset-trend-chart"></canvas>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="page-laporan-harian" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-laporan-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Impor Laporan Harian</h2>
+                </header>
+
+                <div class="p-4 bg-gray-50 rounded-lg border mb-6">
+                    <label for="laporan-harian-input" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tempelkan teks laporan dari WhatsApp di sini:
+                    </label>
+                    <textarea id="laporan-harian-input" rows="10" class="w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Contoh: Laporan harian Ayam penyet surabaya..."></textarea>
+                    <button id="proses-laporan-btn" class="mt-4 w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-semibold">
+                        Simpan & Proses Laporan
+                    </button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Riwayat Laporan Tersimpan</h3>
+                    <div id="daily-report-history-list" class="space-y-3">
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-laporan-bulanan" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-monthly-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Laporan Omset Bulanan</h2>
+                </header>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                        <p class="text-sm text-gray-600">Omset Rata-rata/Bulan</p>
+                        <p id="avg-monthly-turnover" class="font-bold text-lg text-blue-700">Rp 0</p>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                        <p class="text-sm text-gray-600">Bulan Omset Tertinggi</p>
+                        <p id="best-month-name" class="font-bold text-lg text-green-700">-</p>
+                    </div>
+                </div>
+
+                <div class="mb-6 border-t pt-4">
+                    <h3 class="font-bold text-lg text-center mb-4">Grafik Omset Bulanan</h3>
+                    <canvas id="monthly-turnover-chart"></canvas>
+                </div>
+            </div>
+
+            <div id="page-kalkulator-online" class="page hidden">
+                <header class="flex items-center gap-4 mb-4">
+                    <button id="back-to-lainnya-from-online-calc-btn" class="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <h2 class="font-bold text-2xl">Kalkulator Online</h2>
+                </header>
+
+                <div class="space-y-6 p-4 bg-gray-50 rounded-lg border">
+                    <div>
+                        <h3 class="font-bold text-lg mb-3">Ayam Penyet Surabaya</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="aps-grab-input" class="block text-sm font-medium text-gray-700">Pendapatan Grab</label>
+                                <input type="number" id="aps-grab-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="aps-gojek-input" class="block text-sm font-medium text-gray-700">Pendapatan Gojek</label>
+                                <input type="number" id="aps-gojek-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="aps-shopee-input" class="block text-sm font-medium text-gray-700">Pendapatan Shopee</label>
+                                <input type="number" id="aps-shopee-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t pt-6">
+                        <h3 class="font-bold text-lg mb-3">Mie Jogja</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="mj-grab-input" class="block text-sm font-medium text-gray-700">Pendapatan Grab</label>
+                                <input type="number" id="mj-grab-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="mj-gojek-input" class="block text-sm font-medium text-gray-700">Pendapatan Gojek</label>
+                                <input type="number" id="mj-gojek-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="mj-shopee-input" class="block text-sm font-medium text-gray-700">Pendapatan Shopee</label>
+                                <input type="number" id="mj-shopee-input" placeholder="Rp 0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="hitung-online-btn" class="w-full bg-emerald-600 text-white py-2.5 px-4 rounded-lg font-semibold !mt-8">
+                        Hitung Pendapatan Bersih
+                    </button>
+                </div>
+
+                <div id="hasil-online-container" class="mt-6 hidden">
+                    <h3 class="font-bold text-lg mb-4 text-center">Hasil Perhitungan Pendapatan Online</h3>
+
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Ayam Penyet Surabaya</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-3 text-gray-700">
+                            <div class="pb-2 border-b">
+                                <div class="flex justify-between"><span>Komisi Grab (10%/1.1):</span> <span id="aps-grab-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Grab:</span> <span id="aps-grab-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                            <div class="pb-2 border-b">
+                                <div class="flex justify-between"><span>Komisi Gojek (13%/1.1):</span> <span id="aps-gojek-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Gojek:</span> <span id="aps-gojek-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                             <div class="pb-2">
+                                <div class="flex justify-between"><span>Komisi Shopee (10%):</span> <span id="aps-shopee-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Shopee:</span> <span id="aps-shopee-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                            <div class="flex justify-between border-t pt-3 mt-2">
+                                <span class="font-bold">Total Bersih:</span> 
+                                <span id="aps-total-bersih" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="bg-gray-100 p-3 rounded-t-lg">
+                            <h4 class="font-bold text-xl">Mie Jogja</h4>
+                        </div>
+                        <div class="border border-t-0 rounded-b-lg p-4 space-y-3 text-gray-700">
+                            <div class="pb-2 border-b">
+                                <div class="flex justify-between"><span>Komisi Grab (10%/1.1):</span> <span id="mj-grab-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Grab:</span> <span id="mj-grab-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                            <div class="pb-2 border-b">
+                                <div class="flex justify-between"><span>Komisi Gojek (13%/1.1):</span> <span id="mj-gojek-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Gojek:</span> <span id="mj-gojek-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                             <div class="pb-2">
+                                <div class="flex justify-between"><span>Komisi Shopee (10%):</span> <span id="mj-shopee-komisi" class="font-semibold text-red-600">Rp 0</span></div>
+                                <div class="flex justify-between font-medium"><span>Pendapatan Bersih Shopee:</span> <span id="mj-shopee-bersih" class="font-semibold">Rp 0</span></div>
+                            </div>
+                            <div class="flex justify-between border-t pt-3 mt-2">
+                                <span class="font-bold">Total Bersih:</span> 
+                                <span id="mj-total-bersih" class="font-bold text-lg text-emerald-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="mb-6 p-4 bg-gray-50 border rounded-lg space-y-2">
+                    <h4 class="font-bold text-lg text-center mb-3">Total Pendapatan Bersih per Platform</h4>
+                    <div class="flex justify-between items-center text-gray-800">
+                        <span class="font-medium">Total Bersih Grab:</span>
+                        <span id="total-bersih-grab" class="font-bold text-lg">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-gray-800">
+                        <span class="font-medium">Total Bersih Gojek:</span>
+                        <span id="total-bersih-gojek" class="font-bold text-lg">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-gray-800">
+                        <span class="font-medium">Total Bersih Shopee:</span>
+                        <span id="total-bersih-shopee" class="font-bold text-lg">Rp 0</span>
+                    </div>
+                </div>
+
+<div class="bg-emerald-600 text-white p-4 rounded-lg flex justify-between items-center">
+    <span class="font-bold text-xl">Grand Total Bersih</span>
+    <span id="grand-total-online" class="font-bold text-2xl">Rp 0</span>
+</div>
+</div>
+</div>
+<div id="page-hitung-fisik" class="page hidden">
+    <header class="flex items-center gap-4 mb-4">
+        <button id="back-to-lainnya-from-fisik-btn" class="text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+        <h2 class="font-bold text-2xl">Perhitungan Uang Fisik</h2>
+    </header>
+
+    <div id="form-hitung-fisik" class="space-y-4">
+        <div class="space-y-3 p-4 bg-gray-50 rounded-lg border">
+             <div>
+                <label for="uf-tanggal" class="block text-sm font-medium text-gray-700">Hari / Tanggal</label>
+                <input type="date" id="uf-tanggal" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="uf-shift" class="block text-sm font-medium text-gray-700">Shift</label>
+                <select id="uf-shift" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                    <option>PAGI</option>
+                    <option>MALAM</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 class="font-bold text-lg mb-3">Uang Kertas & Koin</h3>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 100.000</span>
+                    <input type="number" id="uf-input-100k" data-value="100000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-100k">Rp 0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 50.000</span>
+                    <input type="number" id="uf-input-50k" data-value="50000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-50k">Rp 0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 20.000</span>
+                    <input type="number" id="uf-input-20k" data-value="20000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-20k">Rp 0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 10.000</span>
+                    <input type="number" id="uf-input-10k" data-value="10000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-10k">Rp 0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 5.000</span>
+                    <input type="number" id="uf-input-5k" data-value="5000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-5k">Rp 0</span>
+                </div>
+                 <div class="flex items-center gap-2">
+                    <span class="w-20 font-medium text-gray-700">Rp 2.000</span>
+                    <input type="number" id="uf-input-2k" data-value="2000" placeholder="0" class="uf-input-kertas w-16 text-center border-gray-300 rounded-md p-1">
+                    <span class="flex-1 text-right font-semibold" id="uf-subtotal-2k">Rp 0</span>
+                </div>
+                 <div class="flex items-center gap-2 mt-3 pt-3 border-t">
+                    <span class="w-20 font-medium text-gray-700">Koin</span>
+                    <input type="number" id="uf-input-koin" placeholder="Rp 0" class="uf-input flex-grow border-gray-300 rounded-md p-1">
+                </div>
+            </div>
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-blue-300">
+                <span class="font-bold">Jumlah Uang Fisik di Laci</span>
+                <span id="uf-total-fisik-laci" class="font-bold text-lg text-blue-700">Rp 0</span>
+            </div>
+        </div>
+
+        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h3 class="font-bold text-lg mb-3">Pengeluaran</h3>
+            <div class="space-y-2">
+                <input type="number" placeholder="Diskon" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 2" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 3" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 4" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 5" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 6" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 7" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="Pengeluaran 8" class="uf-input-pengeluaran w-full border-gray-300 rounded-md p-1.5">
+            </div>
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-red-300">
+                <span class="font-bold">Jumlah Pengeluaran</span>
+                <span id="uf-total-pengeluaran" class="font-bold text-lg text-red-700">Rp 0</span>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+             <label for="uf-modal-kasir" class="block text-sm font-medium text-gray-700">Modal Kasir</label>
+             <input type="number" id="uf-modal-kasir" placeholder="Rp 0" class="uf-input mt-1 w-full border-gray-300 rounded-md p-1.5">
+         </div>
+
+        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h3 class="font-bold text-lg mb-3">Non Tunai / Aplikasi</h3>
+            <div class="space-y-2">
+                <input type="number" placeholder="GOFOOD" class="uf-input-nontunai w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="GRAB" class="uf-input-nontunai w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="SHOPEE" class="uf-input-nontunai w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="EDC" class="uf-input-nontunai w-full border-gray-300 rounded-md p-1.5">
+                <input type="number" placeholder="TF" class="uf-input-nontunai w-full border-gray-300 rounded-md p-1.5">
+            </div>
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-green-300">
+                <span class="font-bold">Jumlah Non Tunai</span>
+                <span id="uf-total-nontunai" class="font-bold text-lg text-green-700">Rp 0</span>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-100 border rounded-lg space-y-4">
+             <div>
+                 <label for="uf-total-penjualan-sistem" class="block text-sm font-medium text-gray-700">Total Penjualan Sistem (PJL/PLU)</label>
+                 <input type="number" id="uf-total-penjualan-sistem" placeholder="Rp 0" class="uf-input mt-1 w-full border-gray-300 rounded-md p-1.5">
+             </div>
+             <div class="text-center p-4 rounded-lg bg-white border">
+                <p class="text-sm text-gray-600">Total Uang Seharusnya (Tunai + Non Tunai)</p>
+                <p id="uf-total-seharusnya" class="font-bold text-3xl text-gray-800">Rp 0</p>
+                <div class="mt-4 pt-4 border-t">
+                    <p class="text-sm font-medium text-gray-600">Selisih (+/-)</p>
+                    <p id="uf-selisih" class="font-bold text-4xl text-emerald-600">Rp 0</p>
+                </div>
+             </div>
+        </div>
+
+        <button id="uf-reset-btn" class="w-full bg-gray-200 text-gray-800 py-2.5 px-4 rounded-lg font-semibold mt-6">
+            Reset Form
+        </button>
+
+    </div>
+</div>
+<div id="page-laporan-absensi" class="page hidden">
+    <header class="flex items-center gap-4 mb-4">
+        <button id="back-to-lainnya-from-absensi-btn" class="text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+        <h2 class="font-bold text-2xl">Laporan Absensi Karyawan</h2>
+    </header>
+
+    <div class="p-4 bg-gray-50 rounded-lg border mb-4">
+        <label for="absensi-date-filter" class="block text-sm font-medium text-gray-700">Tampilkan Laporan untuk Tanggal:</label>
+        <input type="date" id="absensi-date-filter" name="absensi-date-filter" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+    </div>
+
+    <div id="absensi-report-container" class="space-y-3">
+        <div id="absensi-loading" class="text-center py-10">
+            <div class="spinner mx-auto"></div>
+            <p class="mt-2 text-sm text-gray-500">Memuat data absensi...</p>
+        </div>
+        <div id="absensi-list" class="hidden"></div>
+    </div>
+</div>
+
+        </main>
+
+        <div class="fixed bottom-20 right-0 left-0 max-w-md mx-auto z-40">
+            <div id="fab-container" class="absolute bottom-0 right-4 space-y-3"></div>
+
+            <div id="broadcast-controls" class="hidden absolute bottom-0 w-full bg-white p-3 border-t shadow-lg">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm"><strong id="selected-count">0</strong> pelanggan dipilih</p>
+                    <button id="show-broadcast-modal" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm">Broadcast Pesan</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t flex justify-around">
+            <button data-target="page-beranda" class="nav-button flex-1 py-2 px-1 text-center text-gray-500 nav-active"><svg class="mx-auto beranda-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="text-xs">Beranda</span></button>
+            <button data-target="page-pesanan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span class="text-xs">Pesanan</span></button>
+            <button data-target="page-inventaris" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="text-xs">Menu</span></button>
+            <button data-target="page-pihak" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="text-xs">Pelanggan</span></button>
+            <button data-target="page-pelanggan" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12h3v5H7z"/><path d="M12 7h3v10h-3z"/><path d="M17 15h3v2h-3z"/></svg><span class="text-xs">Rangkuman</span></button>
+            <button data-target="page-lainnya" class="nav-button flex-1 py-2 px-1 text-center text-gray-500"><svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span class="text-xs">Lainnya</span></button>
+        </nav>
+    </div>
+
+    <div id="modal-container">
+        <div id="broadcast-progress-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-[70] hidden">
+            <div class="modal-content bg-white w-full rounded-t-2xl p-4 text-center">
+                <h3 id="broadcast-progress-title" class="font-bold text-lg mb-2">Mengirim Broadcast...</h3>
+                <p id="broadcast-progress-status" class="text-gray-600 mb-4">Mempersiapkan...</p>
+                <div id="broadcast-target-info" class="bg-gray-100 p-3 rounded-lg mb-6">
+                    <p class="text-sm">Berikutnya:</p>
+                    <p id="broadcast-next-contact-name" class="font-bold text-xl">-</p>
+                </div>
+                <div id="broadcast-actions">
+                    <button id="broadcast-send-next-btn" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold mb-3">Buka WhatsApp & Kirim</button>
+                    <button id="broadcast-cancel-btn" class="w-full text-gray-600 py-2">Batalkan Broadcast</button>
+                </div>
+                <div id="broadcast-complete" class="hidden">
+                   <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                   <h3 class="font-bold text-lg mt-4">Broadcast Selesai</h3>
+                   <p class="text-gray-600 mb-6">Semua pesan telah diproses.</p>
+                   <button id="broadcast-close-btn" class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script type="module">
+const HIGH_QUALITY_LOGO_URL = "favicon/logo-faktur.png";
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, setDoc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, writeBatch, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDqvDqNWOu80VwrtJCnUgPewztWXDEx52o",
+          authDomain: "database-f3684.firebaseapp.com",
+          projectId: "database-f3684",
+          storageBucket: "database-f3684.firebasestorage.app",
+          messagingSenderId: "378595640412",
+          appId: "1:378595640412:web:c18e3ccde798cad320d299",
+          measurementId: "G-Z67FJLC8X3"
+        };
+
+        const companyInfo = { name: "Ayam Penyet Surabaya", address: "Jl. Soekarno Hatta no. 725A", city: "Kota Bandung, 40286", phone: "0811-6594-527", email: "ayampenyetsurabaya725@gmail.com" };
+        // 
+const companyLogoUrl = "favicon/logo-faktur.png";
+const ATTENDANCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMEmykWQdLjTOEvqwRpbNcoK9fXHrE6reNIBMrP27JajZ7A_X9Yj3mAsO0Fm5EiCBW/exec";
+        let state = { contacts: [], inventory: [], transactions: [], customerOrders: [], monthlyExpenses: [], checklistHistory: [], dailyReports: [] };
+        let salesChart, expensesChart;
+        let omsetTrendChart;
+        let monthlyTurnoverChart;
+        let toastTimer;
+        let turnoverChartSelectedWeek = 0;
+        let calculatedDailyData = {};
+        const OFFICE_COORDS = { lat: -6.9385360, lon: 107.6662661 };
+
+        const ALLOWED_RADIUS_KM = 0.1; 
+        const SHIFT_TIMES = {
+            'PAGI':  { hour: 7,  minute: 40, grace: 0 },
+            'SIANG': { hour: 12, minute: 5,  grace: 0 },
+            'MALAM': { hour: 13, minute: 40, grace: 0 }
+        };
+
+/**
+ * Fungsi untuk menghitung jarak antara dua koordinat GPS (Haversine Formula).
+ * @returns {number} Jarak dalam kilometer.
+ */
+        const haversineDistance = (coords1, coords2) => {
+            const toRad = (x) => x * Math.PI / 180;
+            const R = 6371; // Radius bumi dalam km
+
+            const dLat = toRad(coords2.lat - coords1.lat);
+            const dLon = toRad(coords2.lon - coords1.lon);
+            const lat1 = toRad(coords1.lat);
+            const lat2 = toRad(coords2.lat);
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+
+            return R * c;
+        };
+
+
+        let broadcastQueue = [];
+        let currentBroadcastIndex = 0;
+        let broadcastMessageTemplate = '';
+
+        const getWeekOfMonth = (date) => {
+            const day = date.getDate();
+            if (day <= 7) return 1;
+            if (day <= 14) return 2;
+            if (day <= 21) return 3;
+            return 4;
+        };
+        let chartSelectedWeek = getWeekOfMonth(new Date());
+
+        const monthMap = { "Januari": 0, "Februari": 1, "Maret": 2, "April": 3, "Mei": 4, "Juni": 5, "Juli": 6, "Agustus": 7, "September": 8, "Oktober": 9, "November": 10, "Desember": 11 };
+
+        const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount || 0);
+        const formatDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}) : '';
+        const formatFullDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
+        const showToast = (message) => { const toast = document.getElementById('toast'); if (toastTimer) clearTimeout(toastTimer); toast.textContent = message; toast.classList.add('show'); toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); };
+
+        const formatWhatsappNumber = (phone) => {
+            if (!phone) return '';
+            let formatted = phone.replace(/\D/g, ''); 
+            if (formatted.startsWith('0')) {
+                formatted = '62' + formatted.substring(1);
+            } else if (!formatted.startsWith('62')) {
+                if(formatted.length > 5) {
+                    formatted = '62' + formatted;
+                }
+            }
+            return formatted;
+        };
+
+        const exportToCsv = (filename, headers, data) => {
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+            csvContent += data.map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        };
+
+        const parseDailyReport = (rawText) => {
+            const report = {
+                date: null,
+                grandTotal: 0,
+                totalNaskot: 0,
+                restaurants: {
+                    "Ayam Penyet Surabaya": { total: 0, phones: {} },
+                    "Mie Jogja": { total: 0, phones: {} }
+                }
+            };
+
+            const lines = rawText.trim().split('\n').map(line => line.trim()).filter(Boolean);
+            const parseNumber = (str) => parseInt(String(str).replace(/[.,Rp\sbox]/g, ''), 10) || 0;
+
+            let dateFound = false;
+            lines.forEach(line => {
+                if (!dateFound) {
+                    const dateMatch = line.match(/(\d{1,2}\s\w+\s\d{4})/);
+                    if (dateMatch) {
+                        const [day, monthName, year] = dateMatch[1].split(' ');
+                        const monthIndex = Object.keys(monthMap).findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+                        if (monthIndex > -1) {
+                            const jsDate = new Date(year, monthIndex, day);
+                            report.date = Timestamp.fromDate(jsDate);
+                            dateFound = true;
+                        }
+                    }
+                }
+                const totalMatch = line.match(/^\*Total\s*:\s*\*\s*([\d.,]+)/i);
+                if (totalMatch) {
+                    report.grandTotal = parseNumber(totalMatch[1]);
+                }
+                const naskotMatch = line.match(/^\*total naskot\*\s*:\s*(\d+)/i);
+                if (naskotMatch) {
+                    report.totalNaskot = parseNumber(naskotMatch[1]);
+                }
+            });
+
+            if (!dateFound) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                report.date = Timestamp.fromDate(today);
+            }
+
+            let currentRestaurantKey = null;
+            let currentPhoneKey = null;
+
+            for (const line of lines) {
+                if (line.toLowerCase().includes('ayam penyet surabaya')) {
+                    currentRestaurantKey = "Ayam Penyet Surabaya";
+                    currentPhoneKey = null;
+                    continue;
+                }
+                if (line.toLowerCase().includes('mie jogja')) {
+                    currentRestaurantKey = "Mie Jogja";
+                    currentPhoneKey = null;
+                    continue;
+                }
+
+                if (!currentRestaurantKey) {
+                    continue;
+                }
+
+                const hpMatch = line.match(/^(Hp\d+)\s*:\s*([\d.,]+)/);
+                if (hpMatch) {
+                    currentPhoneKey = hpMatch[1];
+                    const phoneTotal = parseNumber(hpMatch[2]);
+                    report.restaurants[currentRestaurantKey].phones[currentPhoneKey] = {
+                        total: phoneTotal,
+                        "Makan ditempat": 0,
+                        "Naskot": 0,
+                        "Online": 0
+                    };
+                    continue;
+                }
+
+                const categoryMatch = line.match(/^-\s*([A-Za-z\s]+)\s*:\s*([\d.,]+)/);
+                if (categoryMatch) {
+                    if (!currentPhoneKey) continue;
+
+                    const categoryName = categoryMatch[1].trim();
+                    const categoryValue = parseNumber(categoryMatch[2]);
+
+                    if (report.restaurants[currentRestaurantKey].phones[currentPhoneKey].hasOwnProperty(categoryName)) {
+                        report.restaurants[currentRestaurantKey].phones[currentPhoneKey][categoryName] = categoryValue;
+                    }
+                }
+            }
+
+            for (const key in report.restaurants) {
+                const restaurant = report.restaurants[key];
+                restaurant.total = Object.values(restaurant.phones).reduce((sum, phone) => sum + phone.total, 0);
+            }
+
+            const hasAyamPenyetData = report.restaurants["Ayam Penyet Surabaya"].total > 0;
+            const hasMieJogjaData = report.restaurants["Mie Jogja"].total > 0;
+            if (!hasAyamPenyetData && !hasMieJogjaData) {
+                throw new Error("Tidak ada data penjualan yang dapat dibaca. Cek kembali format teks Anda.");
+            }
+
+            return report;
+        };
+
+        const renderFunctions = {
+            renderContactList: () => {
+                const listEl = document.getElementById('contact-list');
+                listEl.innerHTML = '';
+                const whatsappSvgIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
+                const searchTerm = document.getElementById('contactSearchInput')?.value.toLowerCase() || '';
+                const filteredContacts = state.contacts.filter(contact => {
+                    const nameMatch = contact.name.toLowerCase().includes(searchTerm);
+                    const phoneMatch = contact.phone && contact.phone.toLowerCase().includes(searchTerm);
+                    const addressMatch = contact.address && contact.address.toLowerCase().includes(searchTerm);
+                    return nameMatch || phoneMatch || addressMatch;
+                });
+                if (filteredContacts.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 11a4 4 0 110-5.292" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Pelanggan tidak ditemukan</h3><p class="mt-1 text-sm text-gray-500">Coba kata kunci lain atau tambahkan pelanggan baru.</p></div>`;
+                } else {
+                    filteredContacts.forEach(contact => {
+                        const item = document.createElement('div');
+                        item.className = 'p-3 border rounded-lg flex justify-between items-center';
+                        const whatsappNumber = formatWhatsappNumber(contact.phone);
+                        const whatsappButton = whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="text-green-600 hover:text-green-700" title="Kirim WhatsApp">${whatsappSvgIcon}</a>` : '';
+                        item.innerHTML = `
+                            <div class="flex-grow flex items-center gap-3">
+                                <input type="checkbox" data-id="${contact.id}" class="contact-checkbox h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 flex-shrink-0">
+                                <div class="flex-grow">
+                                    <p class="font-bold">${contact.name}</p>
+                                    <p class="text-sm text-gray-500">${contact.phone || '-'}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${contact.address || 'Alamat tidak tersedia'}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 flex-shrink-0">
+                                ${whatsappButton}
+                                <button data-id="${contact.id}" class="edit-contact-btn text-blue-500 font-semibold text-sm">Edit</button>
+                                <button data-id="${contact.id}" class="delete-contact-btn text-red-500 font-semibold text-sm">Hapus</button>
+                            </div>`;
+                        listEl.appendChild(item);
+                    });
+                }
+            },
+            renderInventoryList: () => { const listEl = document.getElementById('inventory-list'); listEl.innerHTML = ''; if (state.inventory.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Menu kosong</h3><p class="mt-1 text-sm text-gray-500">Tambahkan item untuk mengelolanya.</p></div>`; } else { state.inventory.forEach(item => { const el = document.createElement('div'); el.className = 'p-3 border rounded-lg flex justify-between items-center'; el.innerHTML = `<div><p class="font-bold">${item.name}</p></div><div class="text-right"><p class="font-semibold">${formatCurrency(item.price)}</p><div class="space-x-2"><button data-id="${item.id}" class="edit-item-btn text-xs text-blue-500 font-semibold">Edit</button><button data-id="${item.id}" class="delete-item-btn text-xs text-red-500 font-semibold">Hapus</button></div></div>`; listEl.appendChild(el); }); } },
+            renderSalesReport: () => {
+                const listEl = document.getElementById('sales-report-list');
+                const monthFilterEl = document.getElementById('salesMonthFilter');
+                listEl.innerHTML = '';
+                const sales = state.transactions.filter(tx => tx.type === 'sale');
+                const availableMonths = [...new Set(sales.map(sale => new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+                monthFilterEl.value = currentFilterValue;
+                const searchTerm = document.getElementById('salesSearchInput').value.toLowerCase();
+                const selectedMonth = monthFilterEl.value;
+                const filteredSales = sales.filter(tx => (!selectedMonth || new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth) && (!searchTerm || (tx.contactName && tx.contactName.toLowerCase().includes(searchTerm))));
+                if (filteredSales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada penjualan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data yang cocok dengan filter Anda.</p></div>`; return; }
+                const salesByMonth = filteredSales.reduce((acc, sale) => { const monthYear = new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { sales: [], total: 0 }; } acc[monthYear].sales.push(sale); acc[monthYear].total += sale.total; return acc; }, {});
+                Object.keys(salesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = salesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-green-700">${formatCurrency(monthData.total)}</p></header><ul class="divide-y">${salesHtml}</ul>`; listEl.appendChild(monthEl); });
+            },
+            renderOrderList: () => {
+                const listEl = document.getElementById('order-list');
+                listEl.innerHTML = '';
+                const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
+                if (pendingOrders.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada pesanan aktif</h3><p class="mt-1 text-sm text-gray-500">Tambahkan pesanan pelanggan baru.</p></div>`;
+                } else {
+                    pendingOrders.forEach(order => {
+                        const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
+                        const item = document.createElement('div');
+                        item.className = 'p-4 border rounded-lg space-y-3';
+                        item.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div><p class="font-bold text-lg">${order.contactName}</p><p class="text-sm text-gray-600">Alamat: ${order.alamat || '-'}</p></div>
+                                <p class="text-xs text-gray-500">${formatDate(order.orderDate)}</p>
+                            </div>
+                            <div class="text-sm space-y-1 pt-2 border-t"><p class="font-medium">Detail Pesanan:</p><ul class="list-disc pl-5 text-gray-700">${itemsHtml}</ul></div>
+                            <div class="flex justify-between items-center pt-3 border-t">
+                                <p class="font-bold text-lg">${formatCurrency(order.total)}</p>
+                                <div class="space-x-2">
+                                    <button data-id="${order.id}" class="delete-order-btn text-xs font-bold text-red-600">HAPUS</button>
+                                    <button data-id="${order.id}" class="create-invoice-from-order-btn text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-md">BUAT FAKTUR</button>
+                                </div>
+                            </div>`;
+                        listEl.appendChild(item);
+                    });
+                }
+            },
+            renderExpenseReport: () => {
+                const listEl = document.getElementById('expense-report-list');
+                const monthFilterEl = document.getElementById('expenseMonthFilter');
+                listEl.innerHTML = '';
+                const availableMonths = [...new Set(state.monthlyExpenses.map(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+                monthFilterEl.value = currentFilterValue;
+                const selectedMonth = monthFilterEl.value;
+                const filteredExpenses = state.monthlyExpenses.filter(ex => !selectedMonth || new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth);
+                if (filteredExpenses.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui tombol (+).</p></div>`; return; }
+                const expensesByMonth = filteredExpenses.reduce((acc, expense) => { const date = new Date(expense.date.seconds * 1000); const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense); acc[monthYear].total += expense.total; return acc; }, {});
+                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = expensesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; listEl.appendChild(monthEl); });
+            },
+            renderCustomerSummary: () => {
+                const listEl = document.getElementById('customer-summary-list');
+                listEl.innerHTML = '';
+                const sales = state.transactions.filter(tx => tx.type === 'sale');
+                if (sales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Rangkuman pelanggan akan muncul di sini setelah ada penjualan.</p></div>`; return; }
+                const summary = sales.reduce((acc, sale) => { const id = sale.contactId; if (!acc[id]) { acc[id] = { id: id, name: sale.contactName, purchaseCount: 0, totalSpent: 0, lastPurchaseDate: null, items: {} }; } acc[id].purchaseCount += 1; acc[id].totalSpent += sale.total; if (!acc[id].lastPurchaseDate || sale.date.seconds > acc[id].lastPurchaseDate.seconds) { acc[id].lastPurchaseDate = sale.date; } sale.items.forEach(item => { if (!acc[id].items[item.name]) { acc[id].items[item.name] = 0; } acc[id].items[item.name] += item.qty; }); return acc; }, {});
+                const sortedSummary = Object.values(summary).sort((a, b) => b.totalSpent - a.totalSpent);
+                sortedSummary.forEach((customer, index) => {
+                    const el = document.createElement('div');
+                    el.className = 'p-3 border rounded-lg';
+                    el.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                               <span class="font-bold text-gray-400 w-6 text-center">${index + 1}</span>
+                               <div>
+                                   <p class="font-bold">${customer.name}</p>
+                                   <p class="text-sm text-gray-500">Terakhir beli: ${formatDate(customer.lastPurchaseDate)}</p>
+                               </div>
+                            </div>
+                            <div class="text-right">
+                               <p class="font-semibold text-green-600">${formatCurrency(customer.totalSpent)}</p>
+                               <p class="text-xs text-gray-500">${customer.purchaseCount}x transaksi</p>
+                            </div>
+                        </div>
+                        <div class="text-right mt-2 pt-2 border-t">
+                            <button data-id="${customer.id}" class="view-customer-details-btn text-xs font-bold text-blue-600">LIHAT DETAIL</button>
+                        </div>`;
+                    listEl.appendChild(el);
+                });
+            },
+            // GANTI SELURUH FUNGSI renderCompletedOrderList ANDA DENGAN INI
+renderCompletedOrderList: () => {
+    const listEl = document.getElementById('completed-orders-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    let completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+    const searchTerm = document.getElementById('completedOrderSearchInput')?.value.toLowerCase() || '';
+    if (searchTerm) {
+        completedOrders = completedOrders.filter(order => {
+            const nameMatch = order.contactName.toLowerCase().includes(searchTerm);
+            const itemMatch = order.items.some(item => item.name.toLowerCase().includes(searchTerm));
+            return nameMatch || itemMatch;
+        });
+    }
+    if (completedOrders.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-8"><p class="text-sm text-gray-500">Tidak ada pesanan selesai yang cocok.</p></div>`;
+        return;
+    }
+    completedOrders.forEach(order => {
+        const matchingTransaction = state.transactions.find(tx => tx.type === 'sale' && tx.contactId === order.contactId && tx.total === order.total && tx.date && order.orderDate && tx.date.seconds === order.orderDate.seconds);
+        const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
+        const item = document.createElement('div');
+        item.className = 'p-3 border rounded-lg bg-gray-50/70';
+        item.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-bold">${order.contactName}</p>
+                    <p class="text-sm text-gray-500">${formatCurrency(order.total)}</p>
+                </div>
+                <p class="text-xs text-gray-500">${formatDate(order.orderDate)}</p>
+            </div>
+            <div class="text-sm space-y-1 mt-2 pt-2 border-t">
+                <ul class="list-disc pl-5 text-gray-600 text-xs">${itemsHtml}</ul>
+            </div>
+            ${matchingTransaction ?
+            // --- AWAL PERUBAHAN ---
+            `<div class="text-right mt-3 pt-3 border-t flex justify-end items-center gap-4">
+                <button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">Download Faktur</button>
+                <button data-order-id="${order.id}" data-transaction-id="${matchingTransaction.id}" class="delete-completed-order-btn text-xs font-bold text-red-600">HAPUS</button>
+            </div>` 
+            // --- AKHIR PERUBAHAN ---
+            : ''}
+        `;
+        listEl.appendChild(item);
+    });
+},
+            renderCompletedOrderFilters: () => {
+                const monthFilterEl = document.getElementById('completedOrderMonthFilter');
+                if (!monthFilterEl) return;
+                const completedOrders = state.customerOrders.filter(o => o.status === 'completed');
+                const availableMonths = [...new Set(completedOrders.map(order => new Date(order.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Ekspor Semua Bulan</option>';
+                availableMonths.forEach(month => {
+                    const option = new Option(month, month);
+                    monthFilterEl.add(option);
+                });
+                monthFilterEl.value = currentFilterValue;
+            },
+            renderDashboard: () => {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                const monthlySales = state.transactions.filter(tx => tx.date && tx.type === 'sale' && new Date(tx.date.seconds * 1000).getMonth() === currentMonth && new Date(tx.date.seconds * 1000).getFullYear() === currentYear).reduce((sum, tx) => sum + tx.total, 0);
+                const monthlyExpensesTotal = state.monthlyExpenses.filter(ex => ex.date && new Date(ex.date.seconds * 1000).getMonth() === currentMonth && new Date(ex.date.seconds * 1000).getFullYear() === currentYear).reduce((sum, ex) => sum + ex.total, 0);
+                document.getElementById('monthly-sales-card').textContent = formatCurrency(monthlySales);
+                document.getElementById('monthly-expenses-card').textContent = formatCurrency(monthlyExpensesTotal);
+                const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
+                document.getElementById('active-orders-count').textContent = `${pendingOrders.length} Pesanan`;
+                document.getElementById('active-orders-total').textContent = formatCurrency(pendingOrders.reduce((sum, order) => sum + order.total, 0));
+                document.querySelectorAll('.chart-week-btn').forEach(btn => {
+                    const week = parseInt(btn.dataset.week);
+                    if (week === chartSelectedWeek) { btn.classList.add('bg-emerald-100', 'text-emerald-800'); btn.classList.remove('text-gray-500'); } 
+                    else { btn.classList.remove('bg-emerald-100', 'text-emerald-800'); btn.classList.add('text-gray-500'); }
+                });
+                const labels = []; const salesData = []; const expensesData = [];
+                let startDate, endDate;
+                switch (chartSelectedWeek) {
+                    case 1: startDate = new Date(currentYear, currentMonth, 1); endDate = new Date(currentYear, currentMonth, 7); break;
+                    case 2: startDate = new Date(currentYear, currentMonth, 8); endDate = new Date(currentYear, currentMonth, 14); break;
+                    case 3: startDate = new Date(currentYear, currentMonth, 15); endDate = new Date(currentYear, currentMonth, 21); break;
+                    case 4: startDate = new Date(currentYear, currentMonth, 22); endDate = new Date(currentYear, currentMonth + 1, 0); break;
+                }
+                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                    if (d.getMonth() !== currentMonth) continue;
+                    const startOfDay = new Date(d); startOfDay.setHours(0, 0, 0, 0);
+                    const endOfDay = new Date(d); endOfDay.setHours(23, 59, 59, 999);
+                    const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
+                    const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
+                    const dailySales = state.transactions.filter(tx => tx.type === 'sale' && tx.date && tx.date >= startOfDayTimestamp && tx.date <= endOfDayTimestamp).reduce((sum, tx) => sum + tx.total, 0);
+                    const dailyExpenses = state.monthlyExpenses.filter(ex => ex.date && ex.date >= startOfDayTimestamp && ex.date <= endOfDayTimestamp).reduce((sum, ex) => sum + ex.total, 0);
+                    labels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+                    salesData.push(dailySales);
+                    expensesData.push(dailyExpenses);
+                }
+                renderFunctions.updateSalesChart(labels, salesData);
+                renderFunctions.updateExpensesChart(labels, expensesData);
+            },
+            renderProfile: () => {},
+            updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
+            updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
+
+generateInvoice: async (purchaseId) => {
+    const purchase = state.transactions.find(p => p.id === purchaseId);
+    if (!purchase) {
+        showToast("Error: Data transaksi tidak ditemukan.");
+        return;
+    }
+
+    const getLogoBase64 = () => {
+        return new Promise((resolve, reject) => {
+            if (!HIGH_QUALITY_LOGO_URL) { return resolve(null); }
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = HIGH_QUALITY_LOGO_URL;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/jpeg', 0.90);
+                resolve(dataURL);
+            };
+            img.onerror = () => { reject(new Error("Gagal memuat gambar logo.")); };
+        });
+    };
+
+    showToast('Mempersiapkan faktur...');
+
+    try {
+        const logoBase64 = await getLogoBase64();
+        const contact = state.contacts.find(c => c.id === purchase.contactId);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
+
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
+        const margin = 30;
+
+        // 1. HEADER
+        if (logoBase64) {
+            doc.addImage(logoBase64, 'JPEG', margin, margin, 70, 70);
+        }
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("INVOICE", pageWidth - margin, margin + 10, { align: 'right' });
+
+        const d = purchase.date.toDate();
+        const startOfDay = new Date(d);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(d);
+        endOfDay.setHours(23, 59, 59, 999);
+        const transactionsToday = state.transactions.filter(tx => {
+            if (!tx.date) return false;
+            const txDate = tx.date.toDate();
+            return txDate >= startOfDay && txDate <= endOfDay && tx.id !== purchase.id;
+        });
+        const dailySequence = (transactionsToday.length + 1).toString().padStart(3, '0');
+        const numericInvoiceId = `INV/${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}/${dailySequence}`;
+
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text(numericInvoiceId, pageWidth - margin, margin + 25, { align: 'right' });
+
+        // 2. INFORMASI PENJUAL & PEMBELI
+        let yPos = margin + 90;
+        let sellerY = yPos;
+        doc.setFontSize(9);
+        doc.setTextColor(100);
+        doc.text("DITERBITKAN ATAS NAMA", margin, sellerY);
+        sellerY += 12;
+        doc.setFontSize(10);
+        doc.setTextColor(0);
+        doc.setFont("helvetica", "bold");
+        doc.text(companyInfo.name, margin, sellerY);
+        sellerY += 12;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(companyInfo.address, margin, sellerY);
+        sellerY += 10;
+        doc.text(`Email: ${companyInfo.email}`, margin, sellerY);
+        sellerY += 10;
+        doc.text(`No. Tlpn: ${companyInfo.phone}`, margin, sellerY);
+
+        let buyerY = yPos;
+        const rightColX = pageWidth / 2;
+        doc.setFontSize(9);
+        doc.setTextColor(100);
+        doc.text("UNTUK", rightColX, buyerY);
+        doc.setFontSize(10);
+        doc.setTextColor(0);
+        doc.setFont("helvetica", "normal");
+        const addBuyerInfo = (label, value, y) => {
+            doc.setTextColor(100);
+            doc.text(label, rightColX, y);
+            doc.setTextColor(0);
+            doc.text(`: ${value}`, rightColX + 85, y);
+            return y + 14;
+        };
+        buyerY = yPos + 12;
+        const phone = contact ? (contact.phone || '-') : '-';
+        buyerY = addBuyerInfo("Nama", purchase.contactName, buyerY);
+        buyerY = addBuyerInfo("Tlpn", phone, buyerY);
+        buyerY = addBuyerInfo("Tanggal Pembelian", formatDate(purchase.date), buyerY);
+        doc.setTextColor(100);
+        doc.text("Alamat Pengiriman", rightColX, buyerY);
+        doc.setTextColor(0);
+        const address = purchase.address || (contact ? contact.address : 'Tidak ada alamat');
+        const addressLines = doc.splitTextToSize(address, 180);
+        doc.text(`: ${addressLines.join('\n')}`, rightColX + 85, buyerY);
+        buyerY += (addressLines.length * 12);
+
+        const tableStartY = Math.max(sellerY, buyerY) + 20;
+
+        // --- AWAL PERUBAHAN ---
+        // 3. TABEL PRODUK
+        const tableHead = [['INFO PRODUK', 'JUMLAH', 'HARGA SATUAN', 'TOTAL HARGA']];
+        const tableBody = purchase.items.map(item => [
+            item.name, item.qty, formatCurrency(item.price), formatCurrency(item.qty * item.price)
+        ]);
+
+        doc.autoTable({
+            head: tableHead, body: tableBody, startY: tableStartY,
+            theme: 'plain',
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 10, cellPadding: {top: 8, bottom: 8, left: 4, right: 4} },
+            headStyles: {
+                fillColor: false,
+                textColor: 100, // Warna teks header abu-abu
+                fontStyle: 'bold', // Teks header tebal
+                lineWidth: { top: 1.5, bottom: 1.5 }, // Garis tebal di atas dan bawah
+                lineColor: [220, 220, 220]
+            },
+            columnStyles: {
+                0: { // Kolom pertama (INFO PRODUK)
+                    cellWidth: 'auto',
+                    fontStyle: 'bold',
+                    textColor: [5, 150, 105] // Warna teks hijau
+                },
+                1: { halign: 'center', cellWidth: 50 },
+                2: { halign: 'right', cellWidth: 80 },
+                3: { halign: 'right', cellWidth: 80 }
+            }
+        });
+        // --- AKHIR PERUBAHAN ---
+
+        // 4. RINCIAN TOTAL TAGIHAN
+        let finalY = doc.autoTable.previous.finalY;
+        const subtotal = purchase.total;
+        const ongkosKirim = 10000;
+        const voucherOngkir = -10000;
+        const totalBelanja = subtotal + ongkosKirim + voucherOngkir;
+
+        const addTotalLine = (label, value, y, isBold = false) => {
+            doc.setFont("helvetica", isBold ? "bold" : "normal");
+            doc.text(label, pageWidth - margin - 150, y);
+            doc.text(value, pageWidth - margin, y, { align: 'right' });
+            return y + 15;
+        };
+
+        let totalY = finalY + 20;
+        totalY = addTotalLine("Subtotal Harga Barang", formatCurrency(subtotal), totalY);
+        totalY = addTotalLine("Ongkos Kirim", formatCurrency(ongkosKirim), totalY);
+        totalY = addTotalLine("Voucher Ongkos Kirim", formatCurrency(voucherOngkir), totalY);
+        doc.setLineDashPattern([2, 2], 0);
+        doc.line(pageWidth - margin - 150, totalY, pageWidth - margin, totalY);
+        doc.setLineDashPattern([], 0);
+        totalY += 10;
+        doc.setFontSize(12);
+        addTotalLine("TOTAL TAGIHAN", formatCurrency(totalBelanja), totalY, true);
+
+        // 5. FOOTER
+        const footerY = pageHeight - 50;
+        doc.setLineWidth(0.5);
+        doc.line(margin, footerY, pageWidth - margin, footerY);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("Metode Pembayaran:", margin, footerY + 15);
+        doc.setFont("helvetica", "bold");
+        doc.text("Transfer atau COD", margin, footerY + 25);
+        const updateDate = new Date().toLocaleString('id-ID', {
+            day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(150);
+        doc.text(`Terakhir diupdate: ${updateDate} WIB`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+
+        doc.save(`faktur-${purchase.contactName.replace(/\s/g, '_')}-${numericInvoiceId}.pdf`);
+    } catch (error) {
+        console.error("Gagal membuat faktur:", error);
+        showToast(`Gagal: ${error.message}`);
+    }
+},
+            renderChecklistReport: () => {
+                const listEl = document.getElementById('checklist-report-list');
+                const monthFilterEl = document.getElementById('checklistMonthFilter');
+                if (!listEl || !monthFilterEl) return;
+                listEl.innerHTML = '';
+                const availableMonths = [...new Set(state.checklistHistory.map(report => report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) : null).filter(Boolean))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+                const currentFilterValue = monthFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+                monthFilterEl.value = currentFilterValue;
+                const selectedMonth = monthFilterEl.value;
+                const filteredReports = state.checklistHistory.filter(report => !selectedMonth || (report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth));
+                if (filteredReports.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada laporan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data laporan kebersihan yang cocok dengan filter Anda.</p></div>`;
+                    return;
+                }
+                filteredReports.forEach(report => {
+                    const dateEl = document.createElement('div');
+                    const reportDate = report.tanggal ? new Date(report.tanggal.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Tanggal Tidak Valid';
+            const tasks = report.tasks; 
+            let tasksArray = [];
+            if (Array.isArray(tasks)) {
+                tasksArray = tasks;
+            } 
+            else if (tasks && typeof tasks === 'object') {
+                tasksArray = Object.values(tasks);
+            }
+            const tasksHtml = tasksArray.filter(task => task && task.done).map((task, index) => {
+    const taskId = Object.keys(report.tasks).find(key => report.tasks[key].text === task.text && report.tasks[key].completedBy === task.completedBy);
+    
+    const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
+    
+    const staffReviewHtml = `
+                    <div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700">
+                            <input type="checkbox" 
+                                   class="staff-check-task w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500" 
+                                   data-report-id="${report.id}" 
+                                   data-task-id="${taskId}" 
+                                   ${task.isChecked ? 'checked' : ''}>
+                            Tandai sudah dicek
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" 
+                                   class="staff-comment-input flex-grow border-gray-300 rounded-md shadow-sm text-sm p-1.5" 
+                                   placeholder="Beri komentar..." 
+                                   data-report-id="${report.id}" 
+                                   data-task-id="${taskId}"
+                                   value="${task.staffComment || ''}">
+                             <button 
+                                class="save-comment-btn bg-indigo-500 text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-indigo-600"
+                                data-report-id="${report.id}"
+                                data-task-id="${taskId}">
+                                Simpan
+                             </button>
+                        </div>
+                    </div>
+                `;
+    
+    return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">
+                            ${imageHtml}
+                            <div class="flex-1">
+                                <p class="font-medium">${task.text}</p>
+                                <p class="text-sm text-gray-600">Oleh: <strong>${task.completedBy || 'N/A'}</strong></p>
+                                ${staffReviewHtml}
+                            </div>
+                        </li>`;
+}).join('');
+                    if (tasksHtml) {
+                        dateEl.innerHTML = `<div class="border rounded-lg mb-4"><header class="bg-gray-50 p-3 rounded-t-lg"><h3 class="font-bold text-lg">${reportDate}</h3></header><ul class="px-3">${tasksHtml}</ul></div>`;
+                        listEl.appendChild(dateEl);
+                    }
+                });
+            },
+            renderDailyReportHistory: () => {
+                const listEl = document.getElementById('daily-report-history-list');
+                if (!listEl) return;
+                listEl.innerHTML = '';
+                if (state.dailyReports.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-10"><p class="text-sm text-gray-500">Belum ada laporan yang diimpor.</p></div>`;
+                    return;
+                }
+                state.dailyReports.forEach(report => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'p-3 border rounded-lg flex justify-between items-center';
+                    itemEl.innerHTML = `
+                        <div data-id="${report.id}" class="flex-grow cursor-pointer hover:bg-gray-50 flex justify-between items-center view-daily-report-btn">
+                            <div>
+                                <p class="font-bold">${formatFullDate(report.date)}</p>
+                                <p class="text-sm text-gray-500">${Object.keys(report.restaurants).length} Restoran</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-green-600">${formatCurrency(report.grandTotal)}</p>
+                                <p class="text-xs text-gray-500">${report.totalNaskot} Nasi Kotak</p>
+                            </div>
+                        </div>
+                        <button data-id="${report.id}" class="delete-daily-report-btn ml-4 text-gray-400 hover:text-red-500 p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    `;
+                    itemEl.querySelector('.view-daily-report-btn').addEventListener('click', (e) => {
+                        const reportId = e.currentTarget.dataset.id;
+                        const reportData = state.dailyReports.find(r => r.id === reportId);
+                        if (!reportData) return;
+                        const detailModal = document.getElementById('daily-report-detail-modal');
+                        const detailContent = document.getElementById('daily-report-detail-content');
+                        let contentHtml = `<h4 class="font-bold text-lg mb-2">${formatFullDate(reportData.date)}</h4>`;
+                        for (const [name, data] of Object.entries(reportData.restaurants)) {
+                            contentHtml += `<div class="mt-4 border-t pt-2">
+                                                <div class="flex justify-between items-center">
+                                                    <h5 class="font-bold">${name}</h5>
+                                                    <p class="font-semibold">${formatCurrency(data.total)}</p>
+                                                </div>`;
+                            for (const [phone, phoneData] of Object.entries(data.phones)) {
+                                contentHtml += `<div class="pl-4 mt-2">
+                                                    <p class="font-medium text-sm">${phone}: ${formatCurrency(phoneData.total)}</p>
+                                                    <ul class="list-disc pl-5 text-xs text-gray-600">
+                                                        <li>Makan ditempat: ${formatCurrency(phoneData['Makan ditempat'])}</li>
+                                                        <li>Naskot: ${formatCurrency(phoneData['Naskot'])}</li>
+                                                        <li>Online: ${formatCurrency(phoneData['Online'])}</li>
+                                                    </ul>
+                                                </div>`;
+                            }
+                            contentHtml += `</div>`;
+                        }
+                        contentHtml += `<div class="mt-6 border-t pt-4 text-center space-y-2">
+                                            <p>Total Nasi Kotak: <strong class="text-lg">${reportData.totalNaskot}</strong></p>
+                                            <p>Grand Total: <strong class="text-2xl text-green-700">${formatCurrency(reportData.grandTotal)}</strong></p>
+                                       </div>`;
+                        detailContent.innerHTML = contentHtml;
+                        detailModal.classList.remove('hidden');
+                    });
+                    listEl.appendChild(itemEl);
+                });
+            },
+            renderOmsetTrendChart: (labels, makanData, naskotData, onlineData) => {
+                const chartContainer = document.getElementById('omset-trend-chart-container');
+                if (!chartContainer) return;
+
+                const ctx = document.getElementById('omset-trend-chart').getContext('2d');
+                if (omsetTrendChart) {
+                    omsetTrendChart.destroy();
+                }
+                omsetTrendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Makan di Tempat',
+                                data: makanData,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'Naskot',
+                                data: naskotData,
+                                borderColor: 'rgb(234, 179, 8)',
+                                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                                fill: true,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'Online',
+                                data: onlineData,
+                                borderColor: 'rgb(16, 185, 129)',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true,
+                                tension: 0.2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        }
+                    }
+                });
+                chartContainer.classList.remove('hidden');
+            },
+            renderMonthlyTurnoverReport: () => {
+                const monthlyData = state.dailyReports.reduce((acc, report) => {
+                    const date = report.date.toDate();
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+                    if (!acc[monthKey]) {
+                        acc[monthKey] = { total: 0, label: date.toLocaleString('id-ID', { month: 'short', year: 'numeric' }) };
+                    }
+                    acc[monthKey].total += report.grandTotal || 0;
+                    return acc;
+                }, {});
+
+                const sortedMonths = Object.keys(monthlyData).sort();
+
+                if (sortedMonths.length === 0) {
+                    showToast("Belum ada data laporan harian untuk ditampilkan.");
+                    return;
+                }
+
+                const labels = sortedMonths.map(key => monthlyData[key].label);
+                const data = sortedMonths.map(key => monthlyData[key].total);
+
+                const totalTurnover = data.reduce((sum, val) => sum + val, 0);
+                const avgTurnover = totalTurnover / data.length;
+                const maxTurnover = Math.max(...data);
+                const bestMonthIndex = data.indexOf(maxTurnover);
+                const bestMonthName = labels[bestMonthIndex];
+
+                document.getElementById('avg-monthly-turnover').textContent = formatCurrency(avgTurnover);
+                document.getElementById('best-month-name').textContent = bestMonthName;
+
+                const ctx = document.getElementById('monthly-turnover-chart').getContext('2d');
+                if (monthlyTurnoverChart) {
+                    monthlyTurnoverChart.destroy();
+                }
+                monthlyTurnoverChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Omset Bulanan',
+                            data: data,
+                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        };
+const pages = document.querySelectorAll('.page'); const navButtons = document.querySelectorAll('.nav-button'); const fabContainer = document.getElementById('fab-container');
+            const navigateTo = (pageId) => { pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId)); navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId; btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if(berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; }); updateFAB(pageId); if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden'); document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); }
+            localStorage.setItem('lastActivePage', pageId);};
+
+            const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
+        function initializeApplication(db) {
+            const modalContainer = document.getElementById('modal-container');
+            const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset(); formEl.dataset.id = data.id || ''; Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; }); modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden'); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); }); modalEl.querySelector('.close-modal-btn').addEventListener('click', hide); formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML; submitBtn.disabled = true; submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries()); data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error); else showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
+            const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => { const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`; modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); let resolvePromise; const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); }; const hide = () => modalEl.classList.add('hidden'); modalEl.querySelector('.confirm-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(true); }); modalEl.querySelector('.cancel-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(false); }); modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } }); return { show }; };
+
+            const dailyReportDetailModalHTML = `<div id="daily-report-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-[60] hidden"><div class="modal-content bg-white w-full rounded-t-2xl relative"><header class="p-4 border-b flex justify-between items-center"><h3 class="font-bold text-lg">Detail Laporan Harian</h3><button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button></header><div id="daily-report-detail-content" class="p-4 max-h-[65vh] overflow-y-auto"></div></div></div>`;
+            modalContainer.insertAdjacentHTML('beforeend', dailyReportDetailModalHTML);
+            const dailyReportDetailModal = document.getElementById('daily-report-detail-modal');
+            dailyReportDetailModal.querySelector('.close-modal-btn').addEventListener('click', () => dailyReportDetailModal.classList.add('hidden'));
+            dailyReportDetailModal.addEventListener('click', (e) => { if(e.target === dailyReportDetailModal) dailyReportDetailModal.classList.add('hidden'); });
+
+
+            const contactModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">No. Telepon</label><input type="tel" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Alamat</label><textarea name="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pelanggan</button>`;
+            const itemModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Harga Jual</label><input type="number" name="price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Barang</button>`;
+            const expenseModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pembelian</label><input type="date" name="purchaseDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Nama Toko</label><input type="text" name="storeName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Jumlah/Satuan</label><input type="text" name="quantity" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Total Harga</label><input type="number" name="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Belanja</button>`;
+            const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
+            const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
+            const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
+            const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
+
+
+            const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { const payload = { name: data.name, phone: data.phone, address: data.address }; if (data.id) { await updateDoc(doc(db, 'contacts', data.id), payload); return 'Pelanggan berhasil diperbarui!'; } else { await addDoc(collection(db, 'contacts'), payload); return 'Pelanggan baru berhasil ditambahkan!'; } });
+            const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
+            const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate }; await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
+            const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
+            const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
+            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); } if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
+            const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { const customerName = data.customerName.trim(); const customerPhone = data.customerPhone.trim(); const customerAddress = form.elements['alamat'].value.trim(); if (!customerName) { throw new Error("Nama pelanggan harus diisi."); } let contactId; let contactName = customerName; const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); if (existingContact) { contactId = existingContact.id; if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) { await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress }); showToast(`Info kontak ${customerName} diperbarui.`); } } else { const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); contactId = newContactRef.id; showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); } const items = []; form.querySelectorAll('.order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang pesanan."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); const payload = { contactId: contactId, contactName: contactName, alamat: customerAddress, items: items, total: total, status: 'pending', orderDate: orderDate }; await addDoc(collection(db, 'customer_orders'), payload); return 'Pesanan baru berhasil disimpan!'; });
+            const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
+            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => { broadcastMessageTemplate = data.message; const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked'); if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone)); if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0; setupAndShowBroadcastProgress(); return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`; });
+
+            const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
+            const setupAndShowBroadcastProgress = () => { document.getElementById('broadcast-actions').classList.remove('hidden'); document.getElementById('broadcast-complete').classList.add('hidden'); broadcastProgressModalEl.classList.remove('hidden'); updateBroadcastProgressUI(); };
+            const updateBroadcastProgressUI = () => { if (currentBroadcastIndex >= broadcastQueue.length) { document.getElementById('broadcast-actions').classList.add('hidden'); document.getElementById('broadcast-complete').classList.remove('hidden'); } else { const contact = broadcastQueue[currentBroadcastIndex]; document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`; document.getElementById('broadcast-next-contact-name').textContent = contact.name; } };
+            const hideBroadcastProgress = () => { broadcastProgressModalEl.classList.add('hidden'); broadcastQueue = []; currentBroadcastIndex = 0; broadcastMessageTemplate = ''; document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false); document.getElementById('broadcast-controls').classList.add('hidden'); };
+            const updateSaleTotal = () => { let total = 0; document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
+            const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateSaleTotal(); };
+            const updateOrderTotal = () => { let total = 0; document.querySelectorAll('#order-items-container .order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('order-total-amount').textContent = formatCurrency(total); };
+            const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateOrderTotal(); };
+            const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
+            const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
+            const populateContactInfo = (contactName) => { const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase()); if (contact) { customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || ''; customerOrderModal.formEl.elements['alamat'].value = contact.address || ''; } };
+            nameInput.addEventListener('input', (e) => { const searchTerm = e.target.value.toLowerCase(); if (searchTerm.length === 0) { suggestionsBox.classList.add('hidden'); return; } const filteredContacts = state.contacts.filter(contact => contact.name.toLowerCase().includes(searchTerm)); if (filteredContacts.length > 0) { suggestionsBox.innerHTML = filteredContacts.map(contact => `<div class="p-2 hover:bg-emerald-50 cursor-pointer suggestion-item" data-name="${contact.name}">${contact.name}</div>`).join(''); suggestionsBox.classList.remove('hidden'); } else { suggestionsBox.classList.add('hidden'); } });
+            nameInput.addEventListener('blur', (e) => { setTimeout(() => { populateContactInfo(e.target.value); suggestionsBox.classList.add('hidden'); }, 200); });
+            suggestionsBox.addEventListener('click', (e) => { if (e.target.classList.contains('suggestion-item')) { const selectedName = e.target.dataset.name; nameInput.value = selectedName; suggestionsBox.classList.add('hidden'); populateContactInfo(selectedName); } });
+
+            function updateTurnoverTrendChart() {
+                const filteredData = {};
+                const startDateValue = document.getElementById('start-date').value;
+                if (!startDateValue) return;
+
+                const startDateOfMonth = new Date(startDateValue.substring(0, 8) + '01');
+                const firstDayOfMonth = startDateOfMonth.getDay();
+
+                for (const dateStr in calculatedDailyData) {
+                    const date = new Date(dateStr.replace(/-/g, '/'));
+                    const dayOfMonth = date.getDate();
+                    let weekOfMonth = Math.ceil((dayOfMonth + firstDayOfMonth) / 7);
+
+                    if (turnoverChartSelectedWeek === 0 || turnoverChartSelectedWeek === weekOfMonth) {
+                        filteredData[dateStr] = calculatedDailyData[dateStr];
+                    }
+                }
+
+                const sortedDates = Object.keys(filteredData).sort();
+                const chartLabels = sortedDates.map(dateStr => {
+                    const [year, month, day] = dateStr.split('-');
+                    const localDate = new Date(year, month - 1, day);
+                    return localDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                });
+                const makanData = sortedDates.map(date => filteredData[date]["Makan ditempat"]);
+                const naskotData = sortedDates.map(date => filteredData[date]["Naskot"]);
+                const onlineData = sortedDates.map(date => filteredData[date]["Online"]);
+
+                renderFunctions.renderOmsetTrendChart(chartLabels, makanData, naskotData, onlineData);
+
+                document.querySelectorAll('.turnover-chart-week-btn').forEach(btn => {
+                    const week = parseInt(btn.dataset.week);
+                    if (week === turnoverChartSelectedWeek) {
+                        btn.classList.add('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.remove('text-gray-500');
+                    } else {
+                        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.add('text-gray-500');
+                    }
+                });
+            }
+
+
+
+            navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
+            document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
+            document.getElementById('shortcut-new-item').addEventListener('click', () => navigateTo('page-inventaris'));
+            document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
+            document.getElementById('shortcut-attendance').addEventListener('click', () => document.getElementById('btn-laporan-absensi').click());
+            document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl; form.elements['orderDate'].value = new Date().toISOString().split('T')[0]; document.getElementById('order-items-container').innerHTML = ''; addOrderItemRow(); customerOrderModal.show(); });
+
+            document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
+            document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('btn-kalkulator-omset').addEventListener('click', () => navigateTo('page-kalkulator-omset'));
+            document.getElementById('back-to-lainnya-from-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('btn-impor-laporan').addEventListener('click', () => navigateTo('page-laporan-harian'));
+            document.getElementById('back-to-lainnya-from-laporan-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.querySelectorAll('.chart-week-btn').forEach(button => { button.addEventListener('click', () => { chartSelectedWeek = parseInt(button.dataset.week); renderFunctions.renderDashboard(); }); });
+
+            document.getElementById('btn-laporan-bulanan').addEventListener('click', () => {
+                renderFunctions.renderMonthlyTurnoverReport();
+                navigateTo('page-laporan-bulanan');
+            });
+            document.getElementById('back-to-lainnya-from-monthly-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+
+            document.getElementById('hitung-omset-btn').addEventListener('click', () => {
+                const startDateEl = document.getElementById('start-date');
+                const endDateEl = document.getElementById('end-date');
+                const hasilContainer = document.getElementById('hasil-omset-container');
+                if (!startDateEl.value || !endDateEl.value) {
+                    showToast("Silakan pilih tanggal mulai dan selesai.");
+                    return;
+                }
+                const startDate = new Date(startDateEl.value);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(endDateEl.value);
+                endDate.setHours(23, 59, 59, 999);
+                if (startDate > endDate) {
+                    showToast("Tanggal mulai tidak boleh lebih dari tanggal selesai.");
+                    return;
+                }
+                const filteredReports = state.dailyReports.filter(report => {
+                    if (!report.date) return false;
+                    const reportDate = report.date.toDate();
+                    return reportDate >= startDate && reportDate <= endDate;
+                });
+                if (filteredReports.length === 0) {
+                    showToast("Tidak ada data laporan harian pada rentang tanggal tersebut.");
+                    hasilContainer.classList.add('hidden');
+                    return;
+                }
+                const totals = {
+                    aps: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
+                    mj: { "Makan ditempat": 0, "Naskot": 0, "Online": 0, total: 0 },
+                };
+                calculatedDailyData = {};
+                filteredReports.forEach(report => {
+                    const apsData = report.restaurants["Ayam Penyet Surabaya"];
+                    if (apsData && apsData.phones) {
+                        Object.values(apsData.phones).forEach(phoneData => {
+                            totals.aps["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                            totals.aps["Naskot"] += phoneData["Naskot"] || 0;
+                            totals.aps["Online"] += phoneData["Online"] || 0;
+                        });
+                    }
+                    const mjData = report.restaurants["Mie Jogja"];
+                    if (mjData && mjData.phones) {
+                        Object.values(mjData.phones).forEach(phoneData => {
+                            totals.mj["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                            totals.mj["Naskot"] += phoneData["Naskot"] || 0;
+                            totals.mj["Online"] += phoneData["Online"] || 0;
+                        });
+                    }
+                    const jsDate = report.date.toDate();
+                    const dateString = `${jsDate.getFullYear()}-${String(jsDate.getMonth() + 1).padStart(2, '0')}-${String(jsDate.getDate()).padStart(2, '0')}`;
+                    if (!calculatedDailyData[dateString]) {
+                        calculatedDailyData[dateString] = { "Makan ditempat": 0, "Naskot": 0, "Online": 0 };
+                    }
+                    Object.values(report.restaurants).forEach(restoData => {
+                        if (restoData && restoData.phones) {
+                            Object.values(restoData.phones).forEach(phoneData => {
+                                calculatedDailyData[dateString]["Makan ditempat"] += phoneData["Makan ditempat"] || 0;
+                                calculatedDailyData[dateString]["Naskot"] += phoneData["Naskot"] || 0;
+                                calculatedDailyData[dateString]["Online"] += phoneData["Online"] || 0;
+                            });
+                        }
+                    });
+                });
+                totals.aps.total = totals.aps["Makan ditempat"] + totals.aps["Naskot"] + totals.aps["Online"];
+                totals.mj.total = totals.mj["Makan ditempat"] + totals.mj["Naskot"] + totals.mj["Online"];
+                const grandTotal = totals.aps.total + totals.mj.total;
+                document.getElementById('aps-makan').textContent = formatCurrency(totals.aps["Makan ditempat"]);
+                document.getElementById('aps-naskot').textContent = formatCurrency(totals.aps["Naskot"]);
+                document.getElementById('aps-online').textContent = formatCurrency(totals.aps["Online"]);
+                document.getElementById('aps-total').textContent = formatCurrency(totals.aps.total);
+                document.getElementById('mj-makan').textContent = formatCurrency(totals.mj["Makan ditempat"]);
+                document.getElementById('mj-naskot').textContent = formatCurrency(totals.mj["Naskot"]);
+                document.getElementById('mj-online').textContent = formatCurrency(totals.mj["Online"]);
+                document.getElementById('mj-total').textContent = formatCurrency(totals.mj.total);
+                document.getElementById('grand-total-omset').textContent = formatCurrency(grandTotal);
+                turnoverChartSelectedWeek = 0;
+                updateTurnoverTrendChart();
+                hasilContainer.classList.remove('hidden');
+            });
+
+            document.getElementById('omset-trend-chart-container').addEventListener('click', (e) => {
+                const target = e.target.closest('.turnover-chart-week-btn');
+
+                if (target) {
+                    turnoverChartSelectedWeek = parseInt(target.dataset.week);
+                    updateTurnoverTrendChart();
+                }
+            });
+
+            document.getElementById('proses-laporan-btn').addEventListener('click', async () => {
+                const textarea = document.getElementById('laporan-harian-input');
+                const rawText = textarea.value;
+                if (!rawText.trim()) { showToast("Kotak teks tidak boleh kosong."); return; }
+                try {
+                    const reportData = parseDailyReport(rawText);
+                    const jsDate = reportData.date.toDate();
+                    const year = jsDate.getFullYear();
+                    const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(jsDate.getDate()).padStart(2, '0');
+                    const dateString = `${year}-${month}-${day}`;
+                    const docRef = doc(db, 'daily_reports', dateString);
+                    await setDoc(docRef, reportData);
+                    showToast(`Laporan untuk tanggal ${dateString} berhasil disimpan!`);
+                    textarea.value = '';
+                } catch (error) {
+                    console.error("Gagal memproses laporan:", error);
+                    showToast(error.message);
+                }
+            });
+
+            document.getElementById('btn-kalkulator-online').addEventListener('click', () => navigateTo('page-kalkulator-online'));
+            document.getElementById('back-to-lainnya-from-online-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+
+            document.getElementById('hitung-online-btn').addEventListener('click', () => {
+                const parseInput = (id) => parseFloat(document.getElementById(id).value) || 0;
+
+                const apsGrabPendapatan = parseInput('aps-grab-input');
+                const apsGojekPendapatan = parseInput('aps-gojek-input');
+                const apsShopeePendapatan = parseInput('aps-shopee-input');
+                const mjGrabPendapatan = parseInput('mj-grab-input');
+                const mjGojekPendapatan = parseInput('mj-gojek-input');
+                const mjShopeePendapatan = parseInput('mj-shopee-input');
+
+                const apsGrabKomisi = Math.floor((apsGrabPendapatan * 0.10) / 1.1);
+                const apsGojekKomisi = Math.floor((apsGojekPendapatan * 0.13) / 1.1);
+                const apsShopeeKomisi = Math.floor(apsShopeePendapatan * 0.10);
+
+                const apsGrabBersih = apsGrabPendapatan - apsGrabKomisi;
+                const apsGojekBersih = apsGojekPendapatan - apsGojekKomisi;
+                const apsShopeeBersih = apsShopeePendapatan - apsShopeeKomisi;
+                const apsTotalBersih = apsGrabBersih + apsGojekBersih + apsShopeeBersih;
+
+                const mjGrabKomisi = Math.floor((mjGrabPendapatan * 0.10) / 1.1);
+                const mjGojekKomisi = Math.floor((mjGojekPendapatan * 0.13) / 1.1);
+                const mjShopeeKomisi = Math.floor(mjShopeePendapatan * 0.10);
+
+                const mjGrabBersih = mjGrabPendapatan - mjGrabKomisi;
+                const mjGojekBersih = mjGojekPendapatan - mjGojekKomisi;
+                const mjShopeeBersih = mjShopeePendapatan - mjShopeeKomisi;
+                const mjTotalBersih = mjGrabBersih + mjGojekBersih + mjShopeeBersih;
+
+                const grandTotalOnline = apsTotalBersih + mjTotalBersih;
+                const totalBersihGrab = apsGrabBersih + mjGrabBersih;
+                const totalBersihGojek = apsGojekBersih + mjGojekBersih;
+                const totalBersihShopee = apsShopeeBersih + mjShopeeBersih;
+
+
+
+                document.getElementById('aps-grab-komisi').textContent = formatCurrency(apsGrabKomisi);
+                document.getElementById('aps-grab-bersih').textContent = formatCurrency(apsGrabBersih);
+                document.getElementById('aps-gojek-komisi').textContent = formatCurrency(apsGojekKomisi);
+                document.getElementById('aps-gojek-bersih').textContent = formatCurrency(apsGojekBersih);
+                document.getElementById('aps-shopee-komisi').textContent = formatCurrency(apsShopeeKomisi);
+                document.getElementById('aps-shopee-bersih').textContent = formatCurrency(apsShopeeBersih);
+                document.getElementById('aps-total-bersih').textContent = formatCurrency(apsTotalBersih);
+
+                document.getElementById('mj-grab-komisi').textContent = formatCurrency(mjGrabKomisi);
+                document.getElementById('mj-grab-bersih').textContent = formatCurrency(mjGrabBersih);
+                document.getElementById('mj-gojek-komisi').textContent = formatCurrency(mjGojekKomisi);
+                document.getElementById('mj-gojek-bersih').textContent = formatCurrency(mjGojekBersih);
+                document.getElementById('mj-shopee-komisi').textContent = formatCurrency(mjShopeeKomisi);
+                document.getElementById('mj-shopee-bersih').textContent = formatCurrency(mjShopeeBersih);
+                document.getElementById('mj-total-bersih').textContent = formatCurrency(mjTotalBersih);
+                document.getElementById('total-bersih-grab').textContent = formatCurrency(totalBersihGrab);
+                document.getElementById('total-bersih-grab').textContent = formatCurrency(totalBersihGrab);
+                document.getElementById('total-bersih-gojek').textContent = formatCurrency(totalBersihGojek);
+                document.getElementById('total-bersih-shopee').textContent = formatCurrency(totalBersihShopee);
+
+
+                document.getElementById('grand-total-online').textContent = formatCurrency(grandTotalOnline);
+
+                document.getElementById('hasil-online-container').classList.remove('hidden');
+            });
+
+            document.body.addEventListener('click', async (e) => { 
+            document.getElementById('checklist-report-list').addEventListener('change', async (e) => {
+                if (e.target.classList.contains('staff-check-task')) {
+                    const checkbox = e.target;
+                    const reportId = checkbox.dataset.reportId;
+                    const taskId = checkbox.dataset.taskId;
+                    const isChecked = checkbox.checked;
+
+                    if (!reportId || !taskId) {
+                        showToast("Error: ID Laporan atau Tugas tidak ditemukan.");
+                        return;
+                    }
+
+                    try {
+                        const reportRef = doc(db, 'checklist_history', reportId);
+                        await updateDoc(reportRef, {
+                            [`tasks.${taskId}.isChecked`]: isChecked
+                        });
+                        showToast(`Status cek untuk tugas #${taskId.substring(0,4)} diperbarui.`);
+                    } catch (error) {
+                        console.error("Gagal memperbarui status cek:", error);
+                        showToast("Gagal menyimpan perubahan.");
+                        checkbox.checked = !isChecked; // Kembalikan ke state semula jika gagal
+                    }
+                }
+            });
+
+            document.getElementById('checklist-report-list').addEventListener('click', async (e) => {
+                if (e.target.classList.contains('save-comment-btn')) {
+                    const button = e.target;
+                    const reportId = button.dataset.reportId;
+                    const taskId = button.dataset.taskId;
+                    
+                    const inputEl = button.previousElementSibling;
+                    const commentText = inputEl.value;
+
+                    if (!reportId || !taskId) {
+                        showToast("Error: ID Laporan atau Tugas tidak ditemukan.");
+                        return;
+                    }
+
+                    try {
+                        const reportRef = doc(db, 'checklist_history', reportId);
+                        await updateDoc(reportRef, {
+                            [`tasks.${taskId}.staffComment`]: commentText
+                        });
+                        showToast(`Komentar untuk tugas #${taskId.substring(0,4)} disimpan.`);
+                    } catch (error) {
+                        console.error("Gagal menyimpan komentar:", error);
+                        showToast("Gagal menyimpan komentar.");
+                    }
+                }
+            });
+
+                const target = e.target.closest('button'); 
+                if (!target) return;
+                if (target.classList.contains('delete-completed-order-btn')) {
+                    const orderId = target.dataset.orderId;
+                    const transactionId = target.dataset.transactionId;
+
+                    if (!orderId || !transactionId) {
+                        showToast("Error: ID pesanan atau transaksi tidak ditemukan.");
+                        return;
+                    }
+
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        try {
+            const batch = writeBatch(db);
+            const orderRef = doc(db, "customer_orders", orderId);
+            const transactionRef = doc(db, "transactions", transactionId);
+
+            batch.delete(orderRef);
+            batch.delete(transactionRef);
+
+            // Jalankan batch
+            await batch.commit();
+            showToast("Pesanan dan faktur terkait berhasil dihapus.");
+        } catch (error) {
+            console.error("Gagal menghapus pesanan dan transaksi:", error);
+            showToast("Gagal menghapus data. Silakan coba lagi.");
+        }
+    }
+}
+
+
+                if (target.classList.contains('delete-daily-report-btn')) {
+                    const reportId = target.dataset.id;
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        try {
+                            await deleteDoc(doc(db, 'daily_reports', reportId));
+                            showToast('Laporan harian berhasil dihapus.');
+                        } catch (error) {
+                            console.error("Gagal menghapus laporan:", error);
+                            showToast("Gagal menghapus laporan.");
+                        }
+                    }
+                }
+                    if (target.classList.contains('invoice-btn') || target.classList.contains('reprint-invoice-btn')) {
+                        const transactionId = target.dataset.id;
+                        if (transactionId) {
+                            renderFunctions.generateInvoice(transactionId);
+                        } else {
+                            showToast("ID Faktur tidak ditemukan.");
+                        }
+                    }
+
+
+                if (target.id === 'fab-add-contact') contactModal.show(); 
+                if (target.id === 'fab-add-item') itemModal.show(); 
+                if (target.id === 'fab-add-expense') { expenseModal.show({ purchaseDate: new Date().toISOString().split('T')[0] }); } 
+                if (target.id === 'fab-add-sale') navigateTo('page-penjualan'); 
+                if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click(); 
+                if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); } 
+                if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id)); showToast('Pelanggan berhasil dihapus.'); } } 
+                if (target.classList.contains('edit-item-btn')) { const item = state.inventory.find(i => i.id === target.dataset.id); if (item) itemModal.show(item); } 
+                if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id)); showToast('Barang berhasil dihapus.'); } } 
+                if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { try { await deleteDoc(doc(db, 'transactions', txId)); showToast('Transaksi berhasil dihapus.'); } catch(error) { console.error("Error deleting transaction: ", error); showToast("Gagal menghapus transaksi."); } } } 
+                if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id)); showToast('Pesanan berhasil dihapus.'); } } 
+                if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId)); showToast('Item belanja berhasil dihapus.'); } } 
+
+                if (target.id === 'add-sale-item-btn') addSaleItemRow(); 
+                if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); } 
+                if (target.id === 'add-order-item-btn') addOrderItemRow(); 
+                if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); } 
+                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } } 
+                if (target.classList.contains('view-customer-details-btn')) { const customerId = target.dataset.id; const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId); const detailsEl = document.getElementById('customer-item-details'); if (sales.length > 0) { const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button></div></div>`; }).join(''); detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`; } else { detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`; } customerDetailModal.show(); } 
+            });
+
+            saleModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
+            customerOrderModal.modalEl.addEventListener('change', (e) => { if(e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
+            document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
+            document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
+            document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = ''; document.getElementById('salesMonthFilter').value = ''; renderFunctions.renderSalesReport(); });
+            document.getElementById('contactSearchInput').addEventListener('input', renderFunctions.renderContactList);
+            document.getElementById('completedOrderSearchInput').addEventListener('input', renderFunctions.renderCompletedOrderList);
+            const contactListEl = document.getElementById('contact-list');
+            const broadcastControlsEl = document.getElementById('broadcast-controls');
+            const selectedCountEl = document.getElementById('selected-count');
+            contactListEl.addEventListener('change', e => { if (e.target.classList.contains('contact-checkbox')) { const checkedCount = contactListEl.querySelectorAll('.contact-checkbox:checked').length; if (checkedCount > 0) { selectedCountEl.textContent = checkedCount; broadcastControlsEl.classList.remove('hidden'); } else { broadcastControlsEl.classList.add('hidden'); } } });
+            document.getElementById('show-broadcast-modal').addEventListener('click', () => { broadcastModal.show(); });
+            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => { if(currentBroadcastIndex < broadcastQueue.length) { const contact = broadcastQueue[currentBroadcastIndex]; const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]); const whatsappNumber = formatWhatsappNumber(contact.phone); const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`; window.open(url, '_blank'); currentBroadcastIndex++; updateBroadcastProgressUI(); } });
+            document.getElementById('broadcast-cancel-btn').addEventListener('click', hideBroadcastProgress);
+            document.getElementById('broadcast-close-btn').addEventListener('click', hideBroadcastProgress);
+            document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
+            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('expenseMonthFilter').value; const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"]; let dataToExport = state.monthlyExpenses; if (selectedMonth) { dataToExport = dataToExport.filter(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data belanja untuk diekspor.'); return; } const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); });
+            document.getElementById('expenseMonthFilter').addEventListener('change', renderFunctions.renderExpenseReport);
+            document.getElementById('resetExpenseFilter').addEventListener('click', () => { document.getElementById('expenseMonthFilter').value = ''; renderFunctions.renderExpenseReport(); });
+            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('completedOrderMonthFilter').value; const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.customerOrders.filter(o => o.status === 'completed'); if (selectedMonth) { dataToExport = dataToExport.filter(o => new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data pesanan selesai untuk diekspor.'); return; } const data = dataToExport.flatMap(order => order.items.map(item => [formatDate(order.orderDate), order.contactName, order.alamat || '-', item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan pesanan selesai sedang diunduh...'); });
+            document.getElementById('checklistMonthFilter').addEventListener('change', renderFunctions.renderChecklistReport);
+            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('checklistMonthFilter').value; const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"]; let dataToExport = state.checklistHistory; if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; } const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A'])); const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan kebersihan sedang diunduh...'); });
+            // ... (di dalam fungsi initializeApplication)
+
+
+document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
+    // Set tanggal hari ini saat halaman dibuka
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('uf-tanggal').value = today;
+    navigateTo('page-hitung-fisik');
+});
+document.getElementById('back-to-lainnya-from-fisik-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+
+const formHitungFisik = document.getElementById('form-hitung-fisik');
+
+const hitungUangFisik = () => {
+    const parseInput = (el) => parseFloat(el.value) || 0;
+
+    // Menghitung total uang fisik di laci (Uang Kertas + Koin)
+    let totalUangKertas = 0;
+    formHitungFisik.querySelectorAll('.uf-input-kertas').forEach(input => {
+        const qty = parseInput(input);
+        const value = parseFloat(input.dataset.value);
+        const subtotal = qty * value;
+        totalUangKertas += subtotal;
+        document.getElementById(`uf-subtotal-${input.id.split('-')[2]}`).textContent = formatCurrency(subtotal);
+    });
+    const totalKoin = parseInput(document.getElementById('uf-input-koin'));
+    const totalFisikDiLaci = totalUangKertas + totalKoin;
+    document.getElementById('uf-total-fisik-laci').textContent = formatCurrency(totalFisikDiLaci);
+
+    // Menghitung total pengeluaran
+    let totalPengeluaran = 0;
+    formHitungFisik.querySelectorAll('.uf-input-pengeluaran').forEach(input => {
+        totalPengeluaran += parseInput(input);
+    });
+    document.getElementById('uf-total-pengeluaran').textContent = formatCurrency(totalPengeluaran);
+
+    // Menghitung total non-tunai
+    let totalNonTunai = 0;
+    formHitungFisik.querySelectorAll('.uf-input-nontunai').forEach(input => {
+        totalNonTunai += parseInput(input);
+    });
+    document.getElementById('uf-total-nontunai').textContent = formatCurrency(totalNonTunai);
+
+    // Menghitung rekonsiliasi akhir dengan LOGIKA BARU DARI ANDA
+    const modalKasir = parseInput(document.getElementById('uf-modal-kasir'));
+    const totalPenjualanSistem = parseInput(document.getElementById('uf-total-penjualan-sistem'));
+
+    // Langkah 1: (Uang fisik + pengeluaran)
+    const grossCash = totalFisikDiLaci + totalPengeluaran;
+
+    // Langkah 2: (Hasil Langkah 1 - modal kasir)
+    const totalUangFisikBaru = grossCash - modalKasir;
+
+    // Langkah 3: (Hasil Langkah 2 + uang non tunai)
+    const totalUangSeharusnya = totalUangFisikBaru + totalNonTunai;
+    document.getElementById('uf-total-seharusnya').textContent = formatCurrency(totalUangSeharusnya);
+
+    // Hitung Selisih (membandingkan hasil akhir dengan penjualan sistem)
+    const selisih = totalUangSeharusnya - totalPenjualanSistem;
+    const selisihEl = document.getElementById('uf-selisih');
+    selisihEl.textContent = formatCurrency(selisih);
+
+    if (selisih < 0) {
+        selisihEl.classList.remove('text-emerald-600');
+        selisihEl.classList.add('text-red-600');
+    } else {
+        selisihEl.classList.remove('text-red-600');
+        selisihEl.classList.add('text-emerald-600');
+    }
+};
+
+// Event listener untuk menghitung otomatis saat ada input
+formHitungFisik.addEventListener('input', hitungUangFisik);
+
+// Event listener untuk tombol reset
+document.getElementById('uf-reset-btn').addEventListener('click', () => {
+    formHitungFisik.querySelectorAll('input[type="number"]').forEach(input => {
+        input.value = '';
+    });
+    // Set tanggal kembali ke hari ini setelah reset
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('uf-tanggal').value = today;
+    hitungUangFisik(); // Hitung ulang agar semua total kembali ke Rp 0
+});
+
+const absensiDateFilter = document.getElementById('absensi-date-filter');
+const absensiListContainer = document.getElementById('absensi-list');
+const absensiLoading = document.getElementById('absensi-loading');
+
+/**
+ * Helper function untuk mendapatkan ikon dan warna berdasarkan status. (VERSI BARU DENGAN IKON RELEVAN)
+ * @param {string} status - Karakter status ('H', 'S', 'I', 'A').
+ * @returns {object} - Objek berisi kelas ikon dan warna.
+ */
+const getStatusInfo = (status) => {
+
+    const icons = {
+        H: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>`,
+        S: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
+        I: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`,
+        A: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>`
+    };
+
+            switch (status) {
+                case 'H': return { icon: icons.H, color: 'text-green-500' };
+                case 'S': return { icon: icons.S, color: 'text-yellow-500' };
+                case 'I': return { icon: icons.I, color: 'text-blue-500' };
+                case 'A': return { icon: icons.A, color: 'text-red-500' };
+                default: return { icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`, color: 'text-gray-400' };
+            }
+        };
+
+            const fetchAttendanceReport = async (date) => {
+                absensiListContainer.innerHTML = '';
+                absensiListContainer.classList.add('hidden');
+                absensiLoading.classList.remove('hidden');
+
+                try {
+                    const url = `${ATTENDANCE_SCRIPT_URL}?action=read&date=${date}`;
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Gagal mengambil data dari server.');
+                    }
+                    const result = await response.json();
+                    const attendanceData = result.data || result;
+
+                    if (Array.isArray(attendanceData) && attendanceData.length > 0) {
+                        const sortedData = attendanceData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                        sortedData.forEach(entry => {
+                            if (!entry.timestamp || !entry.nama_karyawan) {
+                                console.warn('Data entri tidak lengkap, dilewati:', entry);
+                                return;
+                            }
+
+                const item = document.createElement('div');
+                item.className = 'bg-white p-3 border rounded-lg flex items-start gap-3 shadow-sm';
+
+                const attendanceTime = new Date(entry.timestamp);
+                const time = attendanceTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const statusInfo = getStatusInfo(entry.keterangan);
+
+                let locationStatus = { text: 'Lokasi T/A', color: 'text-gray-400', distance: null };
+                const lat = parseFloat(entry.latitude);
+                const lon = parseFloat(entry.longitude);
+
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    const distance = haversineDistance(OFFICE_COORDS, { lat, lon });
+                    locationStatus.distance = distance;
+                    if (distance <= ALLOWED_RADIUS_KM) {
+                        locationStatus = { text: 'Di Lokasi', color: 'text-green-600' };
+                    } else {
+                        locationStatus = { text: `Di Luar Lokasi (${(distance * 1000).toFixed(0)} m)`, color: 'text-red-600' };
+                    }
+                }
+
+                let lateStatus = { text: 'T/A', color: 'text-gray-400' };
+
+                let shiftKey = null;
+                const entryShift = entry.shift?.toUpperCase() || '';
+                if (entryShift.includes('PAGI')) {
+                    shiftKey = 'PAGI';
+                } else if (entryShift.includes('SIANG')) {
+                    shiftKey = 'SIANG';
+                } else if (entryShift.includes('MALAM')) {
+                    shiftKey = 'MALAM';
+                }
+                const shiftRule = shiftKey ? SHIFT_TIMES[shiftKey] : null;
+                if (shiftRule && entry.keterangan === 'H') {
+                    const deadline = new Date(attendanceTime);
+                    deadline.setHours(shiftRule.hour, shiftRule.minute, 0, 0);
+                    deadline.setMinutes(deadline.getMinutes() + shiftRule.grace);
+
+                    if (attendanceTime > deadline) {
+                        lateStatus = { text: 'Terlambat', color: 'text-red-600' };
+                    } else {
+                        lateStatus = { text: 'Tepat Waktu', color: 'text-green-600' };
+                    }
+                }
+
+
+                let locationHtml = '<p class="text-xs text-gray-400 mt-2">Peta tidak tersedia (lokasi tidak terekam)</p>';
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    const bbox = `${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}`;
+                    const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+                    locationHtml = `
+                        <div class="mt-2 rounded-lg overflow-hidden border" title="Peta Lokasi Absensi">
+                           <iframe width="100%" height="150" style="border:0;" loading="lazy" src="${iframeSrc}"></iframe>
+                        </div>`;
+                }
+                item.innerHTML = `
+                    <div class="flex-shrink-0 w-16 text-center">
+                        <p class="font-bold text-lg text-gray-800">${time}</p>
+                        <div class="mt-1 ${statusInfo.color}" title="Status: ${entry.keterangan}">
+                            ${statusInfo.icon}
+                        </div>
+                    </div>
+                    <div class="flex-grow border-l pl-3">
+                        <p class="font-bold text-gray-900">${entry.nama_karyawan}</p>
+                        <p class="text-sm text-gray-600">${entry.bagian || 'N/A'} - ${entry.shift || 'N/A'}</p>
+                        <div class="flex items-center gap-3 text-xs mt-2">
+                            <span class="font-semibold px-2 py-0.5 rounded-full ${lateStatus.color} bg-opacity-10 ${lateStatus.color.replace('text', 'bg')}">${lateStatus.text}</span>
+                            <span class="font-semibold px-2 py-0.5 rounded-full ${locationStatus.color} bg-opacity-10 ${locationStatus.color.replace('text', 'bg')}">${locationStatus.text}</span>
+                        </div>
+                        ${locationHtml}
+                    </div>`;
+                absensiListContainer.appendChild(item);
+            });
+        } else {
+            absensiListContainer.innerHTML = `<div class="text-center py-10"><p class="text-sm text-gray-500">Tidak ada data absensi untuk tanggal yang dipilih.</p></div>`;
+        }
+    } catch (error) {
+        console.error('Error fetching attendance:', error);
+        absensiListContainer.innerHTML = `<div class="text-center py-10"><p class="text-sm text-red-500">Terjadi kesalahan: ${error.message}. Coba lagi nanti.</p></div>`;
+    } finally {
+        absensiLoading.classList.add('hidden');
+        absensiListContainer.classList.remove('hidden');
+    }
+};
+
+document.getElementById('btn-laporan-absensi').addEventListener('click', () => {
+    navigateTo('page-laporan-absensi');
+    const today = new Date().toISOString().split('T')[0];
+    if (!absensiDateFilter.value) {
+        absensiDateFilter.value = today;
+    }
+    fetchAttendanceReport(absensiDateFilter.value || today);
+});
+
+// Tombol kembali
+document.getElementById('back-to-lainnya-from-absensi-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+
+// Event listener untuk filter tanggal
+absensiDateFilter.addEventListener('change', (e) => {
+    if (e.target.value) {
+        fetchAttendanceReport(e.target.value);
+    }
+});
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            let isAppInitialized = false;
+            if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then((registration) => {
+                console.log('Service Worker berhasil didaftarkan: ', registration);
+            })
+            .catch((error) => {
+                console.log('Pendaftaran Service Worker gagal: ', error);
+            });
+    });
+}
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    if (isAppInitialized) return; 
+                    isAppInitialized = true;
+                    initializeApplication(db);
+                    const lastPage = localStorage.getItem('lastActivePage');
+                if (lastPage) {
+                    navigateTo(lastPage); // Arahkan ke halaman terakhir yang disimpan
+                } else {
+                    navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
+                }
+                    onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderContactList(); renderFunctions.renderDashboard();}, (error) => console.error("Error fetching contacts:", error));
+                    onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
+                    onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderSalesReport(); renderFunctions.renderDashboard(); renderFunctions.renderCustomerSummary(); renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
+
+                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderOrderList(); renderFunctions.renderCompletedOrderList(); renderFunctions.renderDashboard(); renderFunctions.renderCompletedOrderFilters(); }, (error) => console.error("Error fetching customer orders:", error));
+                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderExpenseReport(); renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching monthly expenses:", error));
+                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => { state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderFunctions.renderChecklistReport(); }, (error) => console.error("Error fetching checklist history:", error));
+
+                    onSnapshot(query(collection(db, 'daily_reports'), orderBy('date', 'desc')), (snapshot) => {
+                        state.dailyReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderDailyReportHistory();
+                    }, (error) => console.error("Error fetching daily reports:", error));
+
+
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => { loadingOverlay.style.display = 'none'; document.getElementById('app-container').classList.remove('hidden'); }, 300);
+                } else {
+                    signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error);    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
