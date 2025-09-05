@@ -1649,18 +1649,14 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
                 const startDateValue = document.getElementById('start-date').value;
                 if (!startDateValue) return;
 
-                const startDateOfMonth = new Date(startDateValue.substring(0, 8) + '01');
-                const firstDayOfMonth = startDateOfMonth.getDay();
-
                 for (const dateStr in calculatedDailyData) {
-                    const date = new Date(dateStr.replace(/-/g, '/'));
-                    const dayOfMonth = date.getDate();
-                    let weekOfMonth = Math.ceil((dayOfMonth + firstDayOfMonth) / 7);
-
-                    if (turnoverChartSelectedWeek === 0 || turnoverChartSelectedWeek === weekOfMonth) {
-                        filteredData[dateStr] = calculatedDailyData[dateStr];
-                    }
-                }
+    const date = new Date(dateStr.replace(/-/g, '/'));
+    // Memanggil fungsi getWeekOfMonth yang sudah ada untuk perhitungan yang benar
+    const weekOfMonth = getWeekOfMonth(date);
+    if (turnoverChartSelectedWeek === 0 || turnoverChartSelectedWeek === weekOfMonth) {
+        filteredData[dateStr] = calculatedDailyData[dateStr];
+    }
+}
 
                 const sortedDates = Object.keys(filteredData).sort();
                 const chartLabels = sortedDates.map(dateStr => {
