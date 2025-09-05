@@ -219,10 +219,19 @@
                  <div id="expense-report-list" class="space-y-6"></div>
             </div>
 
-            <div id="page-pelanggan" class="page hidden">
-                <h2 class="font-bold text-2xl mb-6">Rangkuman Pelanggan</h2>
-                <div id="customer-summary-list" class="space-y-4"></div>
-            </div>
+<div id="page-pelanggan" class="page hidden">
+    <h2 class="font-bold text-2xl mb-6">Rangkuman Pelanggan</h2>
+    
+    <div class="space-y-4 mb-4 p-4 bg-gray-50 rounded-lg border">
+        <div class="flex items-center gap-2">
+            <select id="customer-summary-month-filter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
+                <option value="">Tampilkan Semua Bulan</option>
+            </select>
+            <button id="customer-summary-reset-filter" class="bg-gray-200 px-3 py-1.5 rounded-lg text-sm">Reset</button>
+        </div>
+    </div>
+    <div id="customer-summary-list" class="space-y-4"></div>
+</div>
 
             <div id="page-lainnya" class="page hidden">
                 <div class="space-y-6">
@@ -1093,17 +1102,53 @@ const formatCurrencyShort = (amount) => {
                 const expensesByMonth = filteredExpenses.reduce((acc, expense) => { const date = new Date(expense.date.seconds * 1000); const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense); acc[monthYear].total += expense.total; return acc; }, {});
                 Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = expensesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`; listEl.appendChild(monthEl); });
             },
-            renderCustomerSummary: () => {
-                const listEl = document.getElementById('customer-summary-list');
-                listEl.innerHTML = '';
-                const sales = state.transactions.filter(tx => tx.type === 'sale');
-                if (sales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Rangkuman pelanggan akan muncul di sini setelah ada penjualan.</p></div>`; return; }
-                const summary = sales.reduce((acc, sale) => { const id = sale.contactId; if (!acc[id]) { acc[id] = { id: id, name: sale.contactName, purchaseCount: 0, totalSpent: 0, lastPurchaseDate: null, items: {} }; } acc[id].purchaseCount += 1; acc[id].totalSpent += sale.total; if (!acc[id].lastPurchaseDate || sale.date.seconds > acc[id].lastPurchaseDate.seconds) { acc[id].lastPurchaseDate = sale.date; } sale.items.forEach(item => { if (!acc[id].items[item.name]) { acc[id].items[item.name] = 0; } acc[id].items[item.name] += item.qty; }); return acc; }, {});
-                const sortedSummary = Object.values(summary).sort((a, b) => b.totalSpent - a.totalSpent);
-                sortedSummary.forEach((customer, index) => {
-                    const el = document.createElement('div');
-                    el.className = 'p-3 border rounded-lg';
-                    el.innerHTML = `
+            // GANTI FUNGSI LAMA DENGAN VERSI BARU INI
+renderCustomerSummary: () => {
+    const listEl = document.getElementById('customer-summary-list');
+    const monthFilterEl = document.getElementById('customer-summary-month-filter');
+    if (!listEl || !monthFilterEl) return;
+    
+    listEl.innerHTML = '';
+    const allSales = state.transactions.filter(tx => tx.type === 'sale');
+    
+    // 1. Populasi dropdown filter dengan bulan yang tersedia
+    const availableMonths = [...new Set(allSales.map(sale => new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
+    const currentFilterValue = monthFilterEl.value;
+    monthFilterEl.innerHTML = '<option value="">Tampilkan Semua Bulan</option>';
+    availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
+    monthFilterEl.value = currentFilterValue;
+    
+    // 2. Filter transaksi berdasarkan bulan yang dipilih
+    const selectedMonth = monthFilterEl.value;
+    const salesToProcess = selectedMonth ?
+        allSales.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth) :
+        allSales;
+    
+    if (salesToProcess.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data penjualan pada periode yang dipilih.</p></div>`;
+        return;
+    }
+    
+    // 3. Buat rangkuman dari data yang sudah difilter
+    const summary = salesToProcess.reduce((acc, sale) => {
+        const id = sale.contactId;
+        if (!acc[id]) {
+            acc[id] = { id: id, name: sale.contactName, purchaseCount: 0, totalSpent: 0, lastPurchaseDate: null };
+        }
+        acc[id].purchaseCount += 1;
+        acc[id].totalSpent += sale.total;
+        if (!acc[id].lastPurchaseDate || sale.date.seconds > acc[id].lastPurchaseDate.seconds) {
+            acc[id].lastPurchaseDate = sale.date;
+        }
+        return acc;
+    }, {});
+    
+    // 4. Tampilkan hasilnya
+    const sortedSummary = Object.values(summary).sort((a, b) => b.totalSpent - a.totalSpent);
+    sortedSummary.forEach((customer, index) => {
+        const el = document.createElement('div');
+        el.className = 'p-3 border rounded-lg';
+        el.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                <span class="font-bold text-gray-400 w-6 text-center">${index + 1}</span>
@@ -1120,9 +1165,9 @@ const formatCurrencyShort = (amount) => {
                         <div class="text-right mt-2 pt-2 border-t">
                             <button data-id="${customer.id}" class="view-customer-details-btn text-xs font-bold text-blue-600">LIHAT DETAIL</button>
                         </div>`;
-                    listEl.appendChild(el);
-                });
-            },
+        listEl.appendChild(el);
+    });
+},
             // GANTI SELURUH FUNGSI renderCompletedOrderList ANDA DENGAN INI
 renderCompletedOrderList: () => {
     const listEl = document.getElementById('completed-orders-list');
@@ -1730,6 +1775,11 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
         function initializeApplication(db) {
 // Tambahkan ini di dalam fungsi initializeApplication(db)
 
+document.getElementById('customer-summary-month-filter').addEventListener('change', renderFunctions.renderCustomerSummary);
+document.getElementById('customer-summary-reset-filter').addEventListener('click', () => {
+    document.getElementById('customer-summary-month-filter').value = '';
+    renderFunctions.renderCustomerSummary();
+});
 document.getElementById('monthly-report-year-filter').addEventListener('change', () => {
     renderFunctions.renderMonthlyTurnoverReport();
 });
