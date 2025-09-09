@@ -193,10 +193,15 @@
             </div>
 
             <div id="page-pihak" class="page hidden">
-                <h2 class="font-bold text-2xl mb-6">Daftar Pelanggan</h2>
-                <input type="text" id="contactSearchInput" placeholder="Cari nama, no. telp, atau alamat..." class="w-full px-3 py-1.5 border rounded-lg mb-4">
-                <div id="contact-list" class="space-y-3"></div>
-            </div>
+    <h2 class="font-bold text-2xl mb-6">Daftar Pelanggan</h2>
+    <input type="text" id="contactSearchInput" placeholder="Cari nama, no. telp, atau alamat..." class="w-full px-3 py-1.5 border rounded-lg mb-4">
+    
+    <div class="flex items-center mb-4 pl-1">
+        <input type="checkbox" id="select-all-contacts-checkbox" class="h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+        <label for="select-all-contacts-checkbox" class="ml-2 text-sm font-medium text-gray-700">Pilih Semua</label>
+    </div>
+    <div id="contact-list" class="space-y-3"></div>
+</div>
 
             <div id="page-inventaris" class="page hidden">
                 <h2 class="font-bold text-2xl mb-6">Menu</h2>
@@ -221,7 +226,7 @@
 
 <div id="page-pelanggan" class="page hidden">
     <h2 class="font-bold text-2xl mb-6">Rangkuman Pelanggan</h2>
-    
+
     <div class="space-y-4 mb-4 p-4 bg-gray-50 rounded-lg border">
         <div class="flex items-center gap-2">
             <select id="customer-summary-month-filter" class="w-full px-3 py-1.5 border rounded-lg bg-white">
@@ -773,18 +778,18 @@ const updateMonthDisplay = () => {
     const displayEl = document.getElementById('month-display');
     const nextBtn = document.getElementById('next-month-btn');
     if (!displayEl || !nextBtn) return;
-    
+
     // Format tanggal menjadi "Nama Bulan Tahun"
     displayEl.textContent = displayedDate.toLocaleDateString('id-ID', {
         month: 'long',
         year: 'numeric'
     });
-    
+
     // Cek apakah bulan yang ditampilkan adalah bulan saat ini atau masa depan
     const now = new Date();
     const isCurrentOrFutureMonth = displayedDate.getFullYear() > now.getFullYear() ||
         (displayedDate.getFullYear() === now.getFullYear() && displayedDate.getMonth() >= now.getMonth());
-    
+
     // Nonaktifkan tombol 'next' jika sudah di bulan saat ini
     nextBtn.disabled = isCurrentOrFutureMonth;
     nextBtn.classList.toggle('opacity-50', isCurrentOrFutureMonth);
@@ -1107,28 +1112,28 @@ renderCustomerSummary: () => {
     const listEl = document.getElementById('customer-summary-list');
     const monthFilterEl = document.getElementById('customer-summary-month-filter');
     if (!listEl || !monthFilterEl) return;
-    
+
     listEl.innerHTML = '';
     const allSales = state.transactions.filter(tx => tx.type === 'sale');
-    
+
     // 1. Populasi dropdown filter dengan bulan yang tersedia
     const availableMonths = [...new Set(allSales.map(sale => new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' })))].sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]]));
     const currentFilterValue = monthFilterEl.value;
     monthFilterEl.innerHTML = '<option value="">Tampilkan Semua Bulan</option>';
     availableMonths.forEach(month => monthFilterEl.add(new Option(month, month)));
     monthFilterEl.value = currentFilterValue;
-    
+
     // 2. Filter transaksi berdasarkan bulan yang dipilih
     const selectedMonth = monthFilterEl.value;
     const salesToProcess = selectedMonth ?
         allSales.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth) :
         allSales;
-    
+
     if (salesToProcess.length === 0) {
         listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada data penjualan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data penjualan pada periode yang dipilih.</p></div>`;
         return;
     }
-    
+
     // 3. Buat rangkuman dari data yang sudah difilter
     const summary = salesToProcess.reduce((acc, sale) => {
         const id = sale.contactId;
@@ -1142,7 +1147,7 @@ renderCustomerSummary: () => {
         }
         return acc;
     }, {});
-    
+
     // 4. Tampilkan hasilnya
     const sortedSummary = Object.values(summary).sort((a, b) => b.totalSpent - a.totalSpent);
     sortedSummary.forEach((customer, index) => {
@@ -1490,9 +1495,9 @@ generateInvoice: async (purchaseId) => {
             }
             const tasksHtml = tasksArray.filter(task => task && task.done).map((task, index) => {
     const taskId = Object.keys(report.tasks).find(key => report.tasks[key].text === task.text && report.tasks[key].completedBy === task.completedBy);
-    
+
     const imageHtml = task.proofUrl ? `<a href="${task.proofUrl}" target="_blank" rel="noopener noreferrer" title="Lihat gambar penuh"><img src="${task.proofUrl}" alt="${task.text}" class="w-16 h-16 object-cover rounded-md bg-gray-200"></a>` : `<div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-400">Tdk ada gbr</div>`;
-    
+
     const staffReviewHtml = `
                     <div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
                         <label class="flex items-center gap-2 text-sm text-gray-700">
@@ -1519,7 +1524,7 @@ generateInvoice: async (purchaseId) => {
                         </div>
                     </div>
                 `;
-    
+
     return `<li class="flex items-start gap-3 py-3 border-b last:border-b-0">
                             ${imageHtml}
                             <div class="flex-1">
@@ -1648,6 +1653,8 @@ omsetTrendChart = new Chart(ctx, {
 });
                 chartContainer.classList.remove('hidden');
             },
+            // ▼▼▼ KODE BARU DIMULAI ▼▼▼
+
             // GANTI SELURUH FUNGSI LAMA DENGAN INI
             renderMonthlyTurnoverReport: () => {
                 // 0. Populasi Filter Tahun jika belum ada
@@ -1660,7 +1667,7 @@ omsetTrendChart = new Chart(ctx, {
 
                 // 1. Filter laporan harian berdasarkan tahun yang dipilih
                 const reportsInYear = state.dailyReports.filter(r => r.date.toDate().getFullYear() === selectedYear);
-                
+
                 // 2. Proses dan agregat data per bulan
                 const monthlyData = {};
                 for (let i = 0; i < 12; i++) {
@@ -1676,7 +1683,7 @@ omsetTrendChart = new Chart(ctx, {
                 reportsInYear.forEach(report => {
                     const month = report.date.toDate().getMonth();
                     monthlyData[month].total += report.grandTotal || 0;
-                    
+
                     for (const restoName in report.restaurants) {
                         monthlyData[month].restaurants[restoName] += report.restaurants[restoName].total || 0;
                         for (const phone of Object.values(report.restaurants[restoName].phones)) {
@@ -1686,13 +1693,13 @@ omsetTrendChart = new Chart(ctx, {
                         }
                     }
                 });
-                
+
                 const processedMonths = Object.values(monthlyData).filter(m => m.total > 0);
-                
+
                 // 3. Hitung & tampilkan KPI
                 const totalTurnover = processedMonths.reduce((sum, val) => sum + val.total, 0);
                 const avgTurnover = processedMonths.length > 0 ? totalTurnover / processedMonths.length : 0;
-                
+
                 let maxTurnover = 0;
                 let bestMonthName = '-';
                 processedMonths.forEach(m => {
@@ -1729,7 +1736,7 @@ document.getElementById('avg-monthly-turnover').textContent = formatCurrencyShor
                 // 5. Render Grafik Stacked Bar
                 const ctx = document.getElementById('monthly-turnover-chart').getContext('2d');
                 if (monthlyTurnoverChart) monthlyTurnoverChart.destroy();
-                
+
                 // Filter bulan yang punya data saja
                 const monthsWithData = Object.values(monthlyData).filter(m => m.total > 0);
 
@@ -1788,7 +1795,7 @@ document.getElementById('export-monthly-report-csv').addEventListener('click', (
     const selectedYear = document.getElementById('monthly-report-year-filter').value;
     // (Logika ekspor akan menggunakan data yang sudah diproses di render function)
     const headers = ["Bulan", "Total Omset", "Makan di Tempat", "Naskot", "Online", "Omset APS", "Omset MJ"];
-    
+
     // Kita perlu memproses ulang data khusus untuk ekspor agar akurat
     const dataToExport = [];
     const monthlyDataForExport = {};
@@ -1812,7 +1819,7 @@ document.getElementById('export-monthly-report-csv').addEventListener('click', (
             }
         }
     });
-    
+
     Object.values(monthlyDataForExport).forEach(m => {
         if (m.total > 0) { // Hanya ekspor bulan yang ada datanya
             dataToExport.push([
@@ -1826,12 +1833,12 @@ document.getElementById('export-monthly-report-csv').addEventListener('click', (
             ]);
         }
     });
-    
+
     if (dataToExport.length === 0) {
         showToast("Tidak ada data untuk diekspor pada tahun ini.");
         return;
     }
-    
+
     const filename = `laporan_omset_bulanan_${selectedYear}.csv`;
     exportToCsv(filename, headers, dataToExport);
     showToast('Laporan sedang diunduh...');
@@ -2163,7 +2170,7 @@ updateMonthDisplay();
                     const button = e.target;
                     const reportId = button.dataset.reportId;
                     const taskId = button.dataset.taskId;
-                    
+
                     const inputEl = button.previousElementSibling;
                     const commentText = inputEl.value;
 
@@ -2271,7 +2278,51 @@ updateMonthDisplay();
             const contactListEl = document.getElementById('contact-list');
             const broadcastControlsEl = document.getElementById('broadcast-controls');
             const selectedCountEl = document.getElementById('selected-count');
-            contactListEl.addEventListener('change', e => { if (e.target.classList.contains('contact-checkbox')) { const checkedCount = contactListEl.querySelectorAll('.contact-checkbox:checked').length; if (checkedCount > 0) { selectedCountEl.textContent = checkedCount; broadcastControlsEl.classList.remove('hidden'); } else { broadcastControlsEl.classList.add('hidden'); } } });
+            const updateBroadcastControls = () => {
+    const contactListEl = document.getElementById('contact-list');
+    const broadcastControlsEl = document.getElementById('broadcast-controls');
+    const selectedCountEl = document.getElementById('selected-count');
+    const selectAllCheckbox = document.getElementById('select-all-contacts-checkbox');
+    
+    const allCheckboxes = contactListEl.querySelectorAll('.contact-checkbox');
+    const checkedCheckboxes = contactListEl.querySelectorAll('.contact-checkbox:checked');
+    const checkedCount = checkedCheckboxes.length;
+    
+    // Tampilkan atau sembunyikan bar broadcast
+    if (checkedCount > 0) {
+        selectedCountEl.textContent = checkedCount;
+        broadcastControlsEl.classList.remove('hidden');
+    } else {
+        broadcastControlsEl.classList.add('hidden');
+    }
+    
+    // Sinkronkan status checkbox "Pilih Semua"
+    if (allCheckboxes.length > 0 && checkedCount === allCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.checked = false;
+    }
+};
+// ▲▲▲ KODE BARU SELESAI ▲▲▲
+            // Ganti kode lama di atas dengan yang ini
+contactListEl.addEventListener('change', e => {
+    if (e.target.classList.contains('contact-checkbox')) {
+        updateBroadcastControls(); // Cukup panggil fungsi ini
+    }
+});
+// ▼▼▼ KODE BARU DIMULAI ▼▼▼
+document.getElementById('select-all-contacts-checkbox').addEventListener('click', (e) => {
+    const isChecked = e.target.checked;
+    const allVisibleCheckboxes = document.querySelectorAll('#contact-list .contact-checkbox');
+    
+    allVisibleCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+    });
+    
+    // Perbarui tampilan dan hitungan
+    updateBroadcastControls();
+});
+// ▲▲▲ KODE BARU SELESAI ▲▲▲
             document.getElementById('show-broadcast-modal').addEventListener('click', () => { broadcastModal.show(); });
             document.getElementById('broadcast-send-next-btn').addEventListener('click', () => { if(currentBroadcastIndex < broadcastQueue.length) { const contact = broadcastQueue[currentBroadcastIndex]; const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]); const whatsappNumber = formatWhatsappNumber(contact.phone); const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`; window.open(url, '_blank'); currentBroadcastIndex++; updateBroadcastProgressUI(); } });
             document.getElementById('broadcast-cancel-btn').addEventListener('click', hideBroadcastProgress);
