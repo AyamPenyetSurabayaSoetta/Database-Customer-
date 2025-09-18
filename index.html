@@ -195,7 +195,7 @@
             <div id="page-pihak" class="page hidden">
     <h2 class="font-bold text-2xl mb-6">Daftar Pelanggan</h2>
     <input type="text" id="contactSearchInput" placeholder="Cari nama, no. telp, atau alamat..." class="w-full px-3 py-1.5 border rounded-lg mb-4">
-    
+
     <div class="flex items-center mb-4 pl-1">
         <input type="checkbox" id="select-all-contacts-checkbox" class="h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
         <label for="select-all-contacts-checkbox" class="ml-2 text-sm font-medium text-gray-700">Pilih Semua</label>
@@ -1064,34 +1064,63 @@ const formatCurrencyShort = (amount) => {
                 const salesByMonth = filteredSales.reduce((acc, sale) => { const monthYear = new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { sales: [], total: 0 }; } acc[monthYear].sales.push(sale); acc[monthYear].total += sale.total; return acc; }, {});
                 Object.keys(salesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = salesByMonth[month]; const monthEl = document.createElement('div'); monthEl.className = 'border rounded-lg'; const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join(''); monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-green-700">${formatCurrency(monthData.total)}</p></header><ul class="divide-y">${salesHtml}</ul>`; listEl.appendChild(monthEl); });
             },
-            renderOrderList: () => {
-                const listEl = document.getElementById('order-list');
-                listEl.innerHTML = '';
-                const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
-                if (pendingOrders.length === 0) {
-                    listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada pesanan aktif</h3><p class="mt-1 text-sm text-gray-500">Tambahkan pesanan pelanggan baru.</p></div>`;
-                } else {
-                    pendingOrders.forEach(order => {
-                        const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
-                        const item = document.createElement('div');
-                        item.className = 'p-4 border rounded-lg space-y-3';
-                        item.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div><p class="font-bold text-lg">${order.contactName}</p><p class="text-sm text-gray-600">Alamat: ${order.alamat || '-'}</p></div>
-                                <p class="text-xs text-gray-500">${formatDate(order.orderDate)}</p>
-                            </div>
-                            <div class="text-sm space-y-1 pt-2 border-t"><p class="font-medium">Detail Pesanan:</p><ul class="list-disc pl-5 text-gray-700">${itemsHtml}</ul></div>
-                            <div class="flex justify-between items-center pt-3 border-t">
-                                <p class="font-bold text-lg">${formatCurrency(order.total)}</p>
-                                <div class="space-x-2">
-                                    <button data-id="${order.id}" class="delete-order-btn text-xs font-bold text-red-600">HAPUS</button>
-                                    <button data-id="${order.id}" class="create-invoice-from-order-btn text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-md">BUAT FAKTUR</button>
-                                </div>
-                            </div>`;
-                        listEl.appendChild(item);
-                    });
-                }
-            },
+            // GANTI FUNGSI LAMA DENGAN VERSI BARU INI
+renderOrderList: () => {
+    const listEl = document.getElementById('order-list');
+    listEl.innerHTML = '';
+    const pendingOrders = state.customerOrders.filter(o => o.status === 'pending');
+    if (pendingOrders.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada pesanan aktif</h3><p class="mt-1 text-sm text-gray-500">Tambahkan pesanan pelanggan baru.</p></div>`;
+    } else {
+        pendingOrders.forEach(order => {
+            const itemsHtml = order.items.map(item => `<li>${item.qty}x ${item.name}</li>`).join('');
+            const item = document.createElement('div');
+            item.className = 'p-4 border rounded-lg space-y-3';
+            
+            // ▼▼▼ BAGIAN BARU UNTUK MENAMPILKAN RINCIAN TOTAL DENGAN DISKON ▼▼▼
+            const discountInfo = order.discountAmount > 0 ?
+                ` <div class="flex justify-between items-center text-sm">
+                        <p class="text-red-600">Diskon</p>
+                        <p class="font-semibold text-red-600">-${formatCurrency(order.discountAmount)}</p>
+                    </div>` :
+                '';
+            
+            const totalSectionHtml = `
+                <div class="space-y-1 pt-3 border-t">
+                    <div class="flex justify-between items-center text-sm">
+                        <p class="text-gray-600">Subtotal</p>
+                        <p class="font-semibold">${formatCurrency(order.subtotal || order.total)}</p>
+                    </div>
+                    ${discountInfo}
+                    <div class="flex justify-between items-center pt-1 mt-1 border-t">
+                        <p class="font-bold text-lg">Total</p>
+                        <p class="font-bold text-lg">${formatCurrency(order.total)}</p>
+                    </div>
+                </div>
+            `;
+            // ▲▲▲ AKHIR BAGIAN BARU ▲▲▲
+            
+            item.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-lg">${order.contactName}</p>
+                        <p class="text-sm text-gray-600">Alamat: ${order.alamat || '-'}</p>
+                    </div>
+                    <p class="text-xs text-gray-500">${formatDate(order.orderDate)}</p>
+                </div>
+                <div class="text-sm space-y-1 pt-2 border-t">
+                    <p class="font-medium">Detail Pesanan:</p>
+                    <ul class="list-disc pl-5 text-gray-700">${itemsHtml}</ul>
+                </div>
+                ${totalSectionHtml} 
+                <div class="text-right space-x-2">
+                    <button data-id="${order.id}" class="delete-order-btn text-xs font-bold text-red-600">HAPUS</button>
+                    <button data-id="${order.id}" class="create-invoice-from-order-btn text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-md">BUAT FAKTUR</button>
+                </div>`;
+            listEl.appendChild(item);
+        });
+    }
+},
             renderExpenseReport: () => {
                 const listEl = document.getElementById('expense-report-list');
                 const monthFilterEl = document.getElementById('expenseMonthFilter');
@@ -1274,10 +1303,16 @@ const currentYear = displayedDate.getFullYear();
             updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
             updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
 
+// GANTI LAGI SELURUH FUNGSI INI DENGAN VERSI TERBARU
 generateInvoice: async (purchaseId) => {
     const purchase = state.transactions.find(p => p.id === purchaseId);
     if (!purchase) {
         showToast("Error: Data transaksi tidak ditemukan.");
+        return;
+    }
+    
+    if (!purchase.items || !Array.isArray(purchase.items) || purchase.items.length === 0) {
+        showToast("Error: Transaksi ini tidak memiliki item untuk dibuatkan faktur.");
         return;
     }
 
@@ -1302,8 +1337,17 @@ generateInvoice: async (purchaseId) => {
 
     showToast('Mempersiapkan faktur...');
 
+    // ▼▼▼ PERUBAHAN UTAMA DI SINI ▼▼▼
+    let logoBase64 = null;
     try {
-        const logoBase64 = await getLogoBase64();
+        // Kita coba memuat logo, tapi tidak akan menghentikan proses jika gagal
+        logoBase64 = await getLogoBase64();
+    } catch (error) {
+        console.warn(error.message); // Tampilkan pesan di console, bukan sebagai alert
+    }
+    // ▲▲▲ AKHIR PERUBAHAN ▲▲▲
+
+    try {
         const contact = state.contacts.find(c => c.id === purchase.contactId);
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
@@ -1311,9 +1355,10 @@ generateInvoice: async (purchaseId) => {
         const pageHeight = doc.internal.pageSize.height;
         const pageWidth = doc.internal.pageSize.width;
         const margin = 30;
-
+        
+        // (Sisa kode dari sini ke bawah tidak ada yang berubah, sama seperti sebelumnya)
         // 1. HEADER
-        if (logoBase64) {
+        if (logoBase64) { // Cek ini akan memastikan logo hanya ditambahkan jika berhasil dimuat
             doc.addImage(logoBase64, 'JPEG', margin, margin, 70, 70);
         }
         doc.setFontSize(18);
@@ -1336,7 +1381,7 @@ generateInvoice: async (purchaseId) => {
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.text(numericInvoiceId, pageWidth - margin, margin + 25, { align: 'right' });
-
+        
         // 2. INFORMASI PENJUAL & PEMBELI
         let yPos = margin + 90;
         let sellerY = yPos;
@@ -1384,48 +1429,23 @@ generateInvoice: async (purchaseId) => {
         const addressLines = doc.splitTextToSize(address, 180);
         doc.text(`: ${addressLines.join('\n')}`, rightColX + 85, buyerY);
         buyerY += (addressLines.length * 12);
-
         const tableStartY = Math.max(sellerY, buyerY) + 20;
 
-        // --- AWAL PERUBAHAN ---
         // 3. TABEL PRODUK
         const tableHead = [['INFO PRODUK', 'JUMLAH', 'HARGA SATUAN', 'TOTAL HARGA']];
         const tableBody = purchase.items.map(item => [
             item.name, item.qty, formatCurrency(item.price), formatCurrency(item.qty * item.price)
         ]);
-
         doc.autoTable({
             head: tableHead, body: tableBody, startY: tableStartY,
-            theme: 'plain',
-            margin: { left: margin, right: margin },
+            theme: 'plain', margin: { left: margin, right: margin },
             styles: { fontSize: 10, cellPadding: {top: 8, bottom: 8, left: 4, right: 4} },
-            headStyles: {
-                fillColor: false,
-                textColor: 100, // Warna teks header abu-abu
-                fontStyle: 'bold', // Teks header tebal
-                lineWidth: { top: 1.5, bottom: 1.5 }, // Garis tebal di atas dan bawah
-                lineColor: [220, 220, 220]
-            },
-            columnStyles: {
-                0: { // Kolom pertama (INFO PRODUK)
-                    cellWidth: 'auto',
-                    fontStyle: 'bold',
-                    textColor: [5, 150, 105] // Warna teks hijau
-                },
-                1: { halign: 'center', cellWidth: 50 },
-                2: { halign: 'right', cellWidth: 80 },
-                3: { halign: 'right', cellWidth: 80 }
-            }
+            headStyles: { fillColor: false, textColor: 100, fontStyle: 'bold', lineWidth: { top: 1.5, bottom: 1.5 }, lineColor: [220, 220, 220] },
+            columnStyles: { 0: { cellWidth: 'auto', fontStyle: 'bold', textColor: [5, 150, 105] }, 1: { halign: 'center', cellWidth: 50 }, 2: { halign: 'right', cellWidth: 80 }, 3: { halign: 'right', cellWidth: 80 } }
         });
-        // --- AKHIR PERUBAHAN ---
 
         // 4. RINCIAN TOTAL TAGIHAN
         let finalY = doc.autoTable.previous.finalY;
-        const subtotal = purchase.total;
-        const ongkosKirim = 10000;
-        const voucherOngkir = -10000;
-        const totalBelanja = subtotal + ongkosKirim + voucherOngkir;
-
         const addTotalLine = (label, value, y, isBold = false) => {
             doc.setFont("helvetica", isBold ? "bold" : "normal");
             doc.text(label, pageWidth - margin - 150, y);
@@ -1433,16 +1453,29 @@ generateInvoice: async (purchaseId) => {
             return y + 15;
         };
 
+        const subtotal = purchase.items.reduce((sum, item) => sum + (item.qty * item.price), 0);
+        const discountAmount = purchase.discountAmount || 0;
+        const total = purchase.total; 
+        
         let totalY = finalY + 20;
-        totalY = addTotalLine("Subtotal Harga Barang", formatCurrency(subtotal), totalY);
-        totalY = addTotalLine("Ongkos Kirim", formatCurrency(ongkosKirim), totalY);
-        totalY = addTotalLine("Voucher Ongkos Kirim", formatCurrency(voucherOngkir), totalY);
+        totalY = addTotalLine("Subtotal", formatCurrency(subtotal), totalY);
+
+        if (discountAmount > 0) {
+            let discountLabel = "Diskon";
+            if (purchase.discountType === 'percent') {
+                discountLabel += ` (${purchase.discountValue}%)`;
+            }
+            doc.setTextColor(239, 68, 68);
+            totalY = addTotalLine(discountLabel, `-${formatCurrency(discountAmount)}`, totalY);
+            doc.setTextColor(0);
+        }
+
         doc.setLineDashPattern([2, 2], 0);
         doc.line(pageWidth - margin - 150, totalY, pageWidth - margin, totalY);
         doc.setLineDashPattern([], 0);
         totalY += 10;
         doc.setFontSize(12);
-        addTotalLine("TOTAL TAGIHAN", formatCurrency(totalBelanja), totalY, true);
+        addTotalLine("TOTAL TAGIHAN", formatCurrency(total), totalY, true);
 
         // 5. FOOTER
         const footerY = pageHeight - 50;
@@ -1462,8 +1495,8 @@ generateInvoice: async (purchaseId) => {
 
         doc.save(`faktur-${purchase.contactName.replace(/\s/g, '_')}-${numericInvoiceId}.pdf`);
     } catch (error) {
-        console.error("Gagal membuat faktur:", error);
-        showToast(`Gagal: ${error.message}`);
+        console.error("Gagal membuat faktur (setelah memuat logo):", error);
+        showToast(`Gagal: ${error.message || 'Terjadi kesalahan saat membuat PDF.'}`);
     }
 },
             renderChecklistReport: () => {
@@ -1780,7 +1813,7 @@ const pages = document.querySelectorAll('.page'); const navButtons = document.qu
 
             const updateFAB = (pageId) => { fabContainer.innerHTML = ''; let fabHTML = ''; const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all"; const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; if (pageId === 'page-pihak') { fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-inventaris') { fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-penjualan') { fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-pesanan') { fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`; } else if (pageId === 'page-laporan') { fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`; } fabContainer.innerHTML = fabHTML; };
         function initializeApplication(db) {
-// Tambahkan ini di dalam fungsi initializeApplication(db)
+
 
 document.getElementById('customer-summary-month-filter').addEventListener('change', renderFunctions.renderCustomerSummary);
 document.getElementById('customer-summary-reset-filter').addEventListener('click', () => {
@@ -1873,8 +1906,64 @@ updateMonthDisplay();
             const itemModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Harga Jual</label><input type="number" name="price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Barang</button>`;
             const expenseModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pembelian</label><input type="date" name="purchaseDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Nama Toko</label><input type="text" name="storeName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Jumlah/Satuan</label><input type="text" name="quantity" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Total Harga</label><input type="number" name="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Belanja</button>`;
             const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
-            const customerOrderModalContent = ` <div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label><input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div class="relative"> <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label> <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off"> <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div> </div> <div> <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label> <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"> </div> <div> <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label> <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea> </div> <div class="border-t pt-4"> <h4 class="font-medium mb-2">Barang yang Dipesan</h4> <div id="order-items-container" class="space-y-2"></div> <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button> </div> <div class="border-t pt-4 text-right"> <p class="text-gray-600">Total Pesanan:</p> <p id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p> </div> </div> <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button> `;
-            const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
+            // GANTI SELURUH ISI VARIABEL INI
+const customerOrderModalContent = `
+    <div class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tanggal Pesanan</label>
+            <input type="date" name="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required>
+        </div>
+        <div class="relative">
+            <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label>
+            <input type="text" name="customerName" id="customer-name-input" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required autocomplete="off">
+            <div id="customer-suggestions-box" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto hidden"></div>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">No. Telepon (Opsional)</label>
+            <input type="tel" name="customerPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Alamat Pengiriman</label>
+            <textarea name="alamat" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea>
+        </div>
+        <div class="border-t pt-4">
+            <h4 class="font-medium mb-2">Barang yang Dipesan</h4>
+            <div id="order-items-container" class="space-y-2"></div>
+            <button type="button" id="add-order-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button>
+        </div>
+
+        <div class="border-t pt-4 space-y-3">
+            <h4 class="font-medium">Diskon / Potongan Harga</h4>
+            <div class="flex items-center gap-2">
+                <div class="flex-grow">
+                     <input type="number" id="order-discount-value" placeholder="Masukkan nilai" class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm">
+                </div>
+                <div class="flex-shrink-0">
+                     <div class="flex items-center border border-gray-300 rounded-md text-sm font-semibold">
+                        <button type="button" data-type="percent" class="order-discount-type-btn px-4 py-2 text-gray-500 rounded-l-md bg-emerald-100 text-emerald-800">%</button>
+                        <button type="button" data-type="amount" class="order-discount-type-btn px-4 py-2 text-gray-500 rounded-r-md border-l">Rp</button>
+                     </div>
+                     <input type="hidden" id="order-discount-type" value="percent">
+                </div>
+            </div>
+        </div>
+        <div class="border-t pt-4 space-y-2 text-right">
+             <div>
+                <span class="text-sm text-gray-600">Subtotal:</span>
+                <span id="order-subtotal-amount" class="text-sm font-semibold text-gray-800">${formatCurrency(0)}</span>
+             </div>
+             <div>
+                <span class="text-sm text-red-600">Diskon:</span>
+                <span id="order-discount-amount-display" class="text-sm font-semibold text-red-600">${formatCurrency(0)}</span>
+             </div>
+             <div class="mt-1">
+                <span class="text-gray-600 font-medium">Total Pesanan:</span>
+                <span id="order-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</span>
+             </div>
+        </div>
+    </div>
+    <button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Pesanan</button>
+`;            const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
             const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
 
 
@@ -1884,8 +1973,79 @@ updateMonthDisplay();
             const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
             const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = []; form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); } if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() }; await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
-            const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => { const customerName = data.customerName.trim(); const customerPhone = data.customerPhone.trim(); const customerAddress = form.elements['alamat'].value.trim(); if (!customerName) { throw new Error("Nama pelanggan harus diisi."); } let contactId; let contactName = customerName; const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase()); if (existingContact) { contactId = existingContact.id; if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) { await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress }); showToast(`Info kontak ${customerName} diperbarui.`); } } else { const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress }; const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload); contactId = newContactRef.id; showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`); } const items = []; form.querySelectorAll('.order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if(itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang pesanan."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp(); const payload = { contactId: contactId, contactName: contactName, alamat: customerAddress, items: items, total: total, status: 'pending', orderDate: orderDate }; await addDoc(collection(db, 'customer_orders'), payload); return 'Pesanan baru berhasil disimpan!'; });
-            const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
+            // GANTI SELURUH BLOK const customerOrderModal = ... DENGAN INI
+const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => {
+    const customerName = data.customerName.trim();
+    const customerPhone = data.customerPhone.trim();
+    const customerAddress = form.elements['alamat'].value.trim();
+    if (!customerName) {
+        throw new Error("Nama pelanggan harus diisi.");
+    }
+    let contactId;
+    let contactName = customerName;
+    const existingContact = state.contacts.find(c => c.name.toLowerCase() === customerName.toLowerCase());
+    if (existingContact) {
+        contactId = existingContact.id;
+        if (existingContact.phone !== customerPhone || existingContact.address !== customerAddress) {
+            await updateDoc(doc(db, 'contacts', existingContact.id), { phone: customerPhone, address: customerAddress });
+            showToast(`Info kontak ${customerName} diperbarui.`);
+        }
+    } else {
+        const newContactPayload = { name: contactName, phone: customerPhone, address: customerAddress };
+        const newContactRef = await addDoc(collection(db, 'contacts'), newContactPayload);
+        contactId = newContactRef.id;
+        showToast(`Pelanggan baru "${contactName}" telah ditambahkan.`);
+    }
+    const items = [];
+    form.querySelectorAll('.order-item-row').forEach(row => {
+        const itemId = row.querySelector('select[name="itemId"]').value;
+        const itemData = state.inventory.find(i => i.id === itemId);
+        const qty = Number(row.querySelector('input[name="qty"]').value);
+        if (itemData && qty > 0) {
+            items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty });
+        }
+    });
+    if (items.length === 0) {
+        throw new Error("Tambahkan minimal satu barang pesanan.");
+    }
+    
+    // ▼▼▼ LOGIKA BARU UNTUK MENGAMBIL DATA DISKON ▼▼▼
+    const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const discountValue = parseFloat(form.querySelector('#order-discount-value').value) || 0;
+    const discountType = form.querySelector('#order-discount-type').value;
+    
+    let discountAmount = 0;
+    if (discountType === 'percent' && discountValue > 0) {
+        discountAmount = subtotal * (discountValue / 100);
+    } else if (discountType === 'amount' && discountValue > 0) {
+        discountAmount = discountValue;
+    }
+    discountAmount = Math.min(subtotal, discountAmount);
+    
+    const total = subtotal - discountAmount;
+    // ▲▲▲ AKHIR LOGIKA BARU ▲▲▲
+    
+    const orderDate = data.orderDate ? Timestamp.fromDate(new Date(data.orderDate)) : serverTimestamp();
+    
+    // ▼▼▼ PAYLOAD DIPERBARUI DENGAN INFO DISKON ▼▼▼
+    const payload = {
+        contactId: contactId,
+        contactName: contactName,
+        alamat: customerAddress,
+        items: items,
+        subtotal: subtotal, // Simpan subtotal asli
+        discountType: discountType,
+        discountValue: discountValue,
+        discountAmount: discountAmount,
+        total: total, // Total sekarang adalah total setelah diskon
+        status: 'pending',
+        orderDate: orderDate
+    };
+    // ▲▲▲ AKHIR PEMBARUAN PAYLOAD ▲▲▲
+    
+    await addDoc(collection(db, 'customer_orders'), payload);
+    return 'Pesanan baru berhasil disimpan!';
+});            const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
             const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => { broadcastMessageTemplate = data.message; const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked'); if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone)); if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0; setupAndShowBroadcastProgress(); return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`; });
 
             const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
@@ -1894,8 +2054,39 @@ updateMonthDisplay();
             const hideBroadcastProgress = () => { broadcastProgressModalEl.classList.add('hidden'); broadcastQueue = []; currentBroadcastIndex = 0; broadcastMessageTemplate = ''; document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false); document.getElementById('broadcast-controls').classList.add('hidden'); };
             const updateSaleTotal = () => { let total = 0; document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
             const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateSaleTotal(); };
-            const updateOrderTotal = () => { let total = 0; document.querySelectorAll('#order-items-container .order-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; }); document.getElementById('order-total-amount').textContent = formatCurrency(total); };
-            const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateOrderTotal(); };
+            // GANTI FUNGSI LAMA DENGAN VERSI BARU INI
+const updateOrderTotal = () => {
+    let subtotal = 0;
+    document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
+        const itemId = row.querySelector('select[name="itemId"]').value;
+        const itemData = state.inventory.find(i => i.id === itemId);
+        const qty = Number(row.querySelector('input[name="qty"]').value);
+        if (itemData && qty > 0) {
+            subtotal += itemData.price * qty;
+        }
+    });
+    
+    // Ambil nilai dan tipe diskon dari input baru
+    const discountValue = parseFloat(document.getElementById('order-discount-value').value) || 0;
+    const discountType = document.getElementById('order-discount-type').value;
+    
+    let discountAmount = 0;
+    if (discountType === 'percent') {
+        discountAmount = subtotal * (discountValue / 100);
+    } else { // 'amount'
+        discountAmount = discountValue;
+    }
+    
+    // Pastikan diskon tidak lebih besar dari subtotal
+    discountAmount = Math.min(subtotal, discountAmount);
+    
+    const finalTotal = subtotal - discountAmount;
+    
+    // Update semua elemen di UI
+    document.getElementById('order-subtotal-amount').textContent = formatCurrency(subtotal);
+    document.getElementById('order-discount-amount-display').textContent = formatCurrency(discountAmount);
+    document.getElementById('order-total-amount').textContent = formatCurrency(finalTotal);
+};            const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div'); itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join(''); itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`; container.appendChild(itemRow); updateOrderTotal(); };
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
             const populateContactInfo = (contactName) => { const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase()); if (contact) { customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || ''; customerOrderModal.formEl.elements['alamat'].value = contact.address || ''; } };
@@ -2264,7 +2455,38 @@ updateMonthDisplay();
                 if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove(); updateSaleTotal(); } 
                 if (target.id === 'add-order-item-btn') addOrderItemRow(); 
                 if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove(); updateOrderTotal(); } 
-                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { try { const batch = writeBatch(db); const newTransactionRef = doc(collection(db, "transactions")); batch.set(newTransactionRef, { contactId: order.contactId, contactName: order.contactName, items: order.items, total: order.total, type: 'sale', date: order.orderDate, address: order.alamat || '' }); const orderRef = doc(db, "customer_orders", orderId); batch.update(orderRef, { status: "completed" }); await batch.commit(); showToast("Faktur berhasil dibuat dari pesanan!"); } catch (error) { console.error("Gagal membuat faktur dari pesanan: ", error); showToast("Gagal memproses faktur."); } } } 
+                if (target.classList.contains('create-invoice-from-order-btn')) { const orderId = target.dataset.id; const order = state.customerOrders.find(o => o.id === orderId); if (!order) { showToast("Error: Pesanan tidak ditemukan."); return; } const confirmed = await confirmInvoiceModal.show(); if (confirmed) { // GANTI BLOK 'try' UNTUK TOMBOL '.create-invoice-from-order-btn' DENGAN INI
+try {
+    const batch = writeBatch(db);
+    const newTransactionRef = doc(collection(db, "transactions"));
+    
+    // ▼▼▼ PERUBAHAN DI SINI ▼▼▼
+    // Salin semua data relevan dari pesanan, termasuk diskon
+    batch.set(newTransactionRef, {
+        contactId: order.contactId,
+        contactName: order.contactName,
+        items: order.items,
+        subtotal: order.subtotal,
+        discountType: order.discountType || 'percent',
+        discountValue: order.discountValue || 0,
+        discountAmount: order.discountAmount || 0,
+        total: order.total, // Total ini sudah merupakan total setelah diskon
+        type: 'sale',
+        date: order.orderDate,
+        address: order.alamat || ''
+    });
+    // ▲▲▲ AKHIR PERUBAHAN ▲▲▲
+    
+    const orderRef = doc(db, "customer_orders", orderId);
+    batch.update(orderRef, {
+        status: "completed"
+    });
+    await batch.commit();
+    showToast("Faktur berhasil dibuat dari pesanan!");
+} catch (error) {
+    console.error("Gagal membuat faktur dari pesanan: ", error);
+    showToast("Gagal memproses faktur.");
+} } } 
                 if (target.classList.contains('view-customer-details-btn')) { const customerId = target.dataset.id; const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId); const detailsEl = document.getElementById('customer-item-details'); if (sales.length > 0) { const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button></div></div>`; }).join(''); detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`; } else { detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi untuk pelanggan ini.</p>`; } customerDetailModal.show(); } 
             });
 
@@ -2283,11 +2505,11 @@ updateMonthDisplay();
     const broadcastControlsEl = document.getElementById('broadcast-controls');
     const selectedCountEl = document.getElementById('selected-count');
     const selectAllCheckbox = document.getElementById('select-all-contacts-checkbox');
-    
+
     const allCheckboxes = contactListEl.querySelectorAll('.contact-checkbox');
     const checkedCheckboxes = contactListEl.querySelectorAll('.contact-checkbox:checked');
     const checkedCount = checkedCheckboxes.length;
-    
+
     // Tampilkan atau sembunyikan bar broadcast
     if (checkedCount > 0) {
         selectedCountEl.textContent = checkedCount;
@@ -2295,7 +2517,7 @@ updateMonthDisplay();
     } else {
         broadcastControlsEl.classList.add('hidden');
     }
-    
+
     // Sinkronkan status checkbox "Pilih Semua"
     if (allCheckboxes.length > 0 && checkedCount === allCheckboxes.length) {
         selectAllCheckbox.checked = true;
@@ -2314,11 +2536,11 @@ contactListEl.addEventListener('change', e => {
 document.getElementById('select-all-contacts-checkbox').addEventListener('click', (e) => {
     const isChecked = e.target.checked;
     const allVisibleCheckboxes = document.querySelectorAll('#contact-list .contact-checkbox');
-    
+
     allVisibleCheckboxes.forEach(checkbox => {
         checkbox.checked = isChecked;
     });
-    
+
     // Perbarui tampilan dan hitungan
     updateBroadcastControls();
 });
@@ -2335,6 +2557,30 @@ document.getElementById('select-all-contacts-checkbox').addEventListener('click'
             document.getElementById('checklistMonthFilter').addEventListener('change', renderFunctions.renderChecklistReport);
             document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('checklistMonthFilter').value; const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"]; let dataToExport = state.checklistHistory; if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; } const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A'])); const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`; exportToCsv(filename, headers, data); showToast('Laporan kebersihan sedang diunduh...'); });
             // ... (di dalam fungsi initializeApplication)
+            // Tambahkan ini di dalam fungsi initializeApplication(db)
+customerOrderModal.modalEl.addEventListener('click', (e) => {
+    if (e.target.classList.contains('order-discount-type-btn')) {
+        const type = e.target.dataset.type;
+        customerOrderModal.formEl.querySelector('#order-discount-type').value = type;
+        
+        // Atur tampilan tombol aktif
+        customerOrderModal.formEl.querySelectorAll('.order-discount-type-btn').forEach(btn => {
+            btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+            btn.classList.add('text-gray-500');
+        });
+        e.target.classList.add('bg-emerald-100', 'text-emerald-800');
+        e.target.classList.remove('text-gray-500');
+        
+        updateOrderTotal(); // Hitung ulang total setiap kali tipe diganti
+    }
+});
+
+// Tambahkan juga event listener untuk input nilai diskon
+customerOrderModal.modalEl.addEventListener('input', (e) => {
+    if (e.target.id === 'order-discount-value') {
+        updateOrderTotal();
+    }
+});
 
 
 document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
