@@ -1,13 +1,9 @@
-// Nama cache unik. Ubah nama ini jika Anda membuat perubahan besar pada file aplikasi.
 const CACHE_NAME = 'database-aps-soetta-v1.3';
-// URL Google Apps Script yang harus selalu diambil dari internet
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMEmykWQdLjTOEvqwRpbNcoK9fXHrE6reNIBMrP27JajZ7A_X9Yj3mAsO0Fm5EiCBW/exec';
 
-// Daftar lengkap file yang akan disimpan di cache untuk penggunaan offline.
-// Diambil dari daftar file di kode lama Anda.
 const URLS_TO_CACHE = [
   '/',
-  'index.html', // Sesuaikan jika nama file HTML Anda berbeda, misal: index.html
+  'index.html',
 
   // File dari folder 'favicon'
   'favicon/site.webmanifest',
@@ -45,7 +41,6 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
 
   // STRATEGI UNTUK DATA DINAMIS (LAPORAN ABSENSI)
-  // Jika permintaan adalah ke Google Apps Script, gunakan strategi Network First.
   if (requestUrl.href.startsWith(SCRIPT_URL)) {
     event.respondWith(
       fetch(event.request)
@@ -63,7 +58,6 @@ self.addEventListener('fetch', event => {
   }
 
   // STRATEGI UNTUK FILE STATIS (CANGKANG APLIKASI)
-  // Untuk semua permintaan lainnya, gunakan strategi Cache First.
   event.respondWith(
     caches.match(event.request)
       .then(response => {
