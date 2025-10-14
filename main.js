@@ -1,4 +1,4 @@
-        let displayedDate = new Date(); 
+        let displayedDate = new Date();
         const updateMonthDisplay = () => {
             const displayEl = document.getElementById('month-display');
             const nextBtn = document.getElementById('next-month-btn');
@@ -90,7 +90,30 @@
         };
         let chartSelectedWeek = getWeekOfMonth(new Date());
         
-        const monthMap = { "Januari": 0, "Februari": 1, "Maret": 2, "April": 3, "Mei": 4, "Juni": 5, "Juli": 6, "Agustus": 7, "September": 8, "Oktober": 9, "November": 10, "Desember": 11 };
+        const monthMap = {
+            "Januari": 0,
+            "Februari": 1,
+            "Maret": 2,
+            "April": 3,
+            "Mei": 4,
+            "Juni": 5,
+            "Juli": 6,
+            "Agustus": 7,
+            "September": 8,
+            "Oktober": 9,
+            "November": 10,
+            "Desember": 11
+            
+        };
+        const formatCompactNumber = (value) => {
+            if (value >= 1000000) {
+                return (value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'jt';
+            }
+            if (value >= 1000) {
+                return (value / 1000).toLocaleString('id-ID') + 'rb';
+            }
+            return value.toString();
+        };
         const formatCurrencyShort = (amount) => {
             if (amount >= 1000000) {
                 return 'Rp ' + (amount / 1000000).toFixed(1).replace('.', ',') + ' jt';
@@ -103,10 +126,13 @@
         const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount || 0);
         const formatDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
         const formatFullDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
-        const showToast = (message) => { const toast = document.getElementById('toast'); if (toastTimer) clearTimeout(toastTimer);
+        const showToast = (message) => {
+            const toast = document.getElementById('toast');
+            if (toastTimer) clearTimeout(toastTimer);
             toast.textContent = message;
             toast.classList.add('show');
-            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); };
+            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        };
         
         const formatWhatsappNumber = (phone) => {
             if (!phone) return '';
@@ -320,11 +346,18 @@
                     });
                 }
             },
-            renderInventoryList: () => { const listEl = document.getElementById('inventory-list');
-                listEl.innerHTML = ''; if (state.inventory.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Menu kosong</h3><p class="mt-1 text-sm text-gray-500">Tambahkan item untuk mengelolanya.</p></div>`; } else { state.inventory.forEach(item => { const el = document.createElement('div');
+            renderInventoryList: () => {
+                const listEl = document.getElementById('inventory-list');
+                listEl.innerHTML = '';
+                if (state.inventory.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Menu kosong</h3><p class="mt-1 text-sm text-gray-500">Tambahkan item untuk mengelolanya.</p></div>`; } else {
+                    state.inventory.forEach(item => {
+                        const el = document.createElement('div');
                         el.className = 'p-3 border rounded-lg flex justify-between items-center';
                         el.innerHTML = `<div><p class="font-bold">${item.name}</p></div><div class="text-right"><p class="font-semibold">${formatCurrency(item.price)}</p><div class="space-x-2"><button data-id="${item.id}" class="edit-item-btn text-xs text-blue-500 font-semibold">Edit</button><button data-id="${item.id}" class="delete-item-btn text-xs text-red-500 font-semibold">Hapus</button></div></div>`;
-                        listEl.appendChild(el); }); } },
+                        listEl.appendChild(el);
+                    });
+                }
+            },
             renderSalesReport: () => {
                 const listEl = document.getElementById('sales-report-list');
                 const monthFilterEl = document.getElementById('salesMonthFilter');
@@ -339,12 +372,20 @@
                 const selectedMonth = monthFilterEl.value;
                 const filteredSales = sales.filter(tx => (!selectedMonth || new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth) && (!searchTerm || (tx.contactName && tx.contactName.toLowerCase().includes(searchTerm))));
                 if (filteredSales.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada penjualan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data yang cocok dengan filter Anda.</p></div>`; return; }
-                const salesByMonth = filteredSales.reduce((acc, sale) => { const monthYear = new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { sales: [], total: 0 }; } acc[monthYear].sales.push(sale);
-                    acc[monthYear].total += sale.total; return acc; }, {});
-                Object.keys(salesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = salesByMonth[month]; const monthEl = document.createElement('div');
-                    monthEl.className = 'border rounded-lg'; const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join('');
+                const salesByMonth = filteredSales.reduce((acc, sale) => {
+                    const monthYear = new Date(sale.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+                    if (!acc[monthYear]) { acc[monthYear] = { sales: [], total: 0 }; } acc[monthYear].sales.push(sale);
+                    acc[monthYear].total += sale.total;
+                    return acc;
+                }, {});
+                Object.keys(salesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => {
+                    const monthData = salesByMonth[month];
+                    const monthEl = document.createElement('div');
+                    monthEl.className = 'border rounded-lg';
+                    const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join('');
                     monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-green-700">${formatCurrency(monthData.total)}</p></header><ul class="divide-y">${salesHtml}</ul>`;
-                    listEl.appendChild(monthEl); });
+                    listEl.appendChild(monthEl);
+                });
             },
             renderOrderList: () => {
                 const listEl = document.getElementById('order-list');
@@ -413,12 +454,21 @@
                 const selectedMonth = monthFilterEl.value;
                 const filteredExpenses = state.monthlyExpenses.filter(ex => !selectedMonth || new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth);
                 if (filteredExpenses.length === 0) { listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada belanja</h3><p class="mt-1 text-sm text-gray-500">Catat item belanja baru melalui tombol (+).</p></div>`; return; }
-                const expensesByMonth = filteredExpenses.reduce((acc, expense) => { const date = new Date(expense.date.seconds * 1000); const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' }); if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense);
-                    acc[monthYear].total += expense.total; return acc; }, {});
-                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => { const monthData = expensesByMonth[month]; const monthEl = document.createElement('div');
-                    monthEl.className = 'border rounded-lg'; const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join('');
+                const expensesByMonth = filteredExpenses.reduce((acc, expense) => {
+                    const date = new Date(expense.date.seconds * 1000);
+                    const monthYear = date.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+                    if (!acc[monthYear]) { acc[monthYear] = { items: [], total: 0 }; } acc[monthYear].items.push(expense);
+                    acc[monthYear].total += expense.total;
+                    return acc;
+                }, {});
+                Object.keys(expensesByMonth).sort((a, b) => new Date(b.split(' ')[1], monthMap[b.split(' ')[0]]) - new Date(a.split(' ')[1], monthMap[a.split(' ')[0]])).forEach(month => {
+                    const monthData = expensesByMonth[month];
+                    const monthEl = document.createElement('div');
+                    monthEl.className = 'border rounded-lg';
+                    const itemsHtml = monthData.items.map(item => `<li class="flex justify-between items-center py-2 border-b last:border-b-0"><div><p class="font-medium">${item.itemName} (${item.quantity})</p><p class="text-xs text-gray-500">${formatDate(item.date)} - <strong>${item.storeName || 'N/A'}</strong></p></div><div class="flex items-center gap-4"><p class="font-semibold text-red-600">${formatCurrency(item.total)}</p><button data-id="${item.id}" class="delete-expense-btn text-red-500 text-2xl font-bold">&times;</button></div></li>`).join('');
                     monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-red-700">${formatCurrency(monthData.total)}</p></header><ul class="p-3">${itemsHtml}</ul>`;
-                    listEl.appendChild(monthEl); });
+                    listEl.appendChild(monthEl);
+                });
             },
             renderCustomerSummary: () => {
                 const listEl = document.getElementById('customer-summary-list');
@@ -549,10 +599,14 @@
                 document.getElementById('active-orders-total').textContent = formatCurrency(pendingOrders.reduce((sum, order) => sum + order.total, 0));
                 document.querySelectorAll('.chart-week-btn').forEach(btn => {
                     const week = parseInt(btn.dataset.week);
-                    if (week === chartSelectedWeek) { btn.classList.add('bg-emerald-100', 'text-emerald-800');
-                        btn.classList.remove('text-gray-500'); }
-                    else { btn.classList.remove('bg-emerald-100', 'text-emerald-800');
-                        btn.classList.add('text-gray-500'); }
+                    if (week === chartSelectedWeek) {
+                        btn.classList.add('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.remove('text-gray-500');
+                    }
+                    else {
+                        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+                        btn.classList.add('text-gray-500');
+                    }
                 });
                 const labels = [];
                 const salesData = [];
@@ -594,8 +648,81 @@
                 renderFunctions.updateExpensesChart(labels, expensesData);
             },
             renderProfile: () => {},
-            updateSalesChart: (labels, data) => { const ctx = document.getElementById('sales-chart').getContext('2d'); if (salesChart) { salesChart.destroy(); } salesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Masuk', data: data, backgroundColor: 'rgba(16, 185, 129, 0.5)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
-            updateExpensesChart: (labels, data) => { const ctx = document.getElementById('expenses-chart').getContext('2d'); if (expensesChart) { expensesChart.destroy(); } expensesChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Uang Keluar', data: data, backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); },
+            updateSalesChart: (labels, data) => {
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+                salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Uang Masuk',
+                            data: data,
+                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCompactNumber(value);
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            },
+            updateExpensesChart: (labels, data) => {
+                const ctx = document.getElementById('expenses-chart').getContext('2d');
+                if (expensesChart) {
+                    expensesChart.destroy();
+                }
+                expensesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Uang Keluar',
+                            data: data,
+                            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        
+                                        return formatCompactNumber(value);
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            },
             
             generateInvoice: async (purchaseId) => {
                 const purchase = state.transactions.find(p => p.id === purchaseId);
@@ -872,32 +999,79 @@
                     }
                 });
             },
+            // GANTI SELURUH FUNGSI DENGAN VERSI BARU INI
             renderDailyReportHistory: () => {
                 const listEl = document.getElementById('daily-report-history-list');
-                if (!listEl) return;
+                const yearFilterEl = document.getElementById('daily-report-year-filter');
+                const monthFilterEl = document.getElementById('daily-report-month-filter');
+                if (!listEl || !yearFilterEl || !monthFilterEl) return;
+                
+                const now = new Date();
+                const availableYears = [...new Set(state.dailyReports.map(r => r.date.toDate().getFullYear()))].sort((a, b) => b - a);
+                
+                // --- Mengisi Filter Tahun ---
+                const currentYearValue = yearFilterEl.value;
+                yearFilterEl.innerHTML = '<option value="">Semua Tahun</option>';
+                availableYears.forEach(year => yearFilterEl.add(new Option(year, year)));
+                
+                // Cerdas: Jika filter tahun kosong (pertama kali load), atur ke tahun ini
+                if (!currentYearValue && availableYears.includes(now.getFullYear())) {
+                    yearFilterEl.value = now.getFullYear();
+                } else {
+                    yearFilterEl.value = currentYearValue;
+                }
+                
+                // --- Mengisi Filter Bulan Berdasarkan Tahun yang Dipilih ---
+                const selectedYear = yearFilterEl.value;
+                monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
+                if (selectedYear) {
+                    const availableMonths = [...new Set(state.dailyReports
+                        .filter(r => r.date.toDate().getFullYear() == selectedYear)
+                        .map(r => r.date.toDate().getMonth())
+                    )].sort((a, b) => a - b);
+                    
+                    availableMonths.forEach(monthIndex => {
+                        const monthName = new Date(selectedYear, monthIndex).toLocaleString('id-ID', { month: 'long' });
+                        monthFilterEl.add(new Option(monthName, monthIndex));
+                    });
+                }
+                
+                // Cerdas: Jika filter bulan kosong (pertama kali load), atur ke bulan ini
+                const currentMonthValue = monthFilterEl.value;
+                if (selectedYear == now.getFullYear() && !currentMonthValue) {
+                    monthFilterEl.value = now.getMonth();
+                } else {
+                    monthFilterEl.value = currentMonthValue;
+                }
+                monthFilterEl.disabled = !selectedYear;
+                
+                // --- Melakukan Filter Data ---
+                const selectedMonth = monthFilterEl.value;
+                let filteredReports = state.dailyReports;
+                if (selectedYear) {
+                    filteredReports = filteredReports.filter(r => r.date.toDate().getFullYear() == selectedYear);
+                    if (selectedMonth !== '') {
+                        filteredReports = filteredReports.filter(r => r.date.toDate().getMonth() == selectedMonth);
+                    }
+                }
+                
+                // --- Menampilkan Hasil (Sisa kode sama seperti sebelumnya) ---
                 listEl.innerHTML = '';
-                if (state.dailyReports.length === 0) {
-                    listEl.innerHTML = `<div class="text-center py-10"><p class="text-sm text-gray-500">Belum ada laporan yang diimpor.</p></div>`;
+                if (filteredReports.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-10"><p class="text-sm text-gray-500">Tidak ada laporan yang cocok dengan filter.</p></div>`;
                     return;
                 }
-                state.dailyReports.forEach(report => {
+                
+                filteredReports.forEach(report => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'p-3 border rounded-lg flex justify-between items-center';
                     itemEl.innerHTML = `
-                        <div data-id="${report.id}" class="flex-grow cursor-pointer hover:bg-gray-50 flex justify-between items-center view-daily-report-btn">
-                            <div>
-                                <p class="font-bold">${formatFullDate(report.date)}</p>
-                                <p class="text-sm text-gray-500">${Object.keys(report.restaurants).length} Restoran</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-green-600">${formatCurrency(report.grandTotal)}</p>
-                                <p class="text-xs text-gray-500">${report.totalNaskot} Nasi Kotak</p>
-                            </div>
-                        </div>
-                        <button data-id="${report.id}" class="delete-daily-report-btn ml-4 text-gray-400 hover:text-red-500 p-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                        </button>
-                    `;
+            <div data-id="${report.id}" class="flex-grow cursor-pointer hover:bg-gray-50 flex justify-between items-center view-daily-report-btn">
+                <div><p class="font-bold">${formatFullDate(report.date)}</p><p class="text-sm text-gray-500">${Object.keys(report.restaurants).length} Restoran</p></div>
+                <div class="text-right"><p class="font-semibold text-green-600">${formatCurrency(report.grandTotal)}</p><p class="text-xs text-gray-500">${report.totalNaskot} Nasi Kotak</p></div>
+            </div>
+            <button data-id="${report.id}" class="delete-daily-report-btn ml-4 text-gray-400 hover:text-red-500 p-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+        `;
                     itemEl.querySelector('.view-daily-report-btn').addEventListener('click', (e) => {
                         const reportId = e.currentTarget.dataset.id;
                         const reportData = state.dailyReports.find(r => r.id === reportId);
@@ -906,27 +1080,13 @@
                         const detailContent = document.getElementById('daily-report-detail-content');
                         let contentHtml = `<h4 class="font-bold text-lg mb-2">${formatFullDate(reportData.date)}</h4>`;
                         for (const [name, data] of Object.entries(reportData.restaurants)) {
-                            contentHtml += `<div class="mt-4 border-t pt-2">
-                                                <div class="flex justify-between items-center">
-                                                    <h5 class="font-bold">${name}</h5>
-                                                    <p class="font-semibold">${formatCurrency(data.total)}</p>
-                                                </div>`;
+                            contentHtml += `<div class="mt-4 border-t pt-2"><div class="flex justify-between items-center"><h5 class="font-bold">${name}</h5><p class="font-semibold">${formatCurrency(data.total)}</p></div>`;
                             for (const [phone, phoneData] of Object.entries(data.phones)) {
-                                contentHtml += `<div class="pl-4 mt-2">
-                                                    <p class="font-medium text-sm">${phone}: ${formatCurrency(phoneData.total)}</p>
-                                                    <ul class="list-disc pl-5 text-xs text-gray-600">
-                                                        <li>Makan ditempat: ${formatCurrency(phoneData['Makan ditempat'])}</li>
-                                                        <li>Naskot: ${formatCurrency(phoneData['Naskot'])}</li>
-                                                        <li>Online: ${formatCurrency(phoneData['Online'])}</li>
-                                                    </ul>
-                                                </div>`;
+                                contentHtml += `<div class="pl-4 mt-2"><p class="font-medium text-sm">${phone}: ${formatCurrency(phoneData.total)}</p><ul class="list-disc pl-5 text-xs text-gray-600"><li>Makan ditempat: ${formatCurrency(phoneData['Makan ditempat'])}</li><li>Naskot: ${formatCurrency(phoneData['Naskot'])}</li><li>Online: ${formatCurrency(phoneData['Online'])}</li></ul></div>`;
                             }
                             contentHtml += `</div>`;
                         }
-                        contentHtml += `<div class="mt-6 border-t pt-4 text-center space-y-2">
-                                            <p>Total Nasi Kotak: <strong class="text-lg">${reportData.totalNaskot}</strong></p>
-                                            <p>Grand Total: <strong class="text-2xl text-green-700">${formatCurrency(reportData.grandTotal)}</strong></p>
-                                       </div>`;
+                        contentHtml += `<div class="mt-6 border-t pt-4 text-center space-y-2"><p>Total Nasi Kotak: <strong class="text-lg">${reportData.totalNaskot}</strong></p><p>Grand Total: <strong class="text-2xl text-green-700">${formatCurrency(reportData.grandTotal)}</strong></p></div>`;
                         detailContent.innerHTML = contentHtml;
                         detailModal.classList.remove('hidden');
                     });
@@ -946,7 +1106,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Makan di Tempat',
+                            label: 'Dine In',
                             data: makanData,
                             borderColor: 'rgb(59, 130, 246)',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -1069,7 +1229,7 @@
                         labels: monthsWithData.map(m => m.label),
                         datasets: [
                         {
-                            label: 'Makan di Tempat',
+                            label: 'Dine In',
                             data: monthsWithData.map(m => m.categories['Makan ditempat']),
                             backgroundColor: 'rgba(59, 130, 246, 0.7)',
                         },
@@ -1100,11 +1260,17 @@
         const fabContainer = document.getElementById('fab-container');
         const navigateTo = (pageId) => {
             pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId));
-            navButtons.forEach(btn => { const isActive = btn.dataset.target === pageId;
-                btn.classList.toggle('nav-active', isActive); const berandaIcon = btn.querySelector('.beranda-icon'); if (berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none'; });
+            navButtons.forEach(btn => {
+                const isActive = btn.dataset.target === pageId;
+                btn.classList.toggle('nav-active', isActive);
+                const berandaIcon = btn.querySelector('.beranda-icon');
+                if (berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none';
+            });
             updateFAB(pageId);
-            if (pageId !== 'page-pihak') { document.getElementById('broadcast-controls').classList.add('hidden');
-                document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false); }
+            if (pageId !== 'page-pihak') {
+                document.getElementById('broadcast-controls').classList.add('hidden');
+                document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false);
+            }
             localStorage.setItem('lastActivePage', pageId);
         };
         
@@ -1132,7 +1298,14 @@
         };
         
         function initializeApplication(db) {
-            
+            // TAMBAHKAN KEMBALI BLOK INI di dalam fungsi initializeApplication
+            document.getElementById('daily-report-year-filter').addEventListener('change', renderFunctions.renderDailyReportHistory);
+            document.getElementById('daily-report-month-filter').addEventListener('change', renderFunctions.renderDailyReportHistory);
+            document.getElementById('daily-report-reset-filter').addEventListener('click', () => {
+                document.getElementById('daily-report-year-filter').value = '';
+                document.getElementById('daily-report-month-filter').value = '';
+                renderFunctions.renderDailyReportHistory();
+            });
             document.getElementById('reservation-search-input').addEventListener('input', (e) => {
                 reservationFilter.searchTerm = e.target.value;
                 renderFunctions.renderReservations();
@@ -1214,24 +1387,56 @@
             // Panggil fungsi ini sekali saat inisialisasi untuk mengatur teks bulan awal
             updateMonthDisplay();
             const modalContainer = document.getElementById('modal-container');
-            const createModal = (id, title, content, onSubmit) => { const lastButtonIndex = content.lastIndexOf('<button type="submit"'); const formFields = content.substring(0, lastButtonIndex); const submitButton = content.substring(lastButtonIndex); const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`;
-                modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); const formEl = modalEl.querySelector('form'); const show = (data = {}) => { formEl.reset();
+            const createModal = (id, title, content, onSubmit) => {
+                const lastButtonIndex = content.lastIndexOf('<button type="submit"');
+                const formFields = content.substring(0, lastButtonIndex);
+                const submitButton = content.substring(lastButtonIndex);
+                const modalHTML = ` <div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50 hidden"> <div class="modal-content bg-white w-full rounded-t-2xl relative"> <header class="p-4 border-b flex justify-between items-center"> <h3 class="font-bold text-lg">${title}</h3> <button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button> </header> <form autocomplete="off"> <div class="p-4 max-h-[65vh] overflow-y-auto">${formFields}</div> <div class="p-4 border-t">${submitButton}</div> </form> </div> </div>`;
+                modalContainer.insertAdjacentHTML('beforeend', modalHTML);
+                const modalEl = document.getElementById(id);
+                const formEl = modalEl.querySelector('form');
+                const show = (data = {}) => {
+                    formEl.reset();
                     formEl.dataset.id = data.id || '';
                     Object.keys(data).forEach(key => { const input = formEl.elements[key]; if (input) input.value = data[key]; });
-                    modalEl.classList.remove('hidden'); }; const hide = () => modalEl.classList.add('hidden');
+                    modalEl.classList.remove('hidden');
+                };
+                const hide = () => modalEl.classList.add('hidden');
                 modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hide(); });
                 modalEl.querySelector('.close-modal-btn').addEventListener('click', hide);
-                formEl.addEventListener('submit', async (e) => { e.preventDefault(); const submitBtn = formEl.querySelector('button[type="submit"]'); if (!submitBtn) return; const originalBtnHTML = submitBtn.innerHTML;
+                formEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const submitBtn = formEl.querySelector('button[type="submit"]');
+                    if (!submitBtn) return;
+                    const originalBtnHTML = submitBtn.innerHTML;
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`; const formData = new FormData(formEl); const data = Object.fromEntries(formData.entries());
-                    data.id = formEl.dataset.id; try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) { console.error("Error submitting form: ", error); if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error);
-                        else showToast("Gagal menyimpan data. Cek konsol."); } finally { submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalBtnHTML; } }); return { show, hide, formEl, modalEl }; };
-            const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => { const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`;
-                modalContainer.insertAdjacentHTML('beforeend', modalHTML); const modalEl = document.getElementById(id); let resolvePromise; const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); }; const hide = () => modalEl.classList.add('hidden');
+                    submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...`;
+                    const formData = new FormData(formEl);
+                    const data = Object.fromEntries(formData.entries());
+                    data.id = formEl.dataset.id;
+                    try { const successMessage = await onSubmit(data, formEl); if (successMessage) { showToast(successMessage); } hide(); } catch (error) {
+                        console.error("Error submitting form: ", error);
+                        if (typeof error === 'string' || error instanceof String || error.message) showToast(error.message || error);
+                        else showToast("Gagal menyimpan data. Cek konsol.");
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHTML;
+                    }
+                });
+                return { show, hide, formEl, modalEl };
+            };
+            const createConfirmationModal = (id, title, message, confirmText = 'Hapus', confirmClass = 'bg-red-600') => {
+                const modalHTML = `<div id="${id}" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden"><div class="modal-content bg-white w-11/12 max-w-sm rounded-lg p-6 text-center" style="animation: none;"><h3 class="font-bold text-lg mb-2">${title}</h3><p class="text-gray-600 mb-6">${message}</p><div class="flex justify-center gap-4"><button class="cancel-btn px-6 py-2 rounded-lg border">Batal</button><button class="confirm-btn px-6 py-2 rounded-lg text-white ${confirmClass}">${confirmText}</button></div></div></div>`;
+                modalContainer.insertAdjacentHTML('beforeend', modalHTML);
+                const modalEl = document.getElementById(id);
+                let resolvePromise;
+                const show = () => { modalEl.classList.remove('hidden'); return new Promise(resolve => { resolvePromise = resolve; }); };
+                const hide = () => modalEl.classList.add('hidden');
                 modalEl.querySelector('.confirm-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(true); });
                 modalEl.querySelector('.cancel-btn').addEventListener('click', () => { hide(); if (resolvePromise) resolvePromise(false); });
-                modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } }); return { show }; };
+                modalEl.addEventListener('click', (e) => { if (e.target === modalEl) { hide(); if (resolvePromise) resolvePromise(false); } });
+                return { show };
+            };
             
             const dailyReportDetailModalHTML = `<div id="daily-report-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end z-[60] hidden"><div class="modal-content bg-white w-full rounded-t-2xl relative"><header class="p-4 border-b flex justify-between items-center"><h3 class="font-bold text-lg">Detail Laporan Harian</h3><button class="close-modal-btn text-gray-500 text-2xl font-bold">&times;</button></header><div id="daily-report-detail-content" class="p-4 max-h-[65vh] overflow-y-auto"></div></div></div>`;
             modalContainer.insertAdjacentHTML('beforeend', dailyReportDetailModalHTML);
@@ -1362,15 +1567,27 @@
             
             const contactModal = createModal('contact-modal', 'Tambah/Edit Pelanggan', contactModalContent, async (data) => { const payload = { name: data.name, phone: data.phone, address: data.address }; if (data.id) { await updateDoc(doc(db, 'contacts', data.id), payload); return 'Pelanggan berhasil diperbarui!'; } else { await addDoc(collection(db, 'contacts'), payload); return 'Pelanggan baru berhasil ditambahkan!'; } });
             const itemModal = createModal('item-modal', 'Tambah/Edit Barang', itemModalContent, async (data) => { const payload = { name: data.name, price: Number(data.price) }; if (data.id) { await updateDoc(doc(db, 'inventory', data.id), payload); return 'Barang berhasil diperbarui!'; } else { await addDoc(collection(db, 'inventory'), payload); return 'Barang baru berhasil ditambahkan!'; } });
-            const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => { const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp(); const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate };
-                await addDoc(collection(db, 'monthly_expenses'), payload); return 'Item belanja berhasil dicatat!'; });
+            const expenseModal = createModal('expense-modal', 'Catat Belanja Baru', expenseModalContent, async (data) => {
+                const purchaseDate = data.purchaseDate ? Timestamp.fromDate(new Date(data.purchaseDate)) : serverTimestamp();
+                const payload = { itemName: data.itemName, quantity: data.quantity, total: Number(data.total), storeName: data.storeName, date: purchaseDate };
+                await addDoc(collection(db, 'monthly_expenses'), payload);
+                return 'Item belanja berhasil dicatat!';
+            });
             const confirmDeleteModal = createConfirmationModal('confirm-delete-modal', 'Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus item ini?', 'Ya, Hapus', 'bg-red-600');
             const confirmInvoiceModal = createConfirmationModal('confirm-invoice-modal', 'Konfirmasi Pembuatan Faktur', 'Buat faktur untuk pesanan ini? Aksi ini akan membuat catatan transaksi baru.', 'Ya, Buat Faktur', 'bg-green-600');
             const confirmCancelReservationModal = createConfirmationModal('confirm-cancel-modal', 'Konfirmasi Pembatalan', 'Apakah Anda yakin ingin membatalkan reservasi ini?', 'Ya, Batalkan', 'bg-red-600');
             const dateFilterModal = createModal('date-filter-modal', 'Pilih Periode', '<div id="date-filter-content" class="p-4"></div>', () => {});
-            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => { const items = [];
-                form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } }); if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); } if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); } const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0); const contact = state.contacts.find(c => c.id === data.contactId); const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() };
-                await addDoc(collection(db, 'transactions'), salePayload); return 'Faktur penjualan berhasil dibuat!'; });
+            const saleModal = createModal('sale-modal', 'Faktur Penjualan Baru', saleModalContent, async (data, form) => {
+                const items = [];
+                form.querySelectorAll('.sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) { items.push({ id: itemId, name: itemData.name, price: itemData.price, qty: qty }); } });
+                if (items.length === 0) { throw new Error("Tambahkan minimal satu barang."); }
+                if (!data.contactId) { throw new Error("Pilih pelanggan terlebih dahulu."); }
+                const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                const contact = state.contacts.find(c => c.id === data.contactId);
+                const salePayload = { contactId: data.contactId, contactName: contact.name, items, total, type: 'sale', date: serverTimestamp() };
+                await addDoc(collection(db, 'transactions'), salePayload);
+                return 'Faktur penjualan berhasil dibuat!';
+            });
             // GANTI SELURUH BLOK const customerOrderModal = ... DENGAN INI
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => {
                 const customerName = data.customerName.trim();
@@ -1441,32 +1658,54 @@
                 return 'Pesanan baru berhasil disimpan!';
             });
             const customerDetailModal = createModal('customer-detail-modal', 'Detail Pembelian Pelanggan', customerDetailModalContent, () => {});
-            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => { broadcastMessageTemplate = data.message; const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked'); if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone)); if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0;
-                setupAndShowBroadcastProgress(); return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`; });
+            const broadcastModal = createModal('broadcast-modal', 'Broadcast WhatsApp', broadcastModalContent, async (data) => {
+                broadcastMessageTemplate = data.message;
+                const checkedBoxes = document.querySelectorAll('#contact-list .contact-checkbox:checked');
+                if (!broadcastMessageTemplate) { throw new Error("Pesan tidak boleh kosong."); } broadcastQueue = Array.from(checkedBoxes).map(cb => state.contacts.find(c => c.id === cb.dataset.id)).filter(contact => contact && contact.phone && formatWhatsappNumber(contact.phone));
+                if (broadcastQueue.length === 0) { throw new Error("Tidak ada pelanggan terpilih yang memiliki nomor telepon valid."); } currentBroadcastIndex = 0;
+                setupAndShowBroadcastProgress();
+                return `Memulai broadcast untuk ${broadcastQueue.length} pelanggan...`;
+            });
             
             const broadcastProgressModalEl = document.getElementById('broadcast-progress-modal');
-            const setupAndShowBroadcastProgress = () => { document.getElementById('broadcast-actions').classList.remove('hidden');
+            const setupAndShowBroadcastProgress = () => {
+                document.getElementById('broadcast-actions').classList.remove('hidden');
                 document.getElementById('broadcast-complete').classList.add('hidden');
                 broadcastProgressModalEl.classList.remove('hidden');
-                updateBroadcastProgressUI(); };
-            const updateBroadcastProgressUI = () => { if (currentBroadcastIndex >= broadcastQueue.length) { document.getElementById('broadcast-actions').classList.add('hidden');
-                    document.getElementById('broadcast-complete').classList.remove('hidden'); } else { const contact = broadcastQueue[currentBroadcastIndex];
+                updateBroadcastProgressUI();
+            };
+            const updateBroadcastProgressUI = () => {
+                if (currentBroadcastIndex >= broadcastQueue.length) {
+                    document.getElementById('broadcast-actions').classList.add('hidden');
+                    document.getElementById('broadcast-complete').classList.remove('hidden');
+                } else {
+                    const contact = broadcastQueue[currentBroadcastIndex];
                     document.getElementById('broadcast-progress-status').textContent = `Mengirim ke ${currentBroadcastIndex + 1} dari ${broadcastQueue.length}...`;
-                    document.getElementById('broadcast-next-contact-name').textContent = contact.name; } };
-            const hideBroadcastProgress = () => { broadcastProgressModalEl.classList.add('hidden');
+                    document.getElementById('broadcast-next-contact-name').textContent = contact.name;
+                }
+            };
+            const hideBroadcastProgress = () => {
+                broadcastProgressModalEl.classList.add('hidden');
                 broadcastQueue = [];
                 currentBroadcastIndex = 0;
                 broadcastMessageTemplate = '';
                 document.querySelectorAll('.contact-checkbox:checked').forEach(cb => cb.checked = false);
-                document.getElementById('broadcast-controls').classList.add('hidden'); };
-            const updateSaleTotal = () => { let total = 0;
+                document.getElementById('broadcast-controls').classList.add('hidden');
+            };
+            const updateSaleTotal = () => {
+                let total = 0;
                 document.querySelectorAll('#sale-items-container .sale-item-row').forEach(row => { const itemId = row.querySelector('select[name="itemId"]').value; const itemData = state.inventory.find(i => i.id === itemId); const qty = Number(row.querySelector('input[name="qty"]').value); if (itemData && qty > 0) total += itemData.price * qty; });
-                document.getElementById('sale-total-amount').textContent = formatCurrency(total); };
-            const addSaleItemRow = () => { const container = document.getElementById('sale-items-container'); const itemRow = document.createElement('div');
-                itemRow.className = 'sale-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join('');
+                document.getElementById('sale-total-amount').textContent = formatCurrency(total);
+            };
+            const addSaleItemRow = () => {
+                const container = document.getElementById('sale-items-container');
+                const itemRow = document.createElement('div');
+                itemRow.className = 'sale-item-row flex items-center gap-2';
+                const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join('');
                 itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-sale-item-btn text-red-500 text-2xl font-bold">&times;</button>`;
                 container.appendChild(itemRow);
-                updateSaleTotal(); };
+                updateSaleTotal();
+            };
             const updateOrderTotal = () => {
                 let subtotal = 0;
                 document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
@@ -1496,23 +1735,47 @@
                 document.getElementById('order-discount-amount-display').textContent = formatCurrency(discountAmount);
                 document.getElementById('order-total-amount').textContent = formatCurrency(finalTotal);
             };
-            const addOrderItemRow = () => { const container = document.getElementById('order-items-container'); const itemRow = document.createElement('div');
-                itemRow.className = 'order-item-row flex items-center gap-2'; const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join('');
+            const addOrderItemRow = () => {
+                const container = document.getElementById('order-items-container');
+                const itemRow = document.createElement('div');
+                itemRow.className = 'order-item-row flex items-center gap-2';
+                const options = state.inventory.map(item => `<option value="${item.id}" data-price="${item.price}">${item.name}</option>`).join('');
                 itemRow.innerHTML = `<select name="itemId" class="flex-grow border border-gray-300 rounded-md py-1 px-2 text-sm">${options}</select><input type="number" name="qty" value="1" min="1" class="w-16 border border-gray-300 rounded-md py-1 px-2 text-sm"><button type="button" class="remove-order-item-btn text-red-500 text-2xl font-bold">&times;</button>`;
                 container.appendChild(itemRow);
-                updateOrderTotal(); };
+                updateOrderTotal();
+            };
             const nameInput = customerOrderModal.formEl.querySelector('#customer-name-input');
             const suggestionsBox = customerOrderModal.formEl.querySelector('#customer-suggestions-box');
-            const populateContactInfo = (contactName) => { const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase()); if (contact) { customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || '';
-                    customerOrderModal.formEl.elements['alamat'].value = contact.address || ''; } };
-            nameInput.addEventListener('input', (e) => { const searchTerm = e.target.value.toLowerCase(); if (searchTerm.length === 0) { suggestionsBox.classList.add('hidden'); return; } const filteredContacts = state.contacts.filter(contact => contact.name.toLowerCase().includes(searchTerm)); if (filteredContacts.length > 0) { suggestionsBox.innerHTML = filteredContacts.map(contact => `<div class="p-2 hover:bg-emerald-50 cursor-pointer suggestion-item" data-name="${contact.name}">${contact.name}</div>`).join('');
-                    suggestionsBox.classList.remove('hidden'); } else { suggestionsBox.classList.add('hidden'); } });
-            nameInput.addEventListener('blur', (e) => { setTimeout(() => { populateContactInfo(e.target.value);
-                    suggestionsBox.classList.add('hidden'); }, 200); });
-            suggestionsBox.addEventListener('click', (e) => { if (e.target.classList.contains('suggestion-item')) { const selectedName = e.target.dataset.name;
+            const populateContactInfo = (contactName) => {
+                const contact = state.contacts.find(c => c.name.toLowerCase() === contactName.toLowerCase());
+                if (contact) {
+                    customerOrderModal.formEl.elements['customerPhone'].value = contact.phone || '';
+                    customerOrderModal.formEl.elements['alamat'].value = contact.address || '';
+                }
+            };
+            nameInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                if (searchTerm.length === 0) { suggestionsBox.classList.add('hidden'); return; }
+                const filteredContacts = state.contacts.filter(contact => contact.name.toLowerCase().includes(searchTerm));
+                if (filteredContacts.length > 0) {
+                    suggestionsBox.innerHTML = filteredContacts.map(contact => `<div class="p-2 hover:bg-emerald-50 cursor-pointer suggestion-item" data-name="${contact.name}">${contact.name}</div>`).join('');
+                    suggestionsBox.classList.remove('hidden');
+                } else { suggestionsBox.classList.add('hidden'); }
+            });
+            nameInput.addEventListener('blur', (e) => {
+                setTimeout(() => {
+                    populateContactInfo(e.target.value);
+                    suggestionsBox.classList.add('hidden');
+                }, 200);
+            });
+            suggestionsBox.addEventListener('click', (e) => {
+                if (e.target.classList.contains('suggestion-item')) {
+                    const selectedName = e.target.dataset.name;
                     nameInput.value = selectedName;
                     suggestionsBox.classList.add('hidden');
-                    populateContactInfo(selectedName); } });
+                    populateContactInfo(selectedName);
+                }
+            });
             
             function updateTurnoverTrendChart() {
                 const filteredData = {};
@@ -1558,11 +1821,14 @@
             document.getElementById('shortcut-reservation').addEventListener('click', () => navigateTo('page-reservasi'));
             document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
             document.getElementById('shortcut-attendance').addEventListener('click', () => document.getElementById('btn-laporan-absensi').click());
-            document.getElementById('shortcut-new-order').addEventListener('click', () => { if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; } const form = customerOrderModal.formEl;
+            document.getElementById('shortcut-new-order').addEventListener('click', () => {
+                if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; }
+                const form = customerOrderModal.formEl;
                 form.elements['orderDate'].value = new Date().toISOString().split('T')[0];
                 document.getElementById('order-items-container').innerHTML = '';
                 addOrderItemRow();
-                customerOrderModal.show(); });
+                customerOrderModal.show();
+            });
             
             document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
             document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
@@ -1570,8 +1836,12 @@
             document.getElementById('back-to-lainnya-from-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
             document.getElementById('btn-impor-laporan').addEventListener('click', () => navigateTo('page-laporan-harian'));
             document.getElementById('back-to-lainnya-from-laporan-btn').addEventListener('click', () => navigateTo('page-lainnya'));
-            document.querySelectorAll('.chart-week-btn').forEach(button => { button.addEventListener('click', () => { chartSelectedWeek = parseInt(button.dataset.week);
-                    renderFunctions.renderDashboard(); }); });
+            document.querySelectorAll('.chart-week-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    chartSelectedWeek = parseInt(button.dataset.week);
+                    renderFunctions.renderDashboard();
+                });
+            });
             
             document.getElementById('btn-laporan-bulanan').addEventListener('click', () => {
                 renderFunctions.renderMonthlyTurnoverReport();
@@ -1829,8 +2099,10 @@
                             batch.delete(transactionRef);
                             await batch.commit();
                             showToast("Pesanan dan faktur terkait berhasil dihapus.");
-                        } catch (error) { console.error("Gagal menghapus pesanan dan transaksi:", error);
-                            showToast("Gagal menghapus data."); }
+                        } catch (error) {
+                            console.error("Gagal menghapus pesanan dan transaksi:", error);
+                            showToast("Gagal menghapus data.");
+                        }
                     }
                 }
                 if (target.classList.contains('invoice-btn') || target.classList.contains('reprint-invoice-btn')) {
@@ -1852,8 +2124,10 @@
                             batch.update(orderRef, { status: "completed" });
                             await batch.commit();
                             showToast("Faktur berhasil dibuat dari pesanan!");
-                        } catch (error) { console.error("Gagal membuat faktur dari pesanan:", error);
-                            showToast("Gagal memproses faktur."); }
+                        } catch (error) {
+                            console.error("Gagal membuat faktur dari pesanan:", error);
+                            showToast("Gagal memproses faktur.");
+                        }
                     }
                 }
                 
@@ -1864,27 +2138,64 @@
                 if (target.id === 'fab-add-sale') navigateTo('page-penjualan');
                 if (target.id === 'fab-add-order') document.getElementById('shortcut-new-order').click();
                 if (target.classList.contains('edit-contact-btn')) { const contact = state.contacts.find(c => c.id === target.dataset.id); if (contact) contactModal.show(contact); }
-                if (target.classList.contains('delete-contact-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'contacts', target.dataset.id));
-                        showToast('Pelanggan berhasil dihapus.'); } }
+                if (target.classList.contains('delete-contact-btn')) {
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'contacts', target.dataset.id));
+                        showToast('Pelanggan berhasil dihapus.');
+                    }
+                }
                 if (target.classList.contains('edit-item-btn')) { const item = state.inventory.find(i => i.id === target.dataset.id); if (item) itemModal.show(item); }
-                if (target.classList.contains('delete-item-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'inventory', target.dataset.id));
-                        showToast('Barang berhasil dihapus.'); } }
-                if (target.classList.contains('delete-tx-btn')) { const txId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'transactions', txId));
-                        showToast('Transaksi berhasil dihapus.'); } }
-                if (target.classList.contains('delete-order-btn')) { const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'customer_orders', target.dataset.id));
-                        showToast('Pesanan berhasil dihapus.'); } }
-                if (target.classList.contains('delete-expense-btn')) { const expenseId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'monthly_expenses', expenseId));
-                        showToast('Item belanja berhasil dihapus.'); } }
-                if (target.classList.contains('delete-daily-report-btn')) { const reportId = target.dataset.id; const confirmed = await confirmDeleteModal.show(); if (confirmed) { await deleteDoc(doc(db, 'daily_reports', reportId));
-                        showToast('Laporan harian berhasil dihapus.'); } }
+                if (target.classList.contains('delete-item-btn')) {
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'inventory', target.dataset.id));
+                        showToast('Barang berhasil dihapus.');
+                    }
+                }
+                if (target.classList.contains('delete-tx-btn')) {
+                    const txId = target.dataset.id;
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'transactions', txId));
+                        showToast('Transaksi berhasil dihapus.');
+                    }
+                }
+                if (target.classList.contains('delete-order-btn')) {
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'customer_orders', target.dataset.id));
+                        showToast('Pesanan berhasil dihapus.');
+                    }
+                }
+                if (target.classList.contains('delete-expense-btn')) {
+                    const expenseId = target.dataset.id;
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'monthly_expenses', expenseId));
+                        showToast('Item belanja berhasil dihapus.');
+                    }
+                }
+                if (target.classList.contains('delete-daily-report-btn')) {
+                    const reportId = target.dataset.id;
+                    const confirmed = await confirmDeleteModal.show();
+                    if (confirmed) {
+                        await deleteDoc(doc(db, 'daily_reports', reportId));
+                        showToast('Laporan harian berhasil dihapus.');
+                    }
+                }
                 
                 // --- Logika Form Dinamis (Tambah/Hapus Item) ---
                 if (target.id === 'add-sale-item-btn') addSaleItemRow();
-                if (target.classList.contains('remove-sale-item-btn')) { target.closest('.sale-item-row').remove();
-                    updateSaleTotal(); }
+                if (target.classList.contains('remove-sale-item-btn')) {
+                    target.closest('.sale-item-row').remove();
+                    updateSaleTotal();
+                }
                 if (target.id === 'add-order-item-btn') addOrderItemRow();
-                if (target.classList.contains('remove-order-item-btn')) { target.closest('.order-item-row').remove();
-                    updateOrderTotal(); }
+                if (target.classList.contains('remove-order-item-btn')) {
+                    target.closest('.order-item-row').remove();
+                    updateOrderTotal();
+                }
                 
                 // --- Lain-lain ---
                 if (target.classList.contains('view-customer-details-btn')) {
@@ -1906,10 +2217,13 @@
                     try {
                         const reportRef = doc(db, 'checklist_history', reportId);
                         await updateDoc(reportRef, {
-                            [`tasks.${taskId}.staffComment`]: commentText });
+                            [`tasks.${taskId}.staffComment`]: commentText
+                        });
                         showToast(`Komentar disimpan.`);
-                    } catch (error) { console.error("Gagal menyimpan komentar:", error);
-                        showToast("Gagal menyimpan komentar."); }
+                    } catch (error) {
+                        console.error("Gagal menyimpan komentar:", error);
+                        showToast("Gagal menyimpan komentar.");
+                    }
                 }
             });
             
@@ -1917,9 +2231,11 @@
             customerOrderModal.modalEl.addEventListener('change', (e) => { if (e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
-            document.getElementById('resetSalesFilter').addEventListener('click', () => { document.getElementById('salesSearchInput').value = '';
+            document.getElementById('resetSalesFilter').addEventListener('click', () => {
+                document.getElementById('salesSearchInput').value = '';
                 document.getElementById('salesMonthFilter').value = '';
-                renderFunctions.renderSalesReport(); });
+                renderFunctions.renderSalesReport();
+            });
             document.getElementById('contactSearchInput').addEventListener('input', renderFunctions.renderContactList);
             document.getElementById('completedOrderSearchInput').addEventListener('input', renderFunctions.renderCompletedOrderList);
             const contactListEl = document.getElementById('contact-list');
@@ -1971,26 +2287,66 @@
             });
             // ▲▲▲ KODE BARU SELESAI ▲▲▲
             document.getElementById('show-broadcast-modal').addEventListener('click', () => { broadcastModal.show(); });
-            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => { if (currentBroadcastIndex < broadcastQueue.length) { const contact = broadcastQueue[currentBroadcastIndex]; const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]); const whatsappNumber = formatWhatsappNumber(contact.phone); const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            document.getElementById('broadcast-send-next-btn').addEventListener('click', () => {
+                if (currentBroadcastIndex < broadcastQueue.length) {
+                    const contact = broadcastQueue[currentBroadcastIndex];
+                    const message = broadcastMessageTemplate.replace(/{nama}/g, contact.name.split(' ')[0]);
+                    const whatsappNumber = formatWhatsappNumber(contact.phone);
+                    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
                     window.open(url, '_blank');
                     currentBroadcastIndex++;
-                    updateBroadcastProgressUI(); } });
+                    updateBroadcastProgressUI();
+                }
+            });
             document.getElementById('broadcast-cancel-btn').addEventListener('click', hideBroadcastProgress);
             document.getElementById('broadcast-close-btn').addEventListener('click', hideBroadcastProgress);
-            document.getElementById('exportSalesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('salesMonthFilter').value; const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.transactions.filter(tx => tx.type === 'sale'); if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
-                exportToCsv(filename, headers, data); });
-            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('expenseMonthFilter').value; const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"]; let dataToExport = state.monthlyExpenses; if (selectedMonth) { dataToExport = dataToExport.filter(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data belanja untuk diekspor.'); return; } const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]); const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
-                exportToCsv(filename, headers, data); });
+            document.getElementById('exportSalesCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('salesMonthFilter').value;
+                const headers = ["Tanggal", "Pelanggan", "Item", "Jumlah", "Harga Satuan", "Subtotal"];
+                let dataToExport = state.transactions.filter(tx => tx.type === 'sale');
+                if (selectedMonth) { dataToExport = dataToExport.filter(tx => new Date(tx.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); }
+                const data = dataToExport.flatMap(tx => tx.items.map(item => [formatDate(tx.date), tx.contactName, item.name, item.qty, item.price, item.qty * item.price]));
+                const filename = `laporan_penjualan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+                exportToCsv(filename, headers, data);
+            });
+            document.getElementById('exportExpensesCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('expenseMonthFilter').value;
+                const headers = ["Tanggal Pembelian", "Nama Toko", "Nama Barang", "Jumlah/Satuan", "Total Harga"];
+                let dataToExport = state.monthlyExpenses;
+                if (selectedMonth) { dataToExport = dataToExport.filter(ex => new Date(ex.date.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); }
+                if (dataToExport.length === 0) { showToast('Tidak ada data belanja untuk diekspor.'); return; }
+                const data = dataToExport.map(ex => [formatDate(ex.date), ex.storeName, ex.itemName, ex.quantity, ex.total]);
+                const filename = `laporan_belanja_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+                exportToCsv(filename, headers, data);
+            });
             document.getElementById('expenseMonthFilter').addEventListener('change', renderFunctions.renderExpenseReport);
-            document.getElementById('resetExpenseFilter').addEventListener('click', () => { document.getElementById('expenseMonthFilter').value = '';
-                renderFunctions.renderExpenseReport(); });
-            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('completedOrderMonthFilter').value; const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"]; let dataToExport = state.customerOrders.filter(o => o.status === 'completed'); if (selectedMonth) { dataToExport = dataToExport.filter(o => new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data pesanan selesai untuk diekspor.'); return; } const data = dataToExport.flatMap(order => order.items.map(item => [formatDate(order.orderDate), order.contactName, order.alamat || '-', item.name, item.qty, item.price, item.qty * item.price])); const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.getElementById('resetExpenseFilter').addEventListener('click', () => {
+                document.getElementById('expenseMonthFilter').value = '';
+                renderFunctions.renderExpenseReport();
+            });
+            document.getElementById('exportCompletedOrdersCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('completedOrderMonthFilter').value;
+                const headers = ["Tanggal Pesan", "Nama Pelanggan", "Alamat", "Nama Item", "Jumlah", "Harga Satuan", "Subtotal"];
+                let dataToExport = state.customerOrders.filter(o => o.status === 'completed');
+                if (selectedMonth) { dataToExport = dataToExport.filter(o => new Date(o.orderDate.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); }
+                if (dataToExport.length === 0) { showToast('Tidak ada data pesanan selesai untuk diekspor.'); return; }
+                const data = dataToExport.flatMap(order => order.items.map(item => [formatDate(order.orderDate), order.contactName, order.alamat || '-', item.name, item.qty, item.price, item.qty * item.price]));
+                const filename = `laporan_pesanan_selesai_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
                 exportToCsv(filename, headers, data);
-                showToast('Laporan pesanan selesai sedang diunduh...'); });
+                showToast('Laporan pesanan selesai sedang diunduh...');
+            });
             document.getElementById('checklistMonthFilter').addEventListener('change', renderFunctions.renderChecklistReport);
-            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => { const selectedMonth = document.getElementById('checklistMonthFilter').value; const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"]; let dataToExport = state.checklistHistory; if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); } if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; } const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A'])); const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.getElementById('exportChecklistCsvBtn').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('checklistMonthFilter').value;
+                const headers = ["Tanggal", "Tugas", "Dikerjakan Oleh", "Link Bukti Foto"];
+                let dataToExport = state.checklistHistory;
+                if (selectedMonth) { dataToExport = dataToExport.filter(report => report.tanggal && new Date(report.tanggal.seconds * 1000).toLocaleString('id-ID', { month: 'long', year: 'numeric' }) === selectedMonth); }
+                if (dataToExport.length === 0) { showToast('Tidak ada data kebersihan untuk diekspor.'); return; }
+                const data = dataToExport.flatMap(report => (report.tasks || []).filter(t => t.done).map(task => [formatDate(report.tanggal), task.text, task.completedBy || 'N/A', task.proofUrl || 'N/A']));
+                const filename = `laporan_kebersihan_${selectedMonth ? selectedMonth.replace(' ', '_') : 'semua'}_${new Date().toISOString().split('T')[0]}.csv`;
                 exportToCsv(filename, headers, data);
-                showToast('Laporan kebersihan sedang diunduh...'); });
+                showToast('Laporan kebersihan sedang diunduh...');
+            });
             
             
             // TAMBAHKAN BLOK INI DI DALAM ializeApplication(db)
@@ -2055,13 +2411,15 @@
             
             
             const resetAndInitializeFilter = () => {
-                reservationFilter.date = new Date(); // Selalu kembali ke tanggal hari ini
-                document.getElementById('show-custom-date-picker').textContent = reservationFilter.date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-                renderFunctions.renderReservations();
+                reservationFilter.date = new Date();
+                reservationFilter.status = '';
+                reservationFilter.searchTerm = '';
                 
-                document.getElementById('show-custom-date-picker').textContent = "Pilih Tanggal";
+                document.getElementById('show-custom-date-picker').textContent = reservationFilter.date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                
                 document.getElementById('reservation-status-filter').textContent = "Semua Status";
-                document.getElementById('reservation-search-input').value = ''; // <-- Tambahkan ini
+                document.getElementById('reservation-search-input').value = '';
+                
                 renderFunctions.renderReservations();
             };
             document.getElementById('reservation-status-filter').addEventListener('click', () => {
@@ -2390,27 +2748,39 @@
                             renderFunctions.renderReservations();
                         }
                     }, (error) => console.error("Error fetching reservations:", error));
-                    onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => { state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => {
+                        state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderContactList();
-                        renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching contacts:", error));
-                    onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => { state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderFunctions.renderInventoryList(); }, (error) => console.error("Error fetching inventory:", error));
-                    onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => { state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderDashboard();
+                    }, (error) => console.error("Error fetching contacts:", error));
+                    onSnapshot(query(collection(db, 'inventory'), orderBy('name')), (snapshot) => {
+                        state.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderInventoryList();
+                    }, (error) => console.error("Error fetching inventory:", error));
+                    onSnapshot(query(collection(db, 'transactions'), orderBy('date', 'desc')), (snapshot) => {
+                        state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderSalesReport();
                         renderFunctions.renderDashboard();
                         renderFunctions.renderCustomerSummary();
-                        renderFunctions.renderCompletedOrderList(); }, (error) => console.error("Error fetching transactions:", error));
+                        renderFunctions.renderCompletedOrderList();
+                    }, (error) => console.error("Error fetching transactions:", error));
                     
-                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => { state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    onSnapshot(query(collection(db, 'customer_orders'), orderBy('orderDate', 'desc')), (snapshot) => {
+                        state.customerOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderOrderList();
                         renderFunctions.renderCompletedOrderList();
                         renderFunctions.renderDashboard();
-                        renderFunctions.renderCompletedOrderFilters(); }, (error) => console.error("Error fetching customer orders:", error));
-                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => { state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderCompletedOrderFilters();
+                    }, (error) => console.error("Error fetching customer orders:", error));
+                    onSnapshot(query(collection(db, 'monthly_expenses'), orderBy('date', 'desc')), (snapshot) => {
+                        state.monthlyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFunctions.renderExpenseReport();
-                        renderFunctions.renderDashboard(); }, (error) => console.error("Error fetching monthly expenses:", error));
-                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => { state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderFunctions.renderChecklistReport(); }, (error) => console.error("Error fetching checklist history:", error));
+                        renderFunctions.renderDashboard();
+                    }, (error) => console.error("Error fetching monthly expenses:", error));
+                    onSnapshot(query(collection(db, 'checklist_history'), orderBy('tanggal', 'desc')), (snapshot) => {
+                        state.checklistHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFunctions.renderChecklistReport();
+                    }, (error) => console.error("Error fetching checklist history:", error));
                     
                     onSnapshot(query(collection(db, 'daily_reports'), orderBy('date', 'desc')), (snapshot) => {
                         state.dailyReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -2420,8 +2790,10 @@
                     
                     const loadingOverlay = document.getElementById('loading-overlay');
                     loadingOverlay.style.opacity = '0';
-                    setTimeout(() => { loadingOverlay.style.display = 'none';
-                        document.getElementById('app-container').classList.remove('hidden'); }, 300);
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                        document.getElementById('app-container').classList.remove('hidden');
+                    }, 300);
                 } else {
                     signInAnonymously(auth).catch((error) => { console.error("Anonymous sign-in failed:", error); });
                 }
