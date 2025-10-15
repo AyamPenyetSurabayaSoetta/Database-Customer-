@@ -13,7 +13,6 @@
             const isCurrentOrFutureMonth = displayedDate.getFullYear() > now.getFullYear() ||
                 (displayedDate.getFullYear() === now.getFullYear() && displayedDate.getMonth() >= now.getMonth());
             
-            // Nonaktifkan tombol 'next' jika sudah di bulan saat ini
             nextBtn.disabled = isCurrentOrFutureMonth;
             nextBtn.classList.toggle('opacity-50', isCurrentOrFutureMonth);
             nextBtn.classList.toggle('cursor-not-allowed', isCurrentOrFutureMonth);
@@ -263,7 +262,6 @@
         };
         
         const renderFunctions = {
-            // GANTI SELURUH FUNGSI renderReservations DENGAN INI
             renderReservations: () => {
                 const listEl = document.getElementById('reservation-list');
                 if (!listEl) return;
@@ -287,7 +285,6 @@
                 
                 listEl.innerHTML = '';
                 if (filteredReservations.length === 0) {
-                    // --- KODE SVG LENGKAP SUDAH ADA DI SINI ---
                     listEl.innerHTML = `<div class="text-center py-16"><svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><h3 class="mt-2 text-sm font-medium text-gray-900">Reservasi Tidak Ditemukan</h3><p class="mt-1 text-sm text-gray-500">Tidak ada data untuk tanggal yang dipilih.</p></div>`;
                 } else {
                     filteredReservations.forEach(res => {
@@ -399,7 +396,6 @@
                         const item = document.createElement('div');
                         item.className = 'p-4 border rounded-lg space-y-3';
                         
-                        // ▼▼▼ BAGIAN BARU UNTUK MENAMPILKAN RINCIAN TOTAL DENGAN DISKON ▼▼▼
                         const discountInfo = order.discountAmount > 0 ?
                             ` <div class="flex justify-between items-center text-sm">
                         <p class="text-red-600">Diskon</p>
@@ -775,7 +771,7 @@
                     
                     
                     // 1. HEADER
-                    if (logoBase64) { // Cek ini akan memastikan logo hanya ditambahkan jika berhasil dimuat
+                    if (logoBase64) {
                         doc.addImage(logoBase64, 'JPEG', margin, margin, 70, 70);
                     }
                     doc.setFontSize(18);
@@ -999,7 +995,6 @@
                     }
                 });
             },
-            // GANTI SELURUH FUNGSI DENGAN VERSI BARU INI
             renderDailyReportHistory: () => {
                 const listEl = document.getElementById('daily-report-history-list');
                 const yearFilterEl = document.getElementById('daily-report-year-filter');
@@ -1009,19 +1004,16 @@
                 const now = new Date();
                 const availableYears = [...new Set(state.dailyReports.map(r => r.date.toDate().getFullYear()))].sort((a, b) => b - a);
                 
-                // --- Mengisi Filter Tahun ---
                 const currentYearValue = yearFilterEl.value;
                 yearFilterEl.innerHTML = '<option value="">Semua Tahun</option>';
                 availableYears.forEach(year => yearFilterEl.add(new Option(year, year)));
                 
-                // Cerdas: Jika filter tahun kosong (pertama kali load), atur ke tahun ini
                 if (!currentYearValue && availableYears.includes(now.getFullYear())) {
                     yearFilterEl.value = now.getFullYear();
                 } else {
                     yearFilterEl.value = currentYearValue;
                 }
                 
-                // --- Mengisi Filter Bulan Berdasarkan Tahun yang Dipilih ---
                 const selectedYear = yearFilterEl.value;
                 monthFilterEl.innerHTML = '<option value="">Semua Bulan</option>';
                 if (selectedYear) {
@@ -1036,7 +1028,6 @@
                     });
                 }
                 
-                // Cerdas: Jika filter bulan kosong (pertama kali load), atur ke bulan ini
                 const currentMonthValue = monthFilterEl.value;
                 if (selectedYear == now.getFullYear() && !currentMonthValue) {
                     monthFilterEl.value = now.getMonth();
@@ -1105,34 +1096,22 @@
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Dine In',
-                            data: makanData,
-                            borderColor: 'rgb(59, 130, 246)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.2
-                        }, {
-                            label: 'Naskot',
-                            data: naskotData,
-                            borderColor: 'rgb(234, 179, 8)',
-                            backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                            fill: true,
-                            tension: 0.2
-                        }, {
-                            label: 'Online',
-                            data: onlineData,
-                            borderColor: 'rgb(16, 185, 129)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.2
-                        }]
+                        datasets: [
+                            { label: 'Dine In', data: makanData, borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.2 },
+                            { label: 'Naskot', data: naskotData, borderColor: 'rgb(234, 179, 8)', backgroundColor: 'rgba(234, 179, 8, 0.1)', fill: true, tension: 0.2 },
+                            { label: 'Online', data: onlineData, borderColor: 'rgb(16, 185, 129)', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.2 }
+                        ]
                     },
                     options: {
                         responsive: true,
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCompactNumber(value);
+                                    }
+                                }
                             }
                         },
                         plugins: {
@@ -1290,7 +1269,7 @@
                 fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`;
             } else if (pageId === 'page-laporan') {
                 fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-reservasi') { // INI BAGIAN BARUNYA
+            } else if (pageId === 'page-reservasi') {
                 fabHTML = `<button title="Tambah Reservasi" id="fab-add-reservation" class="${baseFabClass}">${plusIcon}</button>`;
             }
             
@@ -1298,7 +1277,6 @@
         };
         
         function initializeApplication(db) {
-            // TAMBAHKAN KEMBALI BLOK INI di dalam fungsi initializeApplication
             document.getElementById('daily-report-year-filter').addEventListener('change', renderFunctions.renderDailyReportHistory);
             document.getElementById('daily-report-month-filter').addEventListener('change', renderFunctions.renderDailyReportHistory);
             document.getElementById('daily-report-reset-filter').addEventListener('click', () => {
@@ -1321,10 +1299,8 @@
             
             document.getElementById('export-monthly-report-csv').addEventListener('click', () => {
                 const selectedYear = document.getElementById('monthly-report-year-filter').value;
-                // (Logika ekspor akan menggunakan data yang sudah diproses di render function)
                 const headers = ["Bulan", "Total Omset", "Makan di Tempat", "Naskot", "Online", "Omset APS", "Omset MJ"];
                 
-                // Kita perlu memproses ulang data khusus untuk ekspor agar akurat
                 const dataToExport = [];
                 const monthlyDataForExport = {};
                 for (let i = 0; i < 12; i++) {
@@ -1384,7 +1360,6 @@
                 renderFunctions.renderDashboard();
             });
             
-            // Panggil fungsi ini sekali saat inisialisasi untuk mengatur teks bulan awal
             updateMonthDisplay();
             const modalContainer = document.getElementById('modal-container');
             const createModal = (id, title, content, onSubmit) => {
@@ -1449,7 +1424,6 @@
             const itemModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Harga Jual</label><input type="number" name="price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Barang</button>`;
             const expenseModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Tanggal Pembelian</label><input type="date" name="purchaseDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Nama Toko</label><input type="text" name="storeName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label class="block text-sm font-medium text-gray-700">Nama Barang</label><input type="text" name="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Jumlah/Satuan</label><input type="text" name="quantity" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div><div><label class="block text-sm font-medium text-gray-700">Total Harga</label><input type="number" name="total" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Simpan Belanja</button>`;
             const saleModalContent = `<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">Pilih Pelanggan</label><select name="contactId" id="sale-contact-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required></select></div><div class="border-t pt-4"><h4 class="font-medium mb-2">Barang yang Dibeli</h4><div id="sale-items-container" class="space-y-2"></div><button type="button" id="add-sale-item-btn" class="mt-2 text-sm text-emerald-600 font-semibold">+ Tambah Barang</button></div><div class="border-t pt-4 text-right"><p class="text-gray-600">Total Tagihan:</p><p id="sale-total-amount" class="font-bold text-2xl">${formatCurrency(0)}</p></div></div><button type="submit" class="mt-6 w-full bg-emerald-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Buat Faktur</button>`;
-            // GANTI SELURUH ISI VARIABEL INI
             const customerOrderModalContent = `
     <div class="space-y-4">
         <div>
@@ -1509,7 +1483,6 @@
 `;
             const customerDetailModalContent = `<div id="customer-item-details"></div><button type="submit" class="hidden">OK</button>`;
             const broadcastModalContent = `<div class="space-y-4"><div><label for="broadcast-message" class="block text-sm font-medium text-gray-700">Pesan Broadcast</label><textarea name="message" id="broadcast-message" rows="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" placeholder="Ketik pesan Anda di sini... (cth: Halo {nama}, ...)" required></textarea><p class="mt-2 text-xs text-gray-500">Gunakan <code class="bg-gray-200 px-1 rounded">{nama}</code> untuk menyisipkan nama pelanggan.</p></div></div><button type="submit" class="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm font-medium">Lanjutkan & Mulai Kirim</button>`;
-            // GANTI SELURUH ISI VARIABEL INI
             const reservationModalContent = `
     <div class="space-y-4">
         <div>
@@ -1588,7 +1561,6 @@
                 await addDoc(collection(db, 'transactions'), salePayload);
                 return 'Faktur penjualan berhasil dibuat!';
             });
-            // GANTI SELURUH BLOK const customerOrderModal = ... DENGAN INI
             const customerOrderModal = createModal('customer-order-modal', 'Pesanan Baru', customerOrderModalContent, async (data, form) => {
                 const customerName = data.customerName.trim();
                 const customerPhone = data.customerPhone.trim();
@@ -2068,11 +2040,9 @@
                         showToast('Reservasi telah ditandai selesai.');
                     } catch (error) { showToast('Gagal memperbarui status.'); }
                 }
-                // TAMBAHKAN BLOK IF INI DI DALAM document.body.addEventListener('click', ...)
                 
                 if (target && target.classList.contains('delete-reservation-btn')) {
                     const resId = target.dataset.id;
-                    // Kita bisa gunakan modal konfirmasi yang sudah ada
                     const confirmed = await confirmDeleteModal.show();
                     if (confirmed) {
                         try {
@@ -2084,7 +2054,6 @@
                         }
                     }
                 }
-                // --- Logika Halaman Pesanan & Faktur ---
                 if (target.classList.contains('delete-completed-order-btn')) {
                     const orderId = target.dataset.orderId;
                     const transactionId = target.dataset.transactionId;
@@ -2266,14 +2235,11 @@
                     selectAllCheckbox.checked = false;
                 }
             };
-            // ▲▲▲ KODE BARU SELESAI ▲▲▲
-            // Ganti kode lama di atas dengan yang ini
             contactListEl.addEventListener('change', e => {
                 if (e.target.classList.contains('contact-checkbox')) {
-                    updateBroadcastControls(); // Cukup panggil fungsi ini
+                    updateBroadcastControls();
                 }
             });
-            // ▼▼▼ KODE BARU DIMULAI ▼▼▼
             document.getElementById('select-all-contacts-checkbox').addEventListener('click', (e) => {
                 const isChecked = e.target.checked;
                 const allVisibleCheckboxes = document.querySelectorAll('#contact-list .contact-checkbox');
@@ -2282,10 +2248,8 @@
                     checkbox.checked = isChecked;
                 });
                 
-                // Perbarui tampilan dan hitungan
                 updateBroadcastControls();
             });
-            // ▲▲▲ KODE BARU SELESAI ▲▲▲
             document.getElementById('show-broadcast-modal').addEventListener('click', () => { broadcastModal.show(); });
             document.getElementById('broadcast-send-next-btn').addEventListener('click', () => {
                 if (currentBroadcastIndex < broadcastQueue.length) {
@@ -2349,7 +2313,6 @@
             });
             
             
-            // TAMBAHKAN BLOK INI DI DALAM ializeApplication(db)
             document.getElementById('show-custom-date-picker').addEventListener('click', () => {
                 let tempDate = new Date(reservationFilter.date);
                 const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -2384,7 +2347,7 @@
                 
                 const pickerModal = createModal('picker-modal', 'Pilih Tanggal', modalContent, () => {});
                 pickerModal.show();
-                updatePickerUI(pickerModal.modalEl); // Initial UI update
+                updatePickerUI(pickerModal.modalEl); 
                 
                 pickerModal.modalEl.querySelector('.modal-content').addEventListener('click', (e) => {
                     const btn = e.target.closest('.date-picker-btn');
@@ -2448,7 +2411,7 @@
                     }
                 });
             });
-            resetAndInitializeFilter(); // Panggil saat aplikasi load
+            resetAndInitializeFilter(); 
             customerOrderModal.modalEl.addEventListener('click', (e) => {
                 if (e.target.classList.contains('order-discount-type-btn')) {
                     const type = e.target.dataset.type;
@@ -2462,11 +2425,10 @@
                     e.target.classList.add('bg-emerald-100', 'text-emerald-800');
                     e.target.classList.remove('text-gray-500');
                     
-                    updateOrderTotal(); // Hitung ulang total setiap kali tipe diganti
+                    updateOrderTotal(); 
                 }
             });
             
-            // Tambahkan juga event listener untuk input nilai diskon
             customerOrderModal.modalEl.addEventListener('input', (e) => {
                 if (e.target.id === 'order-discount-value') {
                     updateOrderTotal();
@@ -2475,7 +2437,6 @@
             
             
             document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
-                // Set tanggal hari ini saat halaman dibuka
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('uf-tanggal').value = today;
                 navigateTo('page-hitung-fisik');
@@ -2738,9 +2699,9 @@
                     initializeApplication(db);
                     const lastPage = localStorage.getItem('lastActivePage');
                     if (lastPage) {
-                        navigateTo(lastPage); // Arahkan ke halaman terakhir yang disimpan
+                        navigateTo(lastPage); 
                     } else {
-                        navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
+                        navigateTo('page-beranda'); 
                     }
                     onSnapshot(query(collection(db, 'reservations'), orderBy('createdAt', 'desc')), (snapshot) => {
                         state.reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
