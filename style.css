@@ -1,106 +1,132 @@
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .nav-active svg,
-    .nav-active span {
-      color: #10B981;
-    }
-    
-    .nav-active svg.beranda-icon {
-      fill: #D1FAE5;
-    }
-    
-    .modal-content {
-      animation: slideUp 0.3s ease-out;
-    }
-    
-    @keyframes slideUp {
-      from {
-        transform: translateY(100%);
-      }
-      
-      to {
-        transform: translateY(0);
-      }
-    }
-    
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.75);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 9999px;
-      z-index: 100;
-      opacity: 0;
-      transition: opacity 0.3s, bottom 0.3s;
-      pointer-events: none;
-    }
-    
-    .toast.show {
-      opacity: 1;
-      bottom: 90px;
-    }
-    
-    #loading-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: white;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.3s ease-out;
-    }
-    
-    .spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border-left-color: #10B981;
-      animation: spin 1s ease infinite;
-    }
-    
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-    #main-content {
-  overflow-x: hidden;
+body {
+    font-family: 'Inter', sans-serif;
 }
-/* GANTI SEMUA CSS NAVIGASI LAMA ANDA DENGAN INI */
+
+
+nav {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
 
 .nav-button {
-    color: #9CA3AF; /* Warna abu-abu untuk ikon tidak aktif */
-    /* Menambahkan transisi untuk perubahan warna dan ukuran (transform) */
-    transition: color 0.3s ease, transform 0.2s ease;
-    /* Titik tumpu animasi diatur ke bawah agar ikon "tumbuh" ke atas */
-    transform-origin: bottom;
-}
-
-/* Aturan untuk tombol yang sedang aktif */
-.nav-button.active {
-    color: #10B981; /* Warna hijau untuk ikon dan teks yang aktif */
-    /* Efek "Pop": ikon diangkat 2px dan diperbesar menjadi 110% */
-    transform: translateY(-2px) scale(1.1); 
+    position: relative;
+    /* Menambahkan transisi untuk efek yang lebih halus */
+    transition: color 0.3s ease-in-out, transform 0.2s ease-in-out; 
+    color: #6B7280; /* Warna abu-abu untuk ikon tidak aktif */
 }
 
 .nav-button span {
-    font-size: 0.75rem; /* 12px */
     font-weight: 500;
-    transition: font-weight 0.2s;
 }
 
-.nav-button.active span {
-    font-weight: 700; /* Tebalkan teks yang aktif */
+/* Style untuk ikon dan teks yang aktif */
+.nav-active {
+    color: #059669; /* Warna hijau emerald yang lebih kuat */
+    transform: scale(1.1); 
+}
+
+.nav-active span {
+    font-weight: 600; /* Membuat teks sedikit lebih tebal */
+}
+
+.nav-active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ECFDF5; /* Warna hijau emerald yang sangat muda */
+    width: 80%;
+    height: 65%;
+    border-radius: 9999px;
+    z-index: -1;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-button::after {
+    content: '';
+    position: absolute;
+    /* Posisikan di bagian atas tombol navigasi */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    /* Lebar awal 0 agar tidak terlihat */
+    width: 0;
+    height: 3px; /* Ketebalan garis */
+    background-color: #10B981; /* Warna hijau */
+    border-radius: 3px; /* Membuat ujung garis sedikit membulat */
+    /* Efek transisi untuk animasi */
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-active::after {
+    width: 50%;
+}
+
+.modal-content {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    bottom: 90px;
+}
+
+#loading-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease-out;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #10B981;
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#main-content {
+    overflow-x: hidden;
 }

@@ -1237,45 +1237,36 @@
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-button');
         const fabContainer = document.getElementById('fab-container');
-// TAMBAHKAN FUNGSI BARU INI
-const updateIndicator = (pageName) => {
-    const navContainer = document.getElementById('nav-container');
-    const navButtons = navContainer.querySelectorAll('.nav-button');
-    const indicator = document.getElementById('nav-indicator');
-    let activeButton = null;
-    
-    // Temukan tombol yang aktif
-    navButtons.forEach(btn => {
-        if (btn.dataset.target === pageName) {
-            activeButton = btn;
-        }
-    });
-    
-    if (activeButton) {
-        const buttonWidth = activeButton.offsetWidth;
-        const buttonLeft = activeButton.offsetLeft;
-        const indicatorWidth = buttonWidth * 0.5; // Lebar garis 50% dari tombol
         
-        indicator.style.width = `${indicatorWidth}px`;
-        indicator.style.transform = `translateX(${buttonLeft + (buttonWidth - indicatorWidth) / 2}px)`;
-    }
-};        
-// GANTI FUNGSI navigateTo ANDA DENGAN VERSI FINAL INI
-const navigateTo = (pageName) => {
-    // 1. Tampilkan halaman yang benar dan sembunyikan yang lain
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.toggle('hidden', page.id !== `page-${pageName}`);
-    });
-    
-    // 2. Atur kelas 'active' pada tombol navigasi
-    document.querySelectorAll('.nav-button').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.target === pageName);
-    });
-    
-    // 3. Logika untuk FAB dan penyimpanan state (tetap sama)
-    updateFAB(`page-${pageName}`);
-    localStorage.setItem('lastActivePage', pageName);
-};
+        // main.js
+        
+        const navigateTo = (pageId) => {
+            // ID halaman target yang benar selalu "page-" + nama halaman
+            const targetPageId = `page-${pageId}`;
+            
+            pages.forEach(page => page.classList.toggle('hidden', page.id !== targetPageId));
+            
+            navButtons.forEach(btn => {
+                // Cocokkan data-target dengan pageId tanpa awalan
+                const isActive = btn.dataset.target === pageId;
+                btn.classList.toggle('nav-active', isActive);
+                
+                // Logika untuk ikon beranda (sudah benar)
+                const berandaIcon = btn.querySelector('.beranda-icon');
+                if (berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none';
+            });
+            
+            // Kirim pageId tanpa awalan ke fungsi FAB
+            updateFAB(pageId);
+            
+            if (pageId !== 'pihak') { // Gunakan nama dasar
+                document.getElementById('broadcast-controls').classList.add('hidden');
+                document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false);
+            }
+            
+            // Simpan ID halaman yang lengkap
+            localStorage.setItem('lastActivePage', targetPageId);
+        };
         
         const updateFAB = (pageId) => {
             fabContainer.innerHTML = '';
@@ -1813,9 +1804,9 @@ const navigateTo = (pageName) => {
             
             
             navButtons.forEach(button => button.addEventListener('click', () => navigateTo(button.dataset.target)));
-            document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('page-pihak'));
-            document.getElementById('shortcut-reservation').addEventListener('click', () => navigateTo('page-reservasi'));
-            document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('page-laporan'));
+            document.getElementById('shortcut-new-contact').addEventListener('click', () => navigateTo('pihak'));
+            document.getElementById('shortcut-reservation').addEventListener('click', () => navigateTo('reservasi'));
+            document.getElementById('shortcut-new-expense').addEventListener('click', () => navigateTo('laporan'));
             document.getElementById('shortcut-attendance').addEventListener('click', () => document.getElementById('btn-laporan-absensi').click());
             document.getElementById('shortcut-new-order').addEventListener('click', () => {
                 if (state.inventory.length === 0) { showToast("Tidak ada barang di inventaris."); return; }
@@ -1826,12 +1817,12 @@ const navigateTo = (pageName) => {
                 customerOrderModal.show();
             });
             
-            document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('page-checklist'));
-            document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('page-lainnya'));
-            document.getElementById('btn-kalkulator-omset').addEventListener('click', () => navigateTo('page-kalkulator-omset'));
-            document.getElementById('back-to-lainnya-from-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
-            document.getElementById('btn-impor-laporan').addEventListener('click', () => navigateTo('page-laporan-harian'));
-            document.getElementById('back-to-lainnya-from-laporan-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('btn-view-checklist').addEventListener('click', () => navigateTo('checklist'));
+            document.getElementById('back-to-lainnya-btn').addEventListener('click', () => navigateTo('lainnya'));
+            document.getElementById('btn-kalkulator-omset').addEventListener('click', () => navigateTo('kalkulator-omset'));
+            document.getElementById('back-to-lainnya-from-calc-btn').addEventListener('click', () => navigateTo('lainnya'));
+            document.getElementById('btn-impor-laporan').addEventListener('click', () => navigateTo('laporan-harian'));
+            document.getElementById('back-to-lainnya-from-laporan-btn').addEventListener('click', () => navigateTo('lainnya'));
             document.querySelectorAll('.chart-week-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     chartSelectedWeek = parseInt(button.dataset.week);
@@ -1841,9 +1832,9 @@ const navigateTo = (pageName) => {
             
             document.getElementById('btn-laporan-bulanan').addEventListener('click', () => {
                 renderFunctions.renderMonthlyTurnoverReport();
-                navigateTo('page-laporan-bulanan');
+                navigateTo('laporan-bulanan');
             });
-            document.getElementById('back-to-lainnya-from-monthly-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('back-to-lainnya-from-monthly-btn').addEventListener('click', () => navigateTo('lainnya'));
             
             document.getElementById('hitung-omset-btn').addEventListener('click', () => {
                 const startDateEl = document.getElementById('start-date');
@@ -1955,8 +1946,8 @@ const navigateTo = (pageName) => {
                 }
             });
             
-            document.getElementById('btn-kalkulator-online').addEventListener('click', () => navigateTo('page-kalkulator-online'));
-            document.getElementById('back-to-lainnya-from-online-calc-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('btn-kalkulator-online').addEventListener('click', () => navigateTo('kalkulator-online'));
+            document.getElementById('back-to-lainnya-from-online-calc-btn').addEventListener('click', () => navigateTo('lainnya'));
             
             document.getElementById('hitung-online-btn').addEventListener('click', () => {
                 const parseInput = (id) => parseFloat(document.getElementById(id).value) || 0;
@@ -2371,7 +2362,7 @@ const navigateTo = (pageName) => {
                 
                 const pickerModal = createModal('picker-modal', 'Pilih Tanggal', modalContent, () => {});
                 pickerModal.show();
-                updatePickerUI(pickerModal.modalEl); 
+                updatePickerUI(pickerModal.modalEl);
                 
                 pickerModal.modalEl.querySelector('.modal-content').addEventListener('click', (e) => {
                     const btn = e.target.closest('.date-picker-btn');
@@ -2435,7 +2426,7 @@ const navigateTo = (pageName) => {
                     }
                 });
             });
-            resetAndInitializeFilter(); 
+            resetAndInitializeFilter();
             customerOrderModal.modalEl.addEventListener('click', (e) => {
                 if (e.target.classList.contains('order-discount-type-btn')) {
                     const type = e.target.dataset.type;
@@ -2449,7 +2440,7 @@ const navigateTo = (pageName) => {
                     e.target.classList.add('bg-emerald-100', 'text-emerald-800');
                     e.target.classList.remove('text-gray-500');
                     
-                    updateOrderTotal(); 
+                    updateOrderTotal();
                 }
             });
             
@@ -2463,9 +2454,9 @@ const navigateTo = (pageName) => {
             document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('uf-tanggal').value = today;
-                navigateTo('page-hitung-fisik');
+                navigateTo('hitung-fisik');
             });
-            document.getElementById('back-to-lainnya-from-fisik-btn').addEventListener('click', () => navigateTo('page-lainnya'));
+            document.getElementById('back-to-lainnya-from-fisik-btn').addEventListener('click', () => navigateTo('lainnya'));
             
             const formHitungFisik = document.getElementById('form-hitung-fisik');
             
@@ -2681,16 +2672,15 @@ const navigateTo = (pageName) => {
             };
             
             document.getElementById('btn-laporan-absensi').addEventListener('click', () => {
-                navigateTo('page-laporan-absensi');
+                navigateTo('laporan-absensi');
                 const today = new Date().toISOString().split('T')[0];
                 if (!absensiDateFilter.value) {
                     absensiDateFilter.value = today;
                 }
                 fetchAttendanceReport(absensiDateFilter.value || today);
             });
+            document.getElementById('back-to-lainnya-from-absensi-btn').addEventListener('click', () => navigateTo('lainnya'));
             
-            // Tombol kembali
-            document.getElementById('back-to-lainnya-from-absensi-btn').addEventListener('click', () => navigateTo('page-lainnya'));
             
             // Event listener untuk filter tanggal
             absensiDateFilter.addEventListener('change', (e) => {
@@ -2721,11 +2711,12 @@ const navigateTo = (pageName) => {
                     if (isAppInitialized) return;
                     isAppInitialized = true;
                     initializeApplication(db);
-                    const lastPage = localStorage.getItem('lastActivePage');
-                    if (lastPage) {
-                        navigateTo(lastPage); 
+                    const lastPageId = localStorage.getItem('lastActivePage');
+                    if (lastPageId) {
+                        const pageName = lastPageId.replace('page-', '');
+                        navigateTo(pageName);
                     } else {
-                        navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
+                        navigateTo('beranda');
                     }
                     onSnapshot(query(collection(db, 'reservations'), orderBy('createdAt', 'desc')), (snapshot) => {
                         state.reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
