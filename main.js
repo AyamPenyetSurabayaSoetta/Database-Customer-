@@ -1237,21 +1237,45 @@
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-button');
         const fabContainer = document.getElementById('fab-container');
-        const navigateTo = (pageId) => {
-            pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId));
-            navButtons.forEach(btn => {
-                const isActive = btn.dataset.target === pageId;
-                btn.classList.toggle('nav-active', isActive);
-                const berandaIcon = btn.querySelector('.beranda-icon');
-                if (berandaIcon) berandaIcon.style.fill = isActive ? '#D1FAE5' : 'none';
-            });
-            updateFAB(pageId);
-            if (pageId !== 'page-pihak') {
-                document.getElementById('broadcast-controls').classList.add('hidden');
-                document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = false);
-            }
-            localStorage.setItem('lastActivePage', pageId);
-        };
+// TAMBAHKAN FUNGSI BARU INI
+const updateIndicator = (pageName) => {
+    const navContainer = document.getElementById('nav-container');
+    const navButtons = navContainer.querySelectorAll('.nav-button');
+    const indicator = document.getElementById('nav-indicator');
+    let activeButton = null;
+    
+    // Temukan tombol yang aktif
+    navButtons.forEach(btn => {
+        if (btn.dataset.target === pageName) {
+            activeButton = btn;
+        }
+    });
+    
+    if (activeButton) {
+        const buttonWidth = activeButton.offsetWidth;
+        const buttonLeft = activeButton.offsetLeft;
+        const indicatorWidth = buttonWidth * 0.5; // Lebar garis 50% dari tombol
+        
+        indicator.style.width = `${indicatorWidth}px`;
+        indicator.style.transform = `translateX(${buttonLeft + (buttonWidth - indicatorWidth) / 2}px)`;
+    }
+};        
+// GANTI FUNGSI navigateTo ANDA DENGAN VERSI FINAL INI
+const navigateTo = (pageName) => {
+    // 1. Tampilkan halaman yang benar dan sembunyikan yang lain
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.toggle('hidden', page.id !== `page-${pageName}`);
+    });
+    
+    // 2. Atur kelas 'active' pada tombol navigasi
+    document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.target === pageName);
+    });
+    
+    // 3. Logika untuk FAB dan penyimpanan state (tetap sama)
+    updateFAB(`page-${pageName}`);
+    localStorage.setItem('lastActivePage', pageName);
+};
         
         const updateFAB = (pageId) => {
             fabContainer.innerHTML = '';
@@ -2701,7 +2725,7 @@
                     if (lastPage) {
                         navigateTo(lastPage); 
                     } else {
-                        navigateTo('page-beranda'); 
+                        navigateTo('page-beranda'); // Jika tidak ada, arahkan ke Beranda
                     }
                     onSnapshot(query(collection(db, 'reservations'), orderBy('createdAt', 'desc')), (snapshot) => {
                         state.reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

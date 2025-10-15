@@ -78,3 +78,29 @@
     #main-content {
   overflow-x: hidden;
 }
+/* GANTI SEMUA CSS NAVIGASI LAMA ANDA DENGAN INI */
+
+.nav-button {
+    color: #9CA3AF; /* Warna abu-abu untuk ikon tidak aktif */
+    /* Menambahkan transisi untuk perubahan warna dan ukuran (transform) */
+    transition: color 0.3s ease, transform 0.2s ease;
+    /* Titik tumpu animasi diatur ke bawah agar ikon "tumbuh" ke atas */
+    transform-origin: bottom;
+}
+
+/* Aturan untuk tombol yang sedang aktif */
+.nav-button.active {
+    color: #10B981; /* Warna hijau untuk ikon dan teks yang aktif */
+    /* Efek "Pop": ikon diangkat 2px dan diperbesar menjadi 110% */
+    transform: translateY(-2px) scale(1.1); 
+}
+
+.nav-button span {
+    font-size: 0.75rem; /* 12px */
+    font-weight: 500;
+    transition: font-weight 0.2s;
+}
+
+.nav-button.active span {
+    font-weight: 700; /* Tebalkan teks yang aktif */
+}
