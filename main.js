@@ -1268,28 +1268,31 @@
             localStorage.setItem('lastActivePage', targetPageId);
         };
         
-        const updateFAB = (pageId) => {
-            fabContainer.innerHTML = '';
-            let fabHTML = '';
-            const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all";
-            const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
-            
-            if (pageId === 'page-pihak') {
-                fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-inventaris') {
-                fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-penjualan') {
-                fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-pesanan') {
-                fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-laporan') {
-                fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`;
-            } else if (pageId === 'page-reservasi') {
-                fabHTML = `<button title="Tambah Reservasi" id="fab-add-reservation" class="${baseFabClass}">${plusIcon}</button>`;
-            }
-            
-            fabContainer.innerHTML = fabHTML;
-        };
+// main.js
+
+const updateFAB = (pageId) => {
+    fabContainer.innerHTML = '';
+    let fabHTML = '';
+    const baseFabClass = "w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-emerald-600 transition-all";
+    const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+    
+    // DIPERBAIKI: Menghapus awalan 'page-' dari semua kondisi
+    if (pageId === 'pihak') {
+        fabHTML = `<button title="Tambah Pelanggan" id="fab-add-contact" class="${baseFabClass}">${plusIcon}</button>`;
+    } else if (pageId === 'inventaris') {
+        fabHTML = `<button title="Tambah Barang" id="fab-add-item" class="${baseFabClass}">${plusIcon}</button>`;
+    } else if (pageId === 'penjualan') {
+        fabHTML = `<button title="Buat Faktur Penjualan" id="fab-add-sale" class="${baseFabClass}">${plusIcon}</button>`;
+    } else if (pageId === 'pesanan') {
+        fabHTML = `<button title="Tambah Pesanan" id="fab-add-order" class="${baseFabClass}">${plusIcon}</button>`;
+    } else if (pageId === 'laporan') {
+        fabHTML = `<button title="Catat Belanja Baru" id="fab-add-expense" class="${baseFabClass}">${plusIcon}</button>`;
+    } else if (pageId === 'reservasi') {
+        fabHTML = `<button title="Tambah Reservasi" id="fab-add-reservation" class="${baseFabClass}">${plusIcon}</button>`;
+    }
+    
+    fabContainer.innerHTML = fabHTML;
+};
         
         function initializeApplication(db) {
             document.getElementById('daily-report-year-filter').addEventListener('change', renderFunctions.renderDailyReportHistory);
