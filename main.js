@@ -2223,7 +2223,12 @@
             });
             
             saleModal.modalEl.addEventListener('change', (e) => { if (e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
-            customerOrderModal.modalEl.addEventListener('change', (e) => { if (e.target.name === 'itemId' || e.target.name === 'qty') updateOrderTotal(); });
+            customerOrderModal.modalEl.addEventListener('change', (e) => {
+    const target = e.target;
+    if (target.name === 'itemId') {
+        updateOrderTotal();
+    }
+});
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => {
@@ -2455,11 +2460,12 @@
                 }
             });
             
-            customerOrderModal.modalEl.addEventListener('input', (e) => {
-                if (e.target.id === 'order-discount-value') {
-                    updateOrderTotal();
-                }
-            });
+customerOrderModal.modalEl.addEventListener('input', (e) => {
+    const target = e.target;
+    if (target.name === 'qty' || target.id === 'order-discount-value') {
+        updateOrderTotal();
+    }
+});
             
             
             document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
