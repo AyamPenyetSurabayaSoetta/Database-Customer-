@@ -2224,11 +2224,11 @@
             
             saleModal.modalEl.addEventListener('change', (e) => { if (e.target.name === 'itemId' || e.target.name === 'qty') updateSaleTotal(); });
             customerOrderModal.modalEl.addEventListener('change', (e) => {
-    const target = e.target;
-    if (target.name === 'itemId') {
-        updateOrderTotal();
-    }
-});
+                const target = e.target;
+                if (target.name === 'itemId') {
+                    updateOrderTotal();
+                }
+            });
             document.getElementById('salesSearchInput').addEventListener('input', renderFunctions.renderSalesReport);
             document.getElementById('salesMonthFilter').addEventListener('change', renderFunctions.renderSalesReport);
             document.getElementById('resetSalesFilter').addEventListener('click', () => {
@@ -2414,7 +2414,7 @@
                 document.getElementById('reservation-status-filter').textContent = "Semua Status";
                 document.getElementById('reservation-search-input').value = '';
                 
-                renderFunctions.renderReservations();
+                //renderFunctions.renderReservations();
             };
             document.getElementById('reservation-status-filter').addEventListener('click', () => {
                 const statusOptions = [
@@ -2460,12 +2460,12 @@
                 }
             });
             
-customerOrderModal.modalEl.addEventListener('input', (e) => {
-    const target = e.target;
-    if (target.name === 'qty' || target.id === 'order-discount-value') {
-        updateOrderTotal();
-    }
-});
+            customerOrderModal.modalEl.addEventListener('input', (e) => {
+                const target = e.target;
+                if (target.name === 'qty' || target.id === 'order-discount-value') {
+                    updateOrderTotal();
+                }
+            });
             
             
             document.getElementById('btn-hitung-fisik').addEventListener('click', () => {
@@ -2737,9 +2737,7 @@ customerOrderModal.modalEl.addEventListener('input', (e) => {
                     }
                     onSnapshot(query(collection(db, 'reservations'), orderBy('createdAt', 'desc')), (snapshot) => {
                         state.reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        if (document.getElementById('page-reservasi').classList.contains('hidden') === false) {
-                            renderFunctions.renderReservations();
-                        }
+                        renderFunctions.renderReservations();
                     }, (error) => console.error("Error fetching reservations:", error));
                     onSnapshot(query(collection(db, 'contacts'), orderBy('name')), (snapshot) => {
                         state.contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
