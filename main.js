@@ -901,7 +901,7 @@
                     doc.setLineDashPattern([], 0);
                     totalY += 10;
                     doc.setFontSize(12);
-                    addTotalLine("TOTAL TAGIHAN", formatCurrency(total), totalY, true);
+                    addTotalLine("TOTAL", formatCurrency(total), totalY, true);
                     
                     // 5. FOOTER
                     const footerY = pageHeight - 50;
