@@ -379,7 +379,7 @@
                     const monthData = salesByMonth[month];
                     const monthEl = document.createElement('div');
                     monthEl.className = 'border rounded-lg';
-                    const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join('');
+                    const salesHtml = monthData.sales.map(sale => `<li class="flex justify-between items-start py-3 px-3 border-b last:border-b-0"><div class="flex-1"><p class="font-medium">Penjualan ke ${sale.contactName}</p><p class="text-xs text-gray-500">${formatDate(sale.date)}</p><div class="mt-2 space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-green-600">FAKTUR</button><button data-id="${sale.id}" class="invoice-paid-btn text-xs font-bold text-blue-600">FAKTUR (LUNAS)</button><button data-id="${sale.id}" class="delete-tx-btn text-xs font-bold text-red-600">HAPUS</button></div></div><p class="font-semibold text-green-600 ml-4 whitespace-nowrap">${formatCurrency(sale.total)}</p></li>`).join('');
                     monthEl.innerHTML = `<header class="bg-gray-50 p-3 rounded-t-lg flex justify-between items-center"><h3 class="font-bold text-lg">${month}</h3><p class="font-bold text-green-700">${formatCurrency(monthData.total)}</p></header><ul class="divide-y">${salesHtml}</ul>`;
                     listEl.appendChild(monthEl);
                 });
@@ -562,9 +562,10 @@
             </div>
             ${matchingTransaction ?
             `<div class="text-right mt-3 pt-3 border-t flex justify-end items-center gap-4">
-                <button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">Download Faktur</button>
+                <button data-id="${matchingTransaction.id}" class="reprint-invoice-btn text-xs font-bold text-blue-600">Faktur Tagihan</button>
+                <button data-id="${matchingTransaction.id}" class="reprint-invoice-paid-btn text-xs font-bold text-green-600">Faktur Lunas</button>
                 <button data-order-id="${order.id}" data-transaction-id="${matchingTransaction.id}" class="delete-completed-order-btn text-xs font-bold text-red-600">HAPUS</button>
-            </div>` 
+            </div>`
             : ''}
         `;
                     listEl.appendChild(item);
@@ -720,7 +721,7 @@
                 });
             },
             
-            generateInvoice: async (purchaseId) => {
+            generateInvoice: async (purchaseId, addWatermark = false) => {
                 const purchase = state.transactions.find(p => p.id === purchaseId);
                 if (!purchase) {
                     showToast("Error: Data transaksi tidak ditemukan.");
@@ -851,7 +852,40 @@
                     doc.text(`: ${addressLines.join('\n')}`, rightColX + 85, buyerY);
                     buyerY += (addressLines.length * 12);
                     const tableStartY = Math.max(sellerY, buyerY) + 20;
-                    
+    // --- BLOK WATERMARK ---
+                    if (addWatermark) {
+                        doc.saveGraphicsState();
+                        
+                        // 1. PENGATURAN TRANSPARANSI (FILL & STROKE)
+                        // Atur isi (fill) ke 10% dan garis (stroke/border) ke 30%
+                        doc.setGState(new doc.GState({ fillOpacity: 0.1, strokeOpacity: 0.3 }));
+                        
+                        // 2. PENGATURAN BORDER
+                        doc.setLineWidth(1); // Atur ketebalan border (0.5px)
+                        
+                        doc.setFontSize(90);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(160, 220, 160); // Warna hijau muda (untuk fill & border)
+                        
+                        // 3. POSISI
+                        const yPosWatermark = pageHeight * 0.65;
+                        const xPosWatermark = (pageWidth / 2) + 50;
+                        
+                        doc.text(
+                            "L U N A S",
+                            xPosWatermark,
+                            yPosWatermark,
+                            {
+                                align: 'center',
+                                angle: 45,
+                                baseline: 'middle',
+                                renderingMode: 'fillStroke' // <-- KUNCI: Render isi & border
+                            }
+                        );
+                        
+                        doc.restoreGraphicsState(); // Mengembalikan GState (transparansi, dll)
+                    }
+                    // --- AKHIR BLOK WATERMARK ---
                     // 3. TABEL PRODUK
                     const tableHead = [
                         ['INFO PRODUK', 'JUMLAH', 'HARGA SATUAN', 'TOTAL HARGA']
@@ -923,7 +957,9 @@
                     doc.setTextColor(150);
                     doc.text(`Terakhir diupdate: ${updateDate} WIB`, pageWidth - margin, pageHeight - margin, { align: 'right' });
                     
-                    doc.save(`faktur-${purchase.contactName.replace(/\s/g, '_')}-${numericInvoiceId}.pdf`);
+                    
+                    const fileName = `faktur${addWatermark ? '-LUNAS' : ''}-${purchase.contactName.replace(/\s/g, '_')}-${numericInvoiceId}.pdf`;
+                    doc.save(fileName);
                 } catch (error) {
                     console.error("Gagal membuat faktur (setelah memuat logo):", error);
                     showToast(`Gagal: ${error.message || 'Terjadi kesalahan saat membuat PDF.'}`);
@@ -2100,10 +2136,24 @@
                         }
                     }
                 }
+                // --- MODIFIKASI: Logika Tombol Faktur (Tanpa Watermark) ---
                 if (target.classList.contains('invoice-btn') || target.classList.contains('reprint-invoice-btn')) {
                     const transactionId = target.dataset.id;
-                    if (transactionId) { renderFunctions.generateInvoice(transactionId); }
-                    else { showToast("ID Faktur tidak ditemukan."); }
+                    if (transactionId) {
+                        renderFunctions.generateInvoice(transactionId, false); // false = tanpa watermark
+                    } else {
+                        showToast("ID Faktur tidak ditemukan.");
+                    }
+                }
+                
+                // --- TAMBAHAN: Logika Tombol Faktur (Dengan Watermark LUNAS) ---
+                if (target.classList.contains('invoice-paid-btn') || target.classList.contains('reprint-invoice-paid-btn')) {
+                    const transactionId = target.dataset.id;
+                    if (transactionId) {
+                        renderFunctions.generateInvoice(transactionId, true); // true = dengan watermark
+                    } else {
+                        showToast("ID Faktur tidak ditemukan.");
+                    }
                 }
                 if (target.classList.contains('create-invoice-from-order-btn')) {
                     const orderId = target.dataset.id;
@@ -2198,7 +2248,7 @@
                     const sales = state.transactions.filter(tx => tx.type === 'sale' && tx.contactId === customerId);
                     const detailsEl = document.getElementById('customer-item-details');
                     if (sales.length > 0) {
-                        const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button></div></div>`; }).join('');
+                        const historyHtml = sales.map(sale => { const itemsHtml = sale.items.map(item => `<li class="text-sm text-gray-700">${item.qty}x ${item.name} <span class="text-gray-500">@ ${formatCurrency(item.price)}</span></li>`).join(''); return `<div class="border rounded-lg p-3 mb-3"><div class="flex justify-between items-center mb-2 pb-2 border-b"><p class="font-semibold text-gray-700">${formatDate(sale.date)}</p><p class="font-bold text-emerald-600">${formatCurrency(sale.total)}</p></div><ul class="list-disc pl-5 mb-3">${itemsHtml}</ul><div class="text-right space-x-2"><button data-id="${sale.id}" class="invoice-btn text-xs font-bold text-blue-600">ULANG FAKTUR</button><button data-id="${sale.id}" class="invoice-paid-btn text-xs font-bold text-green-600">ULANG (LUNAS)</button></div></div>`; }).join('');
                         detailsEl.innerHTML = `<div class="space-y-3">${historyHtml}</div>`;
                     } else { detailsEl.innerHTML = `<p class="text-center text-gray-500">Tidak ada riwayat transaksi.</p>`; }
                     customerDetailModal.show();
